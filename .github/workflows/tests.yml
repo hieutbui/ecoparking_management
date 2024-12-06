@@ -1,0 +1,61 @@
+on:
+  pull_request:
+
+env:
+  Flutter_Version: 3.24.2
+
+jobs:
+  code_analyze:
+    name: Analyze code
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: write
+      checks: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.Flutter_Version }}
+          channel: 'stable'
+          cache: true
+          cache-key: "flutter-:os:-:channel:-:version:-:arch:-:hash:-${{ hashFiles('**/pubspec.lock') }}"
+      
+      - name: Create .env file
+        run: |
+          echo "" > .env
+
+      - name: Run code analysis
+        run: |
+          flutter pub get && flutter pub run build_runner build --delete-conflicting-outputs && flutter analyze
+          dart format --set-exit-if-changed lib/ test/
+          flutter analyze
+
+  widget_test:
+    name: Widget test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.Flutter_Version }}
+          channel: 'stable'
+          cache: true
+          cache-key: "flutter-:os:-:channel:-:version:-:arch:-:hash:-${{ hashFiles('**/pubspec.lock') }}"
+      
+      - name: Create .env file
+        run: |
+          echo "" > .env
+
+      - name: Run widget test
+        run: |
+          flutter pub get && flutter pub run build_runner build --delete-conflicting-outputs && flutter test --coverage
+          flutter test
