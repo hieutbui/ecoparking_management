@@ -1,0 +1,135 @@
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+env:
+  Flutter_Version: 3.24.2
+
+name: Release
+
+jobs:
+  build-android:
+    name: Build Android version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.Flutter_Version }}
+          channel: 'stable'
+          cache: true
+          cache-key: "flutter-:os:-:channel:-:version:-:arch:-:hash:-${{ hashFiles('**/pubspec.lock') }}"
+
+      - name: Create .env file
+        run: |
+          echo "" > .env
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Build Android version
+        run: |
+          flutter clean
+          flutter pub get
+          flutter pub run build_runner build --delete-conflicting-outputs
+          flutter build apk --release
+
+      - name: Rename Android APK
+        run: mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/ecoparking-release-android-${{ github.ref_name }}.apk
+
+      - name: Upload Android artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ecoparking-release-android-${{ github.ref_name }}
+          path: build/app/outputs/flutter-apk/ecoparking-release-android-${{ github.ref_name }}.apk
+
+  build-web:
+    name: Build Web version
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.Flutter_Version }}
+          channel: 'stable'
+          cache: true
+          cache-key: "flutter-:os:-:channel:-:version:-:arch:-:hash:-${{ hashFiles('**/pubspec.lock') }}"
+
+      - name: Create .env file
+        run: |
+          echo "" > .env
+
+      - name: Build Web version
+        env:
+          FOLDER: '/release/${{ github.ref_name }}/'
+        run: |
+          flutter config --enable-web
+          flutter clean
+          flutter pub get
+          flutter pub run build_runner build --delete-conflicting-outputs
+          flutter build web --release --base-href="/${GITHUB_REPOSITORY##*/}/$FOLDER/"
+
+      - name: Configure environments
+        id: configure
+        env:
+          FOLDER: '/release/${{ github.ref_name }}/'
+        run: |
+          echo "URL=https://$GITHUB_REPOSITORY_OWNER.github.io/${GITHUB_REPOSITORY##*/}/$FOLDER" >> $GITHUB_OUTPUT
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: build/web
+          keep_files: true
+          destination_dir: release/${{ github.ref_name }}
+
+      - name: Remove .env file
+        run: |
+          rm .env
+
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    needs: [build-android, build-web]
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set Repository Name
+        id: set_repo_name
+        run: echo "REPO_NAME=${GITHUB_REPOSITORY##*/}" >> $GITHUB_ENV
+
+      - name: Download Android artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ecoparking-release-android-${{ github.ref_name }}
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: softprops/action-gh-release@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO_NAME: ${{ env.REPO_NAME }}
+        with:
+          tag_name: ${{ github.ref }}
+          name: Release ${{ github.ref_name }}
+          body: |
+            See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/${{ github.ref_name }}/CHANGELOG.md) for full changelogs.
+            Web version is available at: https://${{ github.repository_owner }}.github.io/${{env.REPO_NAME}}/release/${{ github.ref_name }}
+          files: |
+            ecoparking-release-android-${{ github.ref_name }}.apk
