@@ -4,6 +4,8 @@ on:
 env:
   Flutter_Version: 3.24.2
 
+name: Pre-merge
+
 jobs:
   code_analyze:
     name: Analyze code
