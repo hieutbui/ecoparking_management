@@ -39,7 +39,7 @@ jobs:
           flutter clean
           flutter pub get
           flutter pub run build_runner build --delete-conflicting-outputs
-          flutter build apk --release
+          flutter build apk --release --dart-define=SUPABASE_PROJECT_URL=${{ secrets.SUPABASE_PROJECT_URL }} --dart-define=SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
 
       - name: Rename Android APK
         run: mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/ecoparking-release-android-${{ github.ref_name }}.apk
@@ -79,7 +79,7 @@ jobs:
           flutter clean
           flutter pub get
           flutter pub run build_runner build --delete-conflicting-outputs
-          flutter build web --release --base-href="/${GITHUB_REPOSITORY##*/}/$FOLDER/"
+          flutter build web --release --dart-define=SUPABASE_PROJECT_URL=${{ secrets.SUPABASE_PROJECT_URL }} --dart-define=SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }} --base-href="/${GITHUB_REPOSITORY##*/}/$FOLDER/"
 
       - name: Configure environments
         id: configure
