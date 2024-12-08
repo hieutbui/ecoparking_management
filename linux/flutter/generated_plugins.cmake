@@ -3,7 +3,7 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
-  flutter_localization
+  dynamic_color
   gtk
   url_launcher_linux
 )
