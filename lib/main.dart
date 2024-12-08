@@ -1,6 +1,36 @@
+import 'package:ecoparking_management/config/env_loader.dart';
+import 'package:ecoparking_management/utils/platform_infos.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_web_plugins/flutter_web_plugins.dart';
+import 'package:loggy/loggy.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  if (PlatformInfos.isRelease) {
+    await dotenv.load(mergeWith: EnvLoader.compileTimeEnvironment);
+  } else {
+    await dotenv.load(fileName: EnvLoader.envFileName);
+  }
+
+  Loggy.initLoggy(
+    logPrinter: const PrettyPrinter(
+      showColors: true,
+    ),
+  );
+
+  await Supabase.initialize(
+    url: EnvLoader.supabaseProjectUrl,
+    anonKey: EnvLoader.supabaseAnonKey,
+    authOptions: const FlutterAuthClientOptions(
+      authFlowType: AuthFlowType.pkce,
+    ),
+  );
+
+  usePathUrlStrategy();
+
   runApp(const MyApp());
 }
 
