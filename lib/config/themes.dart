@@ -1,13 +1,107 @@
+import 'package:ecoparking_management/config/app_config.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class EcoParkingManagementThemes {
   static var fallbackTextTheme = TextTheme(
-      displayLarge: GoogleFonts.beVietnamPro(
-    fontSize: 96,
-    fontWeight: FontWeight.w300,
-    letterSpacing: 0.0,
-  ));
+    displayLarge: GoogleFonts.beVietnamPro(
+      fontSize: 32,
+      fontWeight: FontWeight.w600,
+      letterSpacing: -0.1,
+    ),
+    displayMedium: GoogleFonts.beVietnamPro(
+      fontSize: 24,
+      fontWeight: FontWeight.w600,
+      letterSpacing: -0.1,
+    ),
+    displaySmall: GoogleFonts.beVietnamPro(
+      fontSize: 18,
+      fontWeight: FontWeight.w600,
+      letterSpacing: -0.1,
+    ),
+    headlineLarge: GoogleFonts.beVietnamPro(
+      fontSize: 16,
+      fontWeight: FontWeight.w600,
+      letterSpacing: -0.1,
+    ),
+    headlineMedium: GoogleFonts.beVietnamPro(
+      fontSize: 14,
+      fontWeight: FontWeight.w600,
+      letterSpacing: -0.1,
+    ),
+    headlineSmall: GoogleFonts.beVietnamPro(
+      fontSize: 12,
+      fontWeight: FontWeight.w600,
+      letterSpacing: -0.1,
+    ),
+    bodyLarge: GoogleFonts.beVietnamPro(
+      fontSize: 16,
+      fontWeight: FontWeight.bold,
+      letterSpacing: 0.0,
+    ),
+    bodyMedium: GoogleFonts.beVietnamPro(
+      fontSize: 14,
+      fontWeight: FontWeight.normal,
+      letterSpacing: 0.0,
+    ),
+    bodySmall: GoogleFonts.beVietnamPro(
+      fontSize: 8,
+      fontWeight: FontWeight.normal,
+      letterSpacing: 0.0,
+    ),
+    labelLarge: GoogleFonts.beVietnamPro(
+      fontSize: 26,
+      fontWeight: FontWeight.w600,
+      letterSpacing: -0.1,
+    ),
+    labelMedium: GoogleFonts.beVietnamPro(
+      fontSize: 18,
+      fontWeight: FontWeight.normal,
+      letterSpacing: 0.0,
+    ),
+    labelSmall: GoogleFonts.beVietnamPro(
+      fontSize: 10,
+      fontWeight: FontWeight.w600,
+      letterSpacing: 0.0,
+    ),
+  );
 
-  static ThemeData buildTheme(BuildContext context) => ThemeData();
+  static ThemeData buildTheme(BuildContext context) => ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: AppConfig.primaryColor,
+          primary: AppConfig.primaryColor,
+          onPrimary: AppConfig.onPrimaryColor,
+          primaryContainer: AppConfig.primaryContainerColor,
+          onPrimaryContainer: AppConfig.onPrimaryContainerColor,
+          secondary: AppConfig.secondaryColor,
+          onSecondary: AppConfig.onSecondaryColor,
+          secondaryContainer: AppConfig.secondaryContainerColor,
+          onSecondaryContainer: AppConfig.onSecondaryContainerColor,
+          tertiary: AppConfig.tertiaryColor,
+          onTertiary: AppConfig.onTertiaryColor,
+          tertiaryContainer: AppConfig.tertiaryContainerColor,
+          onTertiaryContainer: AppConfig.onTertiaryContainerColor,
+          error: AppConfig.errorColor,
+          surface: AppConfig.surfaceColor,
+          onSurface: AppConfig.onSurfaceColor,
+          onSurfaceVariant: AppConfig.onSurfaceVariantColor,
+          surfaceContainerLowest: AppConfig.surfaceContainerLowestColor,
+          surfaceContainerLow: AppConfig.surfaceContainerLow,
+          surfaceContainer: AppConfig.surfaceContainer,
+          surfaceContainerHigh: AppConfig.surfaceContainerHigh,
+          surfaceContainerHighest: AppConfig.surfaceContainerHighest,
+          surfaceTint: AppConfig.surfaceTintColor,
+          inverseSurface: AppConfig.inverseSurfaceColor,
+          onInverseSurface: AppConfig.onInverseSurfaceColor,
+          inversePrimary: AppConfig.inversePrimaryColor,
+          outline: AppConfig.outlineColor,
+          outlineVariant: AppConfig.outlineVariantColor,
+        ),
+        textSelectionTheme: const TextSelectionThemeData(
+          cursorColor: AppConfig.primaryColor,
+        ),
+        useMaterial3: true,
+        fontFamily: GoogleFonts.beVietnamPro().fontFamily,
+        textTheme: fallbackTextTheme,
+      );
 }
