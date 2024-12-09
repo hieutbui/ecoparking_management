@@ -1,6 +1,8 @@
 import 'package:ecoparking_management/config/app_config.dart';
+import 'package:ecoparking_management/config/app_routes.dart';
 import 'package:ecoparking_management/config/env_loader.dart';
 import 'package:ecoparking_management/config/themes.dart';
+import 'package:ecoparking_management/di/global/get_it_initializer.dart';
 import 'package:ecoparking_management/utils/platform_infos.dart';
 import 'package:ecoparking_management/widgets/theme_builder.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +14,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  GetItInitializer().setup();
 
   if (PlatformInfos.isRelease) {
     await dotenv.load(mergeWith: EnvLoader.compileTimeEnvironment);
@@ -46,6 +50,7 @@ class EcoParkingManagement extends StatelessWidget {
     return ThemeBuilder(
       builder: (context, themeMode, primaryColor) {
         return MaterialApp.router(
+          routerConfig: AppRoutes.router,
           title: AppConfig.appTitle,
           themeMode: themeMode,
           localizationsDelegates: const [
