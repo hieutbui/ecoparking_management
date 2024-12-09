@@ -52,6 +52,7 @@ class EcoParkingManagement extends StatelessWidget {
         return MaterialApp.router(
           routerConfig: AppRoutes.router,
           title: AppConfig.appTitle,
+          debugShowCheckedModeBanner: false,
           themeMode: themeMode,
           localizationsDelegates: const [
             GlobalMaterialLocalizations.delegate,

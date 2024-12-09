@@ -26,6 +26,34 @@ class DialogUtils {
     );
   }
 
+  static Future<void> showLoginError(BuildContext context) async {
+    return show(
+      context: context,
+      builder: _buildLoginErrorDialog,
+    );
+  }
+
+  static Future<void> showSomethingWentWrong(BuildContext context) async {
+    return show(
+      context: context,
+      builder: _buildSomethingWentWrongDialog,
+    );
+  }
+
+  static Future<void> showNotAllowedAccount(BuildContext context) async {
+    return show(
+      context: context,
+      builder: _buildNotAllowedAccountDialog,
+    );
+  }
+
+  static Future<void> showFillAllLoginFields(BuildContext context) async {
+    return show(
+      context: context,
+      builder: _buildFillAllLoginFieldsDialog,
+    );
+  }
+
   static WidgetBuilder get _buildRequiredLoginDialog => (BuildContext context) {
         return AlertDialog(
           title: Text(
@@ -49,6 +77,13 @@ class DialogUtils {
                 backgroundColor: WidgetStatePropertyAll<Color>(
                   Colors.white,
                 ),
+                shape: WidgetStatePropertyAll<OutlinedBorder>(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(8.0),
+                    ),
+                  ),
+                ),
               ),
               child: Text(
                 'Cancel',
@@ -66,7 +101,7 @@ class DialogUtils {
                 shape: WidgetStatePropertyAll<OutlinedBorder>(
                   RoundedRectangleBorder(
                     borderRadius: const BorderRadius.all(
-                      Radius.circular(12.0),
+                      Radius.circular(8.0),
                     ),
                     side: BorderSide(
                       color: Theme.of(context).colorScheme.primary,
@@ -76,6 +111,189 @@ class DialogUtils {
               ),
               child: Text(
                 'Login',
+                style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                      color: Colors.white,
+                    ),
+              ),
+            ),
+          ],
+        );
+      };
+
+  static WidgetBuilder get _buildLoginErrorDialog => (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            'Login Error',
+            style: Theme.of(context).textTheme.displaySmall!.copyWith(
+                  color: Theme.of(context).colorScheme.error,
+                ),
+          ),
+          content: Text(
+            'An error occurred while trying to login. Please try again.',
+            style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                  fontWeight: FontWeight.normal,
+                  color: Theme.of(context).colorScheme.inversePrimary,
+                ),
+          ),
+          surfaceTintColor: AppConfig.baseBackgroundColor,
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              style: ButtonStyle(
+                backgroundColor: WidgetStatePropertyAll<Color>(
+                  Theme.of(context).colorScheme.primary,
+                ),
+                shape: WidgetStatePropertyAll<OutlinedBorder>(
+                  RoundedRectangleBorder(
+                    borderRadius: const BorderRadius.all(
+                      Radius.circular(8.0),
+                    ),
+                    side: BorderSide(
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                ),
+              ),
+              child: Text(
+                'OK',
+                style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                      color: Colors.white,
+                    ),
+              ),
+            ),
+          ],
+        );
+      };
+
+  static WidgetBuilder get _buildSomethingWentWrongDialog =>
+      (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            'Something Went Wrong',
+            style: Theme.of(context).textTheme.displaySmall!.copyWith(
+                  color: Theme.of(context).colorScheme.error,
+                ),
+          ),
+          content: Text(
+            'An error occurred while trying to process your request. Please try again.',
+            style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                  fontWeight: FontWeight.normal,
+                  color: Theme.of(context).colorScheme.inversePrimary,
+                ),
+          ),
+          surfaceTintColor: AppConfig.baseBackgroundColor,
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              style: ButtonStyle(
+                backgroundColor: WidgetStatePropertyAll<Color>(
+                  Theme.of(context).colorScheme.primary,
+                ),
+                shape: WidgetStatePropertyAll<OutlinedBorder>(
+                  RoundedRectangleBorder(
+                    borderRadius: const BorderRadius.all(
+                      Radius.circular(8.0),
+                    ),
+                    side: BorderSide(
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                ),
+              ),
+              child: Text(
+                'OK',
+                style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                      color: Colors.white,
+                    ),
+              ),
+            ),
+          ],
+        );
+      };
+
+  static WidgetBuilder get _buildNotAllowedAccountDialog =>
+      (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            'Account Not Allowed',
+            style: Theme.of(context).textTheme.displaySmall!.copyWith(
+                  color: Theme.of(context).colorScheme.error,
+                ),
+          ),
+          content: Text(
+            'Your account is not allowed to access this feature. Please contact the administrator.',
+            style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                  fontWeight: FontWeight.normal,
+                  color: Theme.of(context).colorScheme.inversePrimary,
+                ),
+          ),
+          surfaceTintColor: AppConfig.baseBackgroundColor,
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              style: ButtonStyle(
+                backgroundColor: WidgetStatePropertyAll<Color>(
+                  Theme.of(context).colorScheme.primary,
+                ),
+                shape: WidgetStatePropertyAll<OutlinedBorder>(
+                  RoundedRectangleBorder(
+                    borderRadius: const BorderRadius.all(
+                      Radius.circular(8.0),
+                    ),
+                    side: BorderSide(
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                ),
+              ),
+              child: Text(
+                'OK',
+                style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                      color: Colors.white,
+                    ),
+              ),
+            ),
+          ],
+        );
+      };
+
+  static WidgetBuilder get _buildFillAllLoginFieldsDialog =>
+      (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            'Fill All Fields',
+            style: Theme.of(context).textTheme.displaySmall!.copyWith(
+                  color: Theme.of(context).colorScheme.error,
+                ),
+          ),
+          content: Text(
+            'Please fill all fields to login.',
+            style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                  fontWeight: FontWeight.normal,
+                  color: Theme.of(context).colorScheme.inversePrimary,
+                ),
+          ),
+          surfaceTintColor: AppConfig.baseBackgroundColor,
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              style: ButtonStyle(
+                backgroundColor: WidgetStatePropertyAll<Color>(
+                  Theme.of(context).colorScheme.primary,
+                ),
+                shape: WidgetStatePropertyAll<OutlinedBorder>(
+                  RoundedRectangleBorder(
+                    borderRadius: const BorderRadius.all(
+                      Radius.circular(8.0),
+                    ),
+                    side: BorderSide(
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                ),
+              ),
+              child: Text(
+                'OK',
                 style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                       color: Colors.white,
                     ),

@@ -31,7 +31,7 @@ class AppScaffold extends StatelessWidget {
               icon: Icon(
                 Icons.notifications,
                 color: Theme.of(context).colorScheme.primary,
-                size: 28.0,
+                size: 20.0,
               ),
               style: ButtonStyle(
                 backgroundColor: const WidgetStatePropertyAll<Color>(
@@ -44,7 +44,7 @@ class AppScaffold extends StatelessWidget {
                       width: 1.0,
                     ),
                     borderRadius: const BorderRadius.all(
-                      Radius.circular(12.0),
+                      Radius.circular(8.0),
                     ),
                   ),
                 ),
@@ -67,7 +67,7 @@ class AppScaffold extends StatelessWidget {
                       width: 1.0,
                     ),
                     borderRadius: const BorderRadius.all(
-                      Radius.circular(12.0),
+                      Radius.circular(8.0),
                     ),
                   ),
                 ),
@@ -75,10 +75,11 @@ class AppScaffold extends StatelessWidget {
               icon: const Icon(
                 Icons.download_rounded,
                 color: Colors.white,
-                size: 28.0,
+                size: 20.0,
               ),
             )
           ],
+          const SizedBox(width: 16.0),
         ],
       ),
       body: body,
