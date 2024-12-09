@@ -1,3 +1,4 @@
+import 'package:ecoparking_management/utils/mixins/custom_logger.dart';
 import 'package:flutter/material.dart';
 
 class ExceptionScreen extends StatefulWidget {
@@ -7,7 +8,8 @@ class ExceptionScreen extends StatefulWidget {
   ExceptionScreenController createState() => ExceptionScreenController();
 }
 
-class ExceptionScreenController extends State<ExceptionScreen> {
+class ExceptionScreenController extends State<ExceptionScreen>
+    with ControllerLoggy {
   @override
   void initState() {
     super.initState();

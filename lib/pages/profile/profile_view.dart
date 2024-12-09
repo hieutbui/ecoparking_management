@@ -1,7 +1,8 @@
 import 'package:ecoparking_management/pages/profile/profile.dart';
+import 'package:ecoparking_management/utils/mixins/custom_logger.dart';
 import 'package:flutter/material.dart';
 
-class ProfileView extends StatelessWidget {
+class ProfileView extends StatelessWidget with ViewLoggy {
   final ProfileController controller;
 
   const ProfileView({

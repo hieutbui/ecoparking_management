@@ -10,7 +10,7 @@ class EcoParkingManagementThemes {
       letterSpacing: -0.1,
     ),
     displayMedium: GoogleFonts.beVietnamPro(
-      fontSize: 24,
+      fontSize: 28,
       fontWeight: FontWeight.w600,
       letterSpacing: -0.1,
     ),
@@ -101,19 +101,19 @@ class EcoParkingManagementThemes {
           backgroundColor: AppConfig.onPrimaryColor,
           useIndicator: true,
           elevation: 1,
-          indicatorColor: AppConfig.onTertiaryColor,
+          indicatorColor: AppConfig.primaryColor,
           indicatorShape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(8.0)),
           ),
         ),
         navigationBarTheme: const NavigationBarThemeData(
           backgroundColor: AppConfig.onPrimaryColor,
-          indicatorColor: AppConfig.onTertiaryColor,
+          indicatorColor: AppConfig.primaryColor,
           elevation: 1,
           labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
         ),
         textSelectionTheme: const TextSelectionThemeData(
-          cursorColor: AppConfig.primaryColor,
+          cursorColor: AppConfig.onTertiaryColor,
         ),
         useMaterial3: true,
         fontFamily: GoogleFonts.beVietnamPro().fontFamily,

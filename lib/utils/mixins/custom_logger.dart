@@ -23,3 +23,8 @@ mixin ServiceLoggy implements LoggyType {
   Loggy<ServiceLoggy> get loggy =>
       Loggy<ServiceLoggy>('Service Loggy - $runtimeType');
 }
+
+mixin ViewLoggy implements LoggyType {
+  @override
+  Loggy<ViewLoggy> get loggy => Loggy<ViewLoggy>('View Loggy - $runtimeType');
+}

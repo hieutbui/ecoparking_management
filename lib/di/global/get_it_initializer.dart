@@ -1,4 +1,5 @@
-import 'package:ecoparking_management/utils/custom_logger.dart';
+import 'package:ecoparking_management/domain/services/profile_service.dart';
+import 'package:ecoparking_management/utils/mixins/custom_logger.dart';
 import 'package:ecoparking_management/utils/responsive.dart';
 import 'package:get_it/get_it.dart';
 
@@ -51,6 +52,8 @@ class GetItInitializer with GetItLoggy {
   }
 
   void _bindingServices() {
+    getIt.registerSingleton<ProfileService>(ProfileService());
+
     loggy.info('_bindingServices(): Setup successfully');
   }
 
