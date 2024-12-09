@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'package:ecoparking_management/config/app_paths.dart';
 import 'package:ecoparking_management/di/global/get_it_initializer.dart';
+import 'package:ecoparking_management/domain/services/profile_service.dart';
 import 'package:ecoparking_management/pages/employee_management/employee_management.dart';
 import 'package:ecoparking_management/pages/exception_screen/exception_screen.dart';
 import 'package:ecoparking_management/pages/live_overview/live_overview.dart';
+import 'package:ecoparking_management/pages/login/login.dart';
 import 'package:ecoparking_management/pages/previous_analysis/previous_analysis.dart';
 import 'package:ecoparking_management/pages/profile/profile.dart';
 import 'package:ecoparking_management/utils/responsive.dart';
@@ -14,12 +16,43 @@ import 'package:flutter_adaptive_scaffold/flutter_adaptive_scaffold.dart';
 import 'package:go_router/go_router.dart';
 
 class AppRoutes {
+  static final routeChangeNotifier = RouteChangeNotifier();
+  static final _responsive = getIt.get<ResponsiveUtils>();
+  static final _profileService = getIt.get<ProfileService>();
+
+  static GoRouter get router => GoRouter(
+        initialLocation: AppPaths.login.path,
+        debugLogDiagnostics: true,
+        navigatorKey: _rootNavigatorKey,
+        refreshListenable: routeChangeNotifier,
+        routes: <RouteBase>[
+          ShellRoute(
+            navigatorKey: _shellNavigatorKey,
+            builder: _routerBuilder,
+            redirect: _routerRedirect,
+            routes: _listRoutes,
+          ),
+        ],
+        onException: _onRouteException,
+      );
+
   static GlobalKey<NavigatorState> get _rootNavigatorKey =>
       GlobalKey<NavigatorState>(debugLabel: 'Root Navigator');
   static GlobalKey<NavigatorState> get _shellNavigatorKey =>
       GlobalKey<NavigatorState>(debugLabel: 'Shell Navigator');
 
   static List<RouteBase> get _listRoutes => <RouteBase>[
+        GoRoute(
+          path: AppPaths.login.path,
+          pageBuilder: (context, state) => _defaultPageBuilder(
+            context,
+            const Login(),
+            name: AppPaths.login.name,
+          ),
+          redirect: (context, state) => _profileService.isAuthenticated
+              ? AppPaths.liveOverview.path
+              : null,
+        ),
         GoRoute(
           path: AppPaths.liveOverview.path,
           pageBuilder: (context, state) => _defaultPageBuilder(
@@ -62,7 +95,16 @@ class AppRoutes {
         ),
       ];
 
-  static List<String> get _listFullScreenPages => [];
+  static List<String> get _listFullScreenPages => [
+        AppPaths.login.path,
+      ];
+
+  static List<String> get _listScreenRequiredLogin => [
+        AppPaths.liveOverview.path,
+        AppPaths.previousAnalysis.path,
+        AppPaths.employee.path,
+        AppPaths.profile.path,
+      ];
 
   static Map<String, int> get navBarPathToIndex => {
         AppPaths.liveOverview.path: 0,
@@ -76,25 +118,6 @@ class AppRoutes {
         2: AppPaths.employee,
         3: AppPaths.profile,
       };
-
-  static final routeChangeNotifier = RouteChangeNotifier();
-  static final _responsive = getIt.get<ResponsiveUtils>();
-
-  static final GoRouter router = GoRouter(
-    initialLocation: AppPaths.liveOverview.path,
-    debugLogDiagnostics: true,
-    navigatorKey: _rootNavigatorKey,
-    refreshListenable: routeChangeNotifier,
-    routes: <RouteBase>[
-      ShellRoute(
-        navigatorKey: _shellNavigatorKey,
-        builder: _routerBuilder,
-        redirect: _routerRedirect,
-        routes: _listRoutes,
-      ),
-    ],
-    onException: _onRouteException,
-  );
 
   static Page _defaultPageBuilder(
     BuildContext context,
@@ -140,6 +163,18 @@ class AppRoutes {
     BuildContext context,
     GoRouterState state,
   ) {
+    final currentPath = state.uri.path.trim();
+
+    final isRequiredLogin = _listScreenRequiredLogin.any(
+      (path) => path.trim() == currentPath,
+    );
+
+    if (isRequiredLogin) {
+      if (!_profileService.isAuthenticated) {
+        return AppPaths.login.path;
+      }
+    }
+
     return null;
   }
 

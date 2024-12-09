@@ -1,4 +1,5 @@
 import 'package:ecoparking_management/pages/previous_analysis/previous_analysis_view.dart';
+import 'package:ecoparking_management/utils/mixins/custom_logger.dart';
 import 'package:flutter/material.dart';
 
 class PreviousAnalysis extends StatefulWidget {
@@ -8,7 +9,8 @@ class PreviousAnalysis extends StatefulWidget {
   PreviousAnalysisController createState() => PreviousAnalysisController();
 }
 
-class PreviousAnalysisController extends State<PreviousAnalysis> {
+class PreviousAnalysisController extends State<PreviousAnalysis>
+    with ControllerLoggy {
   @override
   void initState() {
     super.initState();

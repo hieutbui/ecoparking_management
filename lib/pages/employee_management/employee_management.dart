@@ -1,5 +1,5 @@
 import 'package:ecoparking_management/pages/employee_management/employee_management_view.dart';
-import 'package:ecoparking_management/utils/custom_logger.dart';
+import 'package:ecoparking_management/utils/mixins/custom_logger.dart';
 import 'package:flutter/material.dart';
 
 class EmployeeManagement extends StatefulWidget {

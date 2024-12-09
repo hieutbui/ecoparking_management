@@ -1,4 +1,5 @@
 import 'package:ecoparking_management/pages/live_overview/live_overview_view.dart';
+import 'package:ecoparking_management/utils/mixins/custom_logger.dart';
 import 'package:flutter/material.dart';
 
 class LiveOverview extends StatefulWidget {
@@ -8,7 +9,7 @@ class LiveOverview extends StatefulWidget {
   LiveOverviewController createState() => LiveOverviewController();
 }
 
-class LiveOverviewController extends State<LiveOverview> {
+class LiveOverviewController extends State<LiveOverview> with ControllerLoggy {
   @override
   void initState() {
     super.initState();
