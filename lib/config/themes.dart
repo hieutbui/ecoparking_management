@@ -97,6 +97,21 @@ class EcoParkingManagementThemes {
           outline: AppConfig.outlineColor,
           outlineVariant: AppConfig.outlineVariantColor,
         ),
+        navigationRailTheme: const NavigationRailThemeData(
+          backgroundColor: AppConfig.onPrimaryColor,
+          useIndicator: true,
+          elevation: 1,
+          indicatorColor: AppConfig.onTertiaryColor,
+          indicatorShape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(8.0)),
+          ),
+        ),
+        navigationBarTheme: const NavigationBarThemeData(
+          backgroundColor: AppConfig.onPrimaryColor,
+          indicatorColor: AppConfig.onTertiaryColor,
+          elevation: 1,
+          labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
+        ),
         textSelectionTheme: const TextSelectionThemeData(
           cursorColor: AppConfig.primaryColor,
         ),
