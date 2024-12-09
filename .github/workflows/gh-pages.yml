@@ -32,6 +32,10 @@ jobs:
           channel: 'stable'
           cache: true
           cache-key: "flutter-:os:-:channel:-:version:-:arch:-:hash:-${{ hashFiles('**/pubspec.lock') }}"
+          
+      - name: Create .env file
+        run: |
+          echo "" > .env
 
       - name: Build Web version
         env:
@@ -74,3 +78,7 @@ jobs:
           body: |
             This PR has been deployed to ${{ steps.configure.outputs.URL }}
           edit-mode: replace
+      
+      - name: Remove .env file
+        run: |
+          rm .env
