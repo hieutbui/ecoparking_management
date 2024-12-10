@@ -33,11 +33,15 @@ class LoginView extends StatelessWidget with ViewLoggy {
                     builder: (context, state, child) {
                       return TextField(
                         controller: controller.emailController,
-                        decoration: const InputDecoration(
+                        textInputAction: TextInputAction.next,
+                        decoration: InputDecoration(
                           labelText: 'Email',
                           hintText: 'Enter your email',
+                          labelStyle: Theme.of(context).textTheme.displaySmall,
+                          hintStyle: Theme.of(context).textTheme.headlineSmall,
                         ),
                         enabled: state is! SignInLoading,
+                        onSubmitted: controller.onEmailSubmitted,
                       );
                     },
                   ),
@@ -45,14 +49,36 @@ class LoginView extends StatelessWidget with ViewLoggy {
                   ValueListenableBuilder(
                     valueListenable: controller.signInNotifier,
                     builder: (context, state, child) {
-                      return TextField(
-                        controller: controller.passwordController,
-                        decoration: const InputDecoration(
-                          labelText: 'Password',
-                          hintText: 'Enter your password',
-                        ),
-                        enabled: state is! SignInLoading,
-                        obscureText: true,
+                      return ValueListenableBuilder(
+                        valueListenable: controller.isObscurePassword,
+                        builder: (context, isObscure, child) {
+                          return TextField(
+                            controller: controller.passwordController,
+                            textInputAction: TextInputAction.done,
+                            obscureText: isObscure,
+                            decoration: InputDecoration(
+                              labelText: 'Password',
+                              hintText: 'Enter your password',
+                              labelStyle:
+                                  Theme.of(context).textTheme.displaySmall,
+                              hintStyle:
+                                  Theme.of(context).textTheme.headlineSmall,
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  isObscure
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                ),
+                                onPressed: () {
+                                  controller.isObscurePassword.value =
+                                      !isObscure;
+                                },
+                              ),
+                            ),
+                            enabled: state is! SignInLoading,
+                            onSubmitted: controller.onPasswordSubmitted,
+                          );
+                        },
                       );
                     },
                   ),
@@ -64,7 +90,11 @@ class LoginView extends StatelessWidget with ViewLoggy {
                         onPressed:
                             state is! SignInLoading ? controller.login : null,
                         child: state is! SignInLoading
-                            ? const Text('Login')
+                            ? Text(
+                                'Login',
+                                style:
+                                    Theme.of(context).textTheme.headlineMedium,
+                              )
                             : const CircularProgressIndicator(),
                       );
                     },

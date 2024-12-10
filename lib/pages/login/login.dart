@@ -15,6 +15,7 @@ import 'package:ecoparking_management/utils/dialog_utils.dart';
 import 'package:ecoparking_management/utils/mixins/custom_logger.dart';
 import 'package:ecoparking_management/utils/navigation_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -35,15 +36,24 @@ class LoginController extends State<Login> with ControllerLoggy {
   final ValueNotifier<GetUserProfileState> getUserProfileNotifier =
       ValueNotifier(const GetUserProfileInitial());
 
+  final ValueNotifier<bool> isObscurePassword = ValueNotifier(true);
+
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
   StreamSubscription<Either<Failure, Success>>? _signInSubscription;
   StreamSubscription<Either<Failure, Success>>? _getUserProfileSubscription;
 
+  User? get user =>
+      _profileService.user ?? Supabase.instance.client.auth.currentUser;
+  Session? get session =>
+      _profileService.session ?? Supabase.instance.client.auth.currentSession;
+  UserProfile? get userProfile => _profileService.userProfile;
+
   @override
   void initState() {
     super.initState();
+    _checkSignedIn();
   }
 
   @override
@@ -54,6 +64,18 @@ class LoginController extends State<Login> with ControllerLoggy {
     super.dispose();
   }
 
+  void _checkSignedIn() {
+    if (user != null && session != null) {
+      _profileService.setSession(session!);
+      _profileService.setUser(user!);
+      if (userProfile != null) {
+        _navigateToLiveOverview();
+      } else {
+        _getUserProfile(userId: user!.id);
+      }
+    }
+  }
+
   void _disposeTextControllers() {
     emailController.dispose();
     passwordController.dispose();
@@ -62,6 +84,7 @@ class LoginController extends State<Login> with ControllerLoggy {
   void _disposeNotifiers() {
     signInNotifier.dispose();
     getUserProfileNotifier.dispose();
+    isObscurePassword.dispose();
   }
 
   void _cancelSubscriptions() {
@@ -102,6 +125,25 @@ class LoginController extends State<Login> with ControllerLoggy {
                 _handleGetUserProfileSuccess,
               ),
             );
+  }
+
+  void toggleObscurePassword() {
+    isObscurePassword.value = !isObscurePassword.value;
+  }
+
+  void _navigateToLiveOverview() {
+    NavigationUtils.replaceTo(
+      context: context,
+      path: AppPaths.liveOverview,
+    );
+  }
+
+  void onEmailSubmitted(String email) {
+    FocusScope.of(context).requestFocus(FocusNode());
+  }
+
+  void onPasswordSubmitted(String password) {
+    login();
   }
 
   void _handleLoginFailure(Failure failure) async {
@@ -164,10 +206,7 @@ class LoginController extends State<Login> with ControllerLoggy {
       }
 
       _profileService.setUserProfile(success.response);
-      NavigationUtils.replaceTo(
-        context: context,
-        path: AppPaths.liveOverview,
-      );
+      _navigateToLiveOverview();
     } else if (success is GetUserProfileLoading) {
       getUserProfileNotifier.value = success;
     }

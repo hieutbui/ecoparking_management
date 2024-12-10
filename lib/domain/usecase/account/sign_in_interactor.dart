@@ -29,8 +29,10 @@ class SignInInteractor with InteractorLoggy {
 
       yield Right(SignInSuccess(response: response));
     } on AuthException catch (e) {
+      loggy.error('SignInInteractor error: $e');
       yield Left(SignInAuthFailure(exception: e));
     } catch (e) {
+      loggy.error('SignInInteractor error: $e');
       yield Left(SignInFailure(exception: e));
     }
   }

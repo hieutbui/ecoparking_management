@@ -82,4 +82,15 @@ enum Gender {
         return 'other';
     }
   }
+
+  String toDisplayString() {
+    switch (this) {
+      case male:
+        return 'Male';
+      case female:
+        return 'Female';
+      case other:
+        return 'Other';
+    }
+  }
 }
