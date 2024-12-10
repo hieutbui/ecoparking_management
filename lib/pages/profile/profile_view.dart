@@ -425,16 +425,14 @@ class ProfileView extends StatelessWidget with ViewLoggy {
                           }
 
                           if (getUserParking is GetUserParkingSuccess) {
-                            return ListView.separated(
-                              itemCount: getUserParking.userParking.length,
-                              shrinkWrap: true,
-                              separatorBuilder: (context, index) =>
-                                  const SizedBox(height: 8),
-                              itemBuilder: (context, index) {
-                                final parking =
-                                    getUserParking.userParking[index];
-                                return ListTile(
-                                  title: Row(
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16.0,
+                                vertical: 8.0,
+                              ),
+                              child: Column(
+                                children: <Widget>[
+                                  Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
@@ -451,7 +449,7 @@ class ProfileView extends StatelessWidget with ViewLoggy {
                                       ),
                                       const SizedBox(width: 8),
                                       Text(
-                                        parking.parkingName,
+                                        getUserParking.userParking.parkingName,
                                         maxLines: 2,
                                         overflow: TextOverflow.ellipsis,
                                         softWrap: true,
@@ -466,7 +464,7 @@ class ProfileView extends StatelessWidget with ViewLoggy {
                                       ),
                                     ],
                                   ),
-                                  subtitle: Row(
+                                  Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
@@ -482,7 +480,8 @@ class ProfileView extends StatelessWidget with ViewLoggy {
                                             ),
                                       ),
                                       Text(
-                                        parking.userRole.toDisplayString(),
+                                        getUserParking.userParking.userRole
+                                            .toDisplayString(),
                                         style: Theme.of(context)
                                             .textTheme
                                             .bodyMedium!
@@ -494,8 +493,8 @@ class ProfileView extends StatelessWidget with ViewLoggy {
                                       ),
                                     ],
                                   ),
-                                );
-                              },
+                                ],
+                              ),
                             );
                           }
 

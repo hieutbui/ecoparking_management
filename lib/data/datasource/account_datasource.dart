@@ -11,7 +11,7 @@ abstract class AccountDataSource {
     required String userId,
   });
 
-  Future<List<dynamic>?> getUserParking({
+  Future<Map<String, dynamic>?> getUserParking({
     required String userId,
   });
 

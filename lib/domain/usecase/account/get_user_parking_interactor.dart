@@ -27,15 +27,9 @@ class GetUserParkingInteractor with InteractorLoggy {
         return;
       }
 
-      final List<ParkingRoles> parkingRoles = response
-          .map(
-            (role) => ParkingRoles.fromJson(role),
-          )
-          .toList();
-
       yield Right(
         GetUserParkingSuccess(
-          userParking: parkingRoles,
+          userParking: ParkingRoles.fromJson(response),
         ),
       );
     } catch (e) {
