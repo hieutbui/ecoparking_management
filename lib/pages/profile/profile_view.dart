@@ -4,6 +4,7 @@ import 'package:ecoparking_management/domain/state/account/get_user_parking_stat
 import 'package:ecoparking_management/domain/state/account/get_user_profile_state.dart';
 import 'package:ecoparking_management/pages/profile/profile.dart';
 import 'package:ecoparking_management/pages/profile/profile_ui_state.dart';
+import 'package:ecoparking_management/pages/profile/profile_view_styles.dart';
 import 'package:ecoparking_management/resources/image_paths.dart';
 import 'package:ecoparking_management/utils/mixins/custom_logger.dart';
 import 'package:ecoparking_management/widgets/app_scaffold.dart';
@@ -41,7 +42,7 @@ class ProfileView extends StatelessWidget with ViewLoggy {
                           color: Theme.of(context).colorScheme.error,
                         ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: ProfileViewStyles.spacing),
                   ElevatedButton(
                     onPressed: controller.navigateToLogin,
                     child: Text(
@@ -73,11 +74,11 @@ class ProfileView extends StatelessWidget with ViewLoggy {
                         ? GFAvatar(
                             backgroundImage: NetworkImage(avatar),
                             shape: GFAvatarShape.circle,
-                            size: 132.0,
+                            size: ProfileViewStyles.avatarSize,
                           )
                         : Container(
-                            width: 132.0,
-                            height: 132.0,
+                            width: ProfileViewStyles.avatarSize,
+                            height: ProfileViewStyles.avatarSize,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               color: Theme.of(context)
@@ -86,16 +87,14 @@ class ProfileView extends StatelessWidget with ViewLoggy {
                             ),
                             child: SvgPicture.asset(
                               ImagePaths.icPerson,
-                              width: 95.0,
-                              height: 100.0,
+                              width: ProfileViewStyles.dummyAvatarWidth,
+                              height: ProfileViewStyles.dummyAvatarHeight,
                             ),
                           ),
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: ProfileViewStyles.avatarBottomSpacing),
                   Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16.0,
-                    ),
+                    padding: ProfileViewStyles.padding,
                     child: ValueListenableBuilder(
                       valueListenable: controller.isEditing,
                       builder: (context, isEdit, child) {
@@ -133,10 +132,7 @@ class ProfileView extends StatelessWidget with ViewLoggy {
                                   onPressed: controller.editProfile,
                                 ),
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16.0,
-                              vertical: 8.0,
-                            ),
+                            padding: ProfileViewStyles.cardPadding,
                             child: isEdit
                                 ? Column(
                                     children: <Widget>[
@@ -154,7 +150,8 @@ class ProfileView extends StatelessWidget with ViewLoggy {
                                         ),
                                         enabled: true,
                                       ),
-                                      const SizedBox(height: 16),
+                                      const SizedBox(
+                                          height: ProfileViewStyles.spacing),
                                       TextField(
                                         controller: controller.emailController,
                                         decoration: InputDecoration(
@@ -169,20 +166,23 @@ class ProfileView extends StatelessWidget with ViewLoggy {
                                         ),
                                         enabled: true,
                                       ),
-                                      const SizedBox(height: 16),
+                                      const SizedBox(
+                                          height: ProfileViewStyles.spacing),
                                       PhoneInputRow(
                                         initialPhoneNumber:
                                             controller.phoneController.text,
                                         onChanged: controller.onPhoneChanged,
                                       ),
-                                      const SizedBox(height: 16),
+                                      const SizedBox(
+                                          height: ProfileViewStyles.spacing),
                                       DropdownGender(
                                         initialGender:
                                             controller.genderNotifier.value,
                                         onSelectGender:
                                             controller.onSelectGender,
                                       ),
-                                      const SizedBox(height: 16),
+                                      const SizedBox(
+                                          height: ProfileViewStyles.spacing),
                                       DateInputRow(
                                         initialDate:
                                             controller.dateNotifier.value,
@@ -262,7 +262,9 @@ class ProfileView extends StatelessWidget with ViewLoggy {
                                               ),
                                             ],
                                           ),
-                                          const SizedBox(height: 8),
+                                          const SizedBox(
+                                              height: ProfileViewStyles
+                                                  .infoLineSpacing),
                                           Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceBetween,
@@ -291,7 +293,9 @@ class ProfileView extends StatelessWidget with ViewLoggy {
                                               )
                                             ],
                                           ),
-                                          const SizedBox(height: 8),
+                                          const SizedBox(
+                                              height: ProfileViewStyles
+                                                  .infoLineSpacing),
                                           Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceBetween,
@@ -320,7 +324,9 @@ class ProfileView extends StatelessWidget with ViewLoggy {
                                               )
                                             ],
                                           ),
-                                          const SizedBox(height: 8),
+                                          const SizedBox(
+                                              height: ProfileViewStyles
+                                                  .infoLineSpacing),
                                           Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceBetween,
@@ -352,7 +358,9 @@ class ProfileView extends StatelessWidget with ViewLoggy {
                                               )
                                             ],
                                           ),
-                                          const SizedBox(height: 8),
+                                          const SizedBox(
+                                              height: ProfileViewStyles
+                                                  .infoLineSpacing),
                                           Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceBetween,
@@ -393,10 +401,7 @@ class ProfileView extends StatelessWidget with ViewLoggy {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16.0,
-                      vertical: 8.0,
-                    ),
+                    padding: ProfileViewStyles.cardPadding,
                     child: InfoCardWithTitle(
                       title: 'Parking position',
                       child: ValueListenableBuilder(
@@ -426,10 +431,7 @@ class ProfileView extends StatelessWidget with ViewLoggy {
 
                           if (getUserParking is GetUserParkingSuccess) {
                             return Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16.0,
-                                vertical: 8.0,
-                              ),
+                              padding: ProfileViewStyles.cardPadding,
                               child: Column(
                                 children: <Widget>[
                                   Row(
@@ -447,7 +449,9 @@ class ProfileView extends StatelessWidget with ViewLoggy {
                                                   .onSurface,
                                             ),
                                       ),
-                                      const SizedBox(width: 8),
+                                      const SizedBox(
+                                          width: ProfileViewStyles
+                                              .infoLineSpacing),
                                       Text(
                                         getUserParking.userParking.parkingName,
                                         maxLines: 2,
@@ -505,10 +509,7 @@ class ProfileView extends StatelessWidget with ViewLoggy {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16.0,
-                      vertical: 8.0,
-                    ),
+                    padding: ProfileViewStyles.cardPadding,
                     child: ElevatedButton(
                       onPressed: controller.onSignOut,
                       style: const ButtonStyle(
@@ -516,10 +517,7 @@ class ProfileView extends StatelessWidget with ViewLoggy {
                           Colors.white,
                         ),
                         padding: WidgetStatePropertyAll<EdgeInsetsGeometry>(
-                          EdgeInsets.symmetric(
-                            horizontal: 16.0,
-                            vertical: 8.0,
-                          ),
+                          ProfileViewStyles.cardPadding,
                         ),
                       ),
                       child: Row(
@@ -528,7 +526,8 @@ class ProfileView extends StatelessWidget with ViewLoggy {
                             Icons.logout,
                             color: Theme.of(context).colorScheme.error,
                           ),
-                          const SizedBox(width: 8),
+                          const SizedBox(
+                              width: ProfileViewStyles.infoLineSpacing),
                           Text(
                             'Logout',
                             style: Theme.of(context)
