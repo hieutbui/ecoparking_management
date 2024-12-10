@@ -41,6 +41,9 @@ class LoginController extends State<Login> with ControllerLoggy {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
+  final FocusNode emailFocusNode = FocusNode();
+  final FocusNode passwordFocusNode = FocusNode();
+
   StreamSubscription<Either<Failure, Success>>? _signInSubscription;
   StreamSubscription<Either<Failure, Success>>? _getUserProfileSubscription;
 
@@ -61,6 +64,8 @@ class LoginController extends State<Login> with ControllerLoggy {
     _disposeTextControllers();
     _disposeNotifiers();
     _cancelSubscriptions();
+    _clearTextControllers();
+    _disposeFocusNodes();
     super.dispose();
   }
 
@@ -92,6 +97,16 @@ class LoginController extends State<Login> with ControllerLoggy {
     _getUserProfileSubscription?.cancel();
     _signInSubscription = null;
     _getUserProfileSubscription = null;
+  }
+
+  void _clearTextControllers() {
+    emailController.clear();
+    passwordController.clear();
+  }
+
+  void _disposeFocusNodes() {
+    emailFocusNode.dispose();
+    passwordFocusNode.dispose();
   }
 
   void login() async {
@@ -139,7 +154,7 @@ class LoginController extends State<Login> with ControllerLoggy {
   }
 
   void onEmailSubmitted(String email) {
-    FocusScope.of(context).requestFocus(FocusNode());
+    passwordFocusNode.requestFocus();
   }
 
   void onPasswordSubmitted(String password) {
