@@ -61,10 +61,10 @@ class LoginController extends State<Login> with ControllerLoggy {
 
   @override
   void dispose() {
+    _clearTextControllers();
     _disposeTextControllers();
     _disposeNotifiers();
     _cancelSubscriptions();
-    _clearTextControllers();
     _disposeFocusNodes();
     super.dispose();
   }
