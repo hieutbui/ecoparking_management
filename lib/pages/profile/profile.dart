@@ -126,10 +126,12 @@ class ProfileController extends State<Profile> with ControllerLoggy {
   }
 
   void navigateToLogin() {
-    NavigationUtils.navigateTo(
-      context: context,
-      path: AppPaths.login,
-    );
+    if (mounted) {
+      NavigationUtils.navigateTo(
+        context: context,
+        path: AppPaths.login,
+      );
+    }
   }
 
   void saveProfile() {
