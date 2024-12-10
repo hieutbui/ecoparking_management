@@ -26,7 +26,7 @@ class GetUserParkingLoading extends Initial implements GetUserParkingState {
 }
 
 class GetUserParkingSuccess extends Success implements GetUserParkingState {
-  final List<ParkingRoles> userParking;
+  final ParkingRoles userParking;
 
   const GetUserParkingSuccess({
     required this.userParking,
