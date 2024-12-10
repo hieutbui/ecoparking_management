@@ -132,7 +132,7 @@ class LoginController extends State<Login> with ControllerLoggy {
   }
 
   void _navigateToLiveOverview() {
-    NavigationUtils.replaceTo(
+    NavigationUtils.navigateTo(
       context: context,
       path: AppPaths.liveOverview,
     );
