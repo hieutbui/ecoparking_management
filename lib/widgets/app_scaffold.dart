@@ -18,7 +18,9 @@ class AppScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppConfig.baseBackgroundColor,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
         title: Text(
           title,
           style: Theme.of(context).textTheme.displayMedium!.copyWith(

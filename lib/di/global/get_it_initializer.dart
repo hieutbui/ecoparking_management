@@ -3,8 +3,11 @@ import 'package:ecoparking_management/data/datasource_impl/account_datasource_im
 import 'package:ecoparking_management/data/repository/account_repository_impl.dart';
 import 'package:ecoparking_management/domain/repository/account_repository.dart';
 import 'package:ecoparking_management/domain/services/profile_service.dart';
+import 'package:ecoparking_management/domain/usecase/account/get_user_parking_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/account/get_user_profile_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/account/sign_in_interactor.dart';
+import 'package:ecoparking_management/domain/usecase/account/sign_out_interactor.dart';
+import 'package:ecoparking_management/domain/usecase/account/update_user_profile_interactor.dart';
 import 'package:ecoparking_management/utils/mixins/custom_logger.dart';
 import 'package:ecoparking_management/utils/responsive.dart';
 import 'package:get_it/get_it.dart';
@@ -68,6 +71,15 @@ class GetItInitializer with GetItLoggy {
     );
     getIt.registerLazySingleton<GetUserProfileInteractor>(
       () => GetUserProfileInteractor(),
+    );
+    getIt.registerLazySingleton<GetUserParkingInteractor>(
+      () => GetUserParkingInteractor(),
+    );
+    getIt.registerLazySingleton<UpdateUserProfileInteractor>(
+      () => UpdateUserProfileInteractor(),
+    );
+    getIt.registerLazySingleton<SignOutInteractor>(
+      () => SignOutInteractor(),
     );
     loggy.info('_bindingInteractor(): Setup successfully');
   }
