@@ -1,8 +1,11 @@
 import 'package:ecoparking_management/config/app_paths.dart';
 import 'package:ecoparking_management/pages/live_overview/live_overview.dart';
+import 'package:ecoparking_management/pages/live_overview/live_overview_view_styles.dart';
 import 'package:ecoparking_management/pages/live_overview/widgets/info_multi_columns.dart';
+import 'package:ecoparking_management/pages/live_overview/widgets/table_info.dart';
 import 'package:ecoparking_management/utils/mixins/custom_logger.dart';
 import 'package:ecoparking_management/widgets/app_scaffold.dart';
+import 'package:ecoparking_management/widgets/info_card_with_title.dart';
 import 'package:flutter/material.dart';
 
 class LiveOverviewView extends StatelessWidget with ViewLoggy {
@@ -20,10 +23,7 @@ class LiveOverviewView extends StatelessWidget with ViewLoggy {
       body: SingleChildScrollView(
         physics: const ClampingScrollPhysics(),
         child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 16.0,
-            vertical: 16.0,
-          ),
+          padding: LiveOverviewViewStyles.padding,
           child: Column(
             children: <Widget>[
               InfoMultiColumns(
@@ -33,22 +33,23 @@ class LiveOverviewView extends StatelessWidget with ViewLoggy {
                       text: TextSpan(
                         children: <InlineSpan>[
                           TextSpan(
-                            text: '6',
+                            text: controller
+                                .dummyLiveOverview.parkingLotsOccupied
+                                .toString(),
                             style: Theme.of(context)
                                 .textTheme
-                                .displayMedium!
+                                .displaySmall!
                                 .copyWith(
-                                  fontSize: 24.0,
                                   color: Theme.of(context).colorScheme.error,
                                 ),
                           ),
                           TextSpan(
-                            text: ' / 10',
+                            text:
+                                ' / ${controller.dummyLiveOverview.parkingLotsTotal}',
                             style: Theme.of(context)
                                 .textTheme
-                                .displayMedium!
+                                .displaySmall!
                                 .copyWith(
-                                  fontSize: 24.0,
                                   color: Theme.of(context).colorScheme.primary,
                                 ),
                           ),
@@ -67,14 +68,13 @@ class LiveOverviewView extends StatelessWidget with ViewLoggy {
                   ),
                   ColumnArguments(
                     highlightedChild: Text(
-                      '${controller.format.simpleCurrencySymbol("VND")} 100000',
-                      style:
-                          Theme.of(context).textTheme.displayMedium!.copyWith(
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
+                      controller.dummyLiveOverview.currentEmployees.toString(),
+                      style: Theme.of(context).textTheme.displaySmall!.copyWith(
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
                     ),
                     secondaryChild: Text(
-                      'Parking Lots Occupied',
+                      'Current Employees',
                       style:
                           Theme.of(context).textTheme.headlineLarge!.copyWith(
                                 color: Theme.of(context)
@@ -85,11 +85,10 @@ class LiveOverviewView extends StatelessWidget with ViewLoggy {
                   ),
                   ColumnArguments(
                     highlightedChild: Text(
-                      '100',
-                      style:
-                          Theme.of(context).textTheme.displayMedium!.copyWith(
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
+                      controller.dummyLiveOverview.totalCustomers.toString(),
+                      style: Theme.of(context).textTheme.displaySmall!.copyWith(
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
                     ),
                     secondaryChild: Text(
                       'Total Customers today',
@@ -102,6 +101,79 @@ class LiveOverviewView extends StatelessWidget with ViewLoggy {
                     ),
                   ),
                 ],
+              ),
+              const SizedBox(height: LiveOverviewViewStyles.spacing),
+              InfoMultiColumns(
+                columns: <ColumnArguments>[
+                  ColumnArguments(
+                    highlightedChild: Text(
+                      controller.getFormattedCurrency(
+                        controller.dummyLiveOverview.totalRevenue,
+                        controller.dummyLiveOverview.currencyLocale,
+                      ),
+                      style: Theme.of(context).textTheme.displaySmall!.copyWith(
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                    ),
+                    secondaryChild: Text(
+                      'Today\'s Revenue',
+                      style:
+                          Theme.of(context).textTheme.headlineLarge!.copyWith(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .surfaceContainerHighest,
+                              ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: LiveOverviewViewStyles.spacing),
+              InfoCardWithTitle(
+                title: 'Current Parking lot allotment',
+                child: TableInfo(
+                  titles: controller.currentParkingLotAllotmentTableTitles,
+                  data: controller.currentTicketRow(
+                    controller.dummyLiveOverview.currentParkingLotAllotment,
+                  ),
+                  rowPerPage: controller
+                              .currentTicketRow(
+                                controller.dummyLiveOverview
+                                    .currentParkingLotAllotment,
+                              )
+                              .length >
+                          controller.rowPerPageNotifier.value
+                      ? controller.rowPerPageNotifier.value
+                      : controller
+                          .currentTicketRow(
+                            controller
+                                .dummyLiveOverview.currentParkingLotAllotment,
+                          )
+                          .length,
+                ),
+              ),
+              const SizedBox(height: LiveOverviewViewStyles.spacing),
+              InfoCardWithTitle(
+                title: 'Current Employees',
+                child: TableInfo(
+                  titles: controller.currentEmployeesTableTitles,
+                  data: controller.currentEmployeeRow(
+                    controller.dummyLiveOverview.currentEmployeesInfo,
+                  ),
+                  rowPerPage: controller
+                              .currentEmployeeRow(
+                                controller
+                                    .dummyLiveOverview.currentEmployeesInfo,
+                              )
+                              .length >
+                          controller.rowPerPageNotifier.value
+                      ? controller.rowPerPageNotifier.value
+                      : controller
+                          .currentEmployeeRow(
+                            controller.dummyLiveOverview.currentEmployeesInfo,
+                          )
+                          .length,
+                  onRowsPerPageChanged: controller.onRowsPerPageChanged,
+                ),
               ),
             ],
           ),

@@ -45,7 +45,7 @@ class EcoParkingManagementThemes {
       letterSpacing: 0.0,
     ),
     bodySmall: GoogleFonts.beVietnamPro(
-      fontSize: 8,
+      fontSize: 14,
       fontWeight: FontWeight.normal,
       letterSpacing: 0.0,
     ),
@@ -114,6 +114,14 @@ class EcoParkingManagementThemes {
         ),
         textSelectionTheme: const TextSelectionThemeData(
           cursorColor: AppConfig.onTertiaryColor,
+        ),
+        dataTableTheme: const DataTableThemeData(
+          headingRowColor: WidgetStatePropertyAll<Color>(
+            Colors.white,
+          ),
+        ),
+        cardTheme: const CardTheme(
+          color: Colors.white,
         ),
         useMaterial3: true,
         fontFamily: GoogleFonts.beVietnamPro().fontFamily,
