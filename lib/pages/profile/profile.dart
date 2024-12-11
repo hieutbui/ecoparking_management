@@ -18,6 +18,7 @@ import 'package:ecoparking_management/pages/profile/profile_view.dart';
 import 'package:ecoparking_management/utils/dialog_utils.dart';
 import 'package:ecoparking_management/utils/mixins/custom_logger.dart';
 import 'package:ecoparking_management/utils/navigation_utils.dart';
+import 'package:ecoparking_management/widgets/dropdown_currency/supported_currencies.dart';
 import 'package:flutter/material.dart';
 import 'package:phone_form_field/phone_form_field.dart';
 
@@ -50,6 +51,8 @@ class ProfileController extends State<Profile> with ControllerLoggy {
   final ValueNotifier<Gender?> genderNotifier = ValueNotifier(null);
   final ValueNotifier<DateTime?> dateNotifier = ValueNotifier<DateTime?>(null);
   final ValueNotifier<bool> isEditing = ValueNotifier(false);
+  final ValueNotifier<SupportedCurrency> currencyNotifier =
+      ValueNotifier(supportedCurrencies.first);
 
   final TextEditingController emailController = TextEditingController();
   final TextEditingController nameController = TextEditingController();
@@ -92,6 +95,7 @@ class ProfileController extends State<Profile> with ControllerLoggy {
     genderNotifier.dispose();
     dateNotifier.dispose();
     getUserProfileStateNotifier.dispose();
+    updateUserProfileStateNotifier.dispose();
   }
 
   void _cancelSubscriptions() {
@@ -217,6 +221,10 @@ class ProfileController extends State<Profile> with ControllerLoggy {
             _handleSignOutSuccess,
           ),
         );
+  }
+
+  void onSelectCurrency(SupportedCurrency currency) {
+    currencyNotifier.value = currency;
   }
 
   void _handleGetUserParkingFailure(Failure failure) {

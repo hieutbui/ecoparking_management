@@ -9,6 +9,7 @@ import 'package:ecoparking_management/resources/image_paths.dart';
 import 'package:ecoparking_management/utils/mixins/custom_logger.dart';
 import 'package:ecoparking_management/widgets/app_scaffold.dart';
 import 'package:ecoparking_management/widgets/date_input_row/date_input_row.dart';
+import 'package:ecoparking_management/widgets/dropdown_currency/dropdown_currency.dart';
 import 'package:ecoparking_management/widgets/dropdown_gender/dropdown_gender.dart';
 import 'package:ecoparking_management/widgets/info_card_with_title.dart';
 import 'package:ecoparking_management/widgets/phone_input_row/phone_input_row.dart';
@@ -505,6 +506,38 @@ class ProfileView extends StatelessWidget with ViewLoggy {
                           return child!;
                         },
                         child: const SizedBox.shrink(),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: ProfileViewStyles.padding,
+                    child: InfoCardWithTitle(
+                      title: 'Setting',
+                      child: Padding(
+                        padding: ProfileViewStyles.padding,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Currency: ',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium!
+                                  .copyWith(
+                                    color:
+                                        Theme.of(context).colorScheme.onSurface,
+                                  ),
+                            ),
+                            const SizedBox(
+                              width: ProfileViewStyles.infoLineSpacing,
+                            ),
+                            DropdownCurrency(
+                              initialCurrency:
+                                  controller.currencyNotifier.value,
+                              onSelectCurrency: controller.onSelectCurrency,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
