@@ -2,6 +2,9 @@ import 'package:ecoparking_management/data/models/live_overview/current_employee
 import 'package:ecoparking_management/data/models/live_overview/current_ticket.dart';
 import 'package:ecoparking_management/data/models/live_overview/live_overview_infos.dart';
 import 'package:ecoparking_management/data/models/ticket_status.dart';
+import 'package:ecoparking_management/data/models/user_profile.dart';
+import 'package:ecoparking_management/di/global/get_it_initializer.dart';
+import 'package:ecoparking_management/domain/services/profile_service.dart';
 import 'package:ecoparking_management/pages/live_overview/live_overview_view.dart';
 import 'package:ecoparking_management/utils/mixins/custom_logger.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +18,8 @@ class LiveOverview extends StatefulWidget {
 }
 
 class LiveOverviewController extends State<LiveOverview> with ControllerLoggy {
+  final ProfileService _profileService = getIt.get<ProfileService>();
+
   final ValueNotifier<int> rowPerPageCurrentEmployeesNotifier =
       ValueNotifier<int>(PaginatedDataTable.defaultRowsPerPage);
   final ValueNotifier<int> rowPerPageCurrentTicketsNotifier =
@@ -112,6 +117,9 @@ class LiveOverviewController extends State<LiveOverview> with ControllerLoggy {
       ),
     ],
   );
+
+  bool get isEmployee =>
+      _profileService.userProfile?.accountType == AccountType.employee;
 
   @override
   void initState() {
@@ -284,6 +292,16 @@ class LiveOverviewController extends State<LiveOverview> with ControllerLoggy {
     if (selectedRowsPerPage != null) {
       rowPerPageCurrentTicketsNotifier.value = selectedRowsPerPage;
     }
+  }
+
+  void onCheckInPressed() {
+    loggy.info('Check In Pressed');
+    //TODO: Check In
+  }
+
+  void onCheckOutPressed() {
+    loggy.info('Check Out Pressed');
+    //TODO: Check Out
   }
 
   @override

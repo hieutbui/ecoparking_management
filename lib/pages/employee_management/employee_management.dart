@@ -1,4 +1,7 @@
 import 'package:ecoparking_management/data/models/live_overview/current_employee_info.dart';
+import 'package:ecoparking_management/data/models/user_profile.dart';
+import 'package:ecoparking_management/di/global/get_it_initializer.dart';
+import 'package:ecoparking_management/domain/services/profile_service.dart';
 import 'package:ecoparking_management/pages/employee_management/employee_management_view.dart';
 import 'package:ecoparking_management/utils/mixins/custom_logger.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +15,8 @@ class EmployeeManagement extends StatefulWidget {
 
 class EmployeeManagementController extends State<EmployeeManagement>
     with ControllerLoggy {
+  final ProfileService _profileService = getIt.get<ProfileService>();
+
   //TODO: Implement fetch data from API
   final int totalEmployees = 10;
   final int onDutyEmployees = 5;
@@ -98,6 +103,9 @@ class EmployeeManagementController extends State<EmployeeManagement>
 
   final ValueNotifier<int> rowPerPage =
       ValueNotifier<int>(PaginatedDataTable.defaultRowsPerPage);
+
+  bool get isOwner =>
+      _profileService.userProfile?.accountType == AccountType.parkingOwner;
 
   @override
   void initState() {
