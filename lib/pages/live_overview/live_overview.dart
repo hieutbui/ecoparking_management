@@ -15,7 +15,9 @@ class LiveOverview extends StatefulWidget {
 }
 
 class LiveOverviewController extends State<LiveOverview> with ControllerLoggy {
-  final ValueNotifier<int> rowPerPageNotifier =
+  final ValueNotifier<int> rowPerPageCurrentEmployeesNotifier =
+      ValueNotifier<int>(PaginatedDataTable.defaultRowsPerPage);
+  final ValueNotifier<int> rowPerPageCurrentTicketsNotifier =
       ValueNotifier<int>(PaginatedDataTable.defaultRowsPerPage);
 
   List<String> get currentEmployeesTableTitles => <String>[
@@ -24,18 +26,18 @@ class LiveOverviewController extends State<LiveOverview> with ControllerLoggy {
         'Email',
         'Phone',
       ];
-
   List<String> get currentParkingLotAllotmentTableTitles => <String>[
         'License Plate',
         'Entry Time',
-        'Actual Exit Time',
-        'Booked Start Time',
-        'Booked Exit Time',
+        'Actual Exit',
+        'Booked Start',
+        'Booked Exit',
         'Status',
         'Duration',
         'Charge',
       ];
 
+  //TODO: Implement fetch data from API
   final dummyLiveOverview = LiveOverviewInfos(
     parkingLotsOccupied: 6,
     parkingLotsTotal: 10,
@@ -123,7 +125,8 @@ class LiveOverviewController extends State<LiveOverview> with ControllerLoggy {
   }
 
   void _disposeNotifiers() {
-    rowPerPageNotifier.dispose();
+    rowPerPageCurrentEmployeesNotifier.dispose();
+    rowPerPageCurrentTicketsNotifier.dispose();
   }
 
   String getFormattedCurrency(num value, String locale) {
@@ -271,9 +274,15 @@ class LiveOverviewController extends State<LiveOverview> with ControllerLoggy {
         .toList();
   }
 
-  void onRowsPerPageChanged(int? selectedRowsPerPage) {
+  void onCurrentEmployeesRowsPerPageChanged(int? selectedRowsPerPage) {
     if (selectedRowsPerPage != null) {
-      rowPerPageNotifier.value = selectedRowsPerPage;
+      rowPerPageCurrentEmployeesNotifier.value = selectedRowsPerPage;
+    }
+  }
+
+  void onCurrentTicketRowsPerPageChanged(int? selectedRowsPerPage) {
+    if (selectedRowsPerPage != null) {
+      rowPerPageCurrentTicketsNotifier.value = selectedRowsPerPage;
     }
   }
 

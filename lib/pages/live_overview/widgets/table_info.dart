@@ -4,6 +4,8 @@ class TableInfo extends StatelessWidget {
   final List<String> titles;
   final List<DataRow> data;
   final int rowPerPage;
+  final List<Widget>? actions;
+  final Widget? header;
   final void Function(int?)? onRowsPerPageChanged;
 
   const TableInfo({
@@ -11,6 +13,8 @@ class TableInfo extends StatelessWidget {
     required this.titles,
     required this.data,
     required this.rowPerPage,
+    this.header,
+    this.actions,
     this.onRowsPerPageChanged,
   });
 
@@ -21,6 +25,8 @@ class TableInfo extends StatelessWidget {
         return SizedBox(
           width: constraint.maxWidth,
           child: PaginatedDataTable(
+            header: header,
+            actions: actions,
             columns: titles
                 .map(
                   (title) => DataColumn(

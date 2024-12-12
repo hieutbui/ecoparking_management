@@ -53,6 +53,10 @@ class ProfileController extends State<Profile> with ControllerLoggy {
   final ValueNotifier<bool> isEditing = ValueNotifier(false);
   final ValueNotifier<SupportedCurrency> currencyNotifier =
       ValueNotifier(supportedCurrencies.first);
+  final ValueNotifier<TimeOfDay?> workingStartTimeNotifier =
+      ValueNotifier<TimeOfDay?>(null);
+  final ValueNotifier<TimeOfDay?> workingEndTimeNotifier =
+      ValueNotifier<TimeOfDay?>(null);
 
   final TextEditingController emailController = TextEditingController();
   final TextEditingController nameController = TextEditingController();
@@ -96,6 +100,9 @@ class ProfileController extends State<Profile> with ControllerLoggy {
     dateNotifier.dispose();
     getUserProfileStateNotifier.dispose();
     updateUserProfileStateNotifier.dispose();
+    currencyNotifier.dispose();
+    workingStartTimeNotifier.dispose();
+    workingEndTimeNotifier.dispose();
   }
 
   void _cancelSubscriptions() {
@@ -225,6 +232,17 @@ class ProfileController extends State<Profile> with ControllerLoggy {
 
   void onSelectCurrency(SupportedCurrency currency) {
     currencyNotifier.value = currency;
+    //TODO: Save currency
+  }
+
+  void onWorkingStartTimeSelected(TimeOfDay? time) {
+    workingStartTimeNotifier.value = time;
+    //TODO: Save working start time
+  }
+
+  void onWorkingEndTimeSelected(TimeOfDay? time) {
+    workingEndTimeNotifier.value = time;
+    //TODO: Save working end time
   }
 
   void _handleGetUserParkingFailure(Failure failure) {

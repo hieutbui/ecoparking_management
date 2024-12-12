@@ -42,28 +42,31 @@ class _DateInputRowState extends State<DateInputRow> {
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
-      controller: _controller,
-      style: DateInputRowStyles.inputtedTextStyle(context),
-      decoration: InputDecoration(
-        hintText: 'Date of Birth',
-        hintStyle: DateInputRowStyles.hintTextStyle(context),
-        suffixIcon: Icon(
-          Icons.calendar_today_rounded,
-          color: _controller.text.isNotEmpty
-              ? Colors.black
-              : Theme.of(context).colorScheme.onSurfaceVariant,
-          size: DateInputRowStyles.suffixIconSize,
+    return SizedBox(
+      width: DateInputRowStyles.width,
+      child: TextField(
+        controller: _controller,
+        style: DateInputRowStyles.inputtedTextStyle(context),
+        decoration: InputDecoration(
+          hintText: 'Date of Birth',
+          hintStyle: DateInputRowStyles.hintTextStyle(context),
+          suffixIcon: Icon(
+            Icons.calendar_today_rounded,
+            color: _controller.text.isNotEmpty
+                ? Colors.black
+                : Theme.of(context).colorScheme.onSurfaceVariant,
+            size: DateInputRowStyles.suffixIconSize,
+          ),
         ),
+        readOnly: true,
+        textInputAction: TextInputAction.done,
+        onTap: () async {
+          final DateTime? picked = await _selectDate();
+          if (widget.onDateSelected != null) {
+            widget.onDateSelected!(picked);
+          }
+        },
       ),
-      readOnly: true,
-      textInputAction: TextInputAction.done,
-      onTap: () async {
-        final DateTime? picked = await _selectDate();
-        if (widget.onDateSelected != null) {
-          widget.onDateSelected!(picked);
-        }
-      },
     );
   }
 
