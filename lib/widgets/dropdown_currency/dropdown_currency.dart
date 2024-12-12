@@ -73,10 +73,7 @@ class _DropdownCurrencyState extends State<DropdownCurrency> {
           _isFocus,
           _selectedCurrency,
         ),
-        dropdownStyleData: DropdownCurrencyStyles.dropdownStyleData(
-          context,
-          _isFocus,
-        ),
+        dropdownStyleData: DropdownCurrencyStyles.dropdownStyleData(context),
       ),
     );
   }
