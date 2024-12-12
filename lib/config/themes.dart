@@ -123,6 +123,15 @@ class EcoParkingManagementThemes {
         cardTheme: const CardTheme(
           color: Colors.white,
         ),
+        datePickerTheme: const DatePickerThemeData(
+          backgroundColor: Colors.white,
+        ),
+        timePickerTheme: const TimePickerThemeData(
+          backgroundColor: Colors.white,
+          dialBackgroundColor: AppConfig.baseBackgroundColor,
+          hourMinuteColor: AppConfig.outlineColor,
+          dayPeriodColor: AppConfig.outlineColor,
+        ),
         useMaterial3: true,
         fontFamily: GoogleFonts.beVietnamPro().fontFamily,
         textTheme: fallbackTextTheme,

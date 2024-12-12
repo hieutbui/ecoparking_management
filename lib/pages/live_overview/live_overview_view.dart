@@ -141,14 +141,16 @@ class LiveOverviewView extends StatelessWidget with ViewLoggy {
                                     .currentParkingLotAllotment,
                               )
                               .length >
-                          controller.rowPerPageNotifier.value
-                      ? controller.rowPerPageNotifier.value
+                          controller.rowPerPageCurrentTicketsNotifier.value
+                      ? controller.rowPerPageCurrentTicketsNotifier.value
                       : controller
                           .currentTicketRow(
                             controller
                                 .dummyLiveOverview.currentParkingLotAllotment,
                           )
                           .length,
+                  onRowsPerPageChanged:
+                      controller.onCurrentTicketRowsPerPageChanged,
                 ),
               ),
               const SizedBox(height: LiveOverviewViewStyles.spacing),
@@ -165,14 +167,15 @@ class LiveOverviewView extends StatelessWidget with ViewLoggy {
                                     .dummyLiveOverview.currentEmployeesInfo,
                               )
                               .length >
-                          controller.rowPerPageNotifier.value
-                      ? controller.rowPerPageNotifier.value
+                          controller.rowPerPageCurrentEmployeesNotifier.value
+                      ? controller.rowPerPageCurrentEmployeesNotifier.value
                       : controller
                           .currentEmployeeRow(
                             controller.dummyLiveOverview.currentEmployeesInfo,
                           )
                           .length,
-                  onRowsPerPageChanged: controller.onRowsPerPageChanged,
+                  onRowsPerPageChanged:
+                      controller.onCurrentEmployeesRowsPerPageChanged,
                 ),
               ),
             ],
