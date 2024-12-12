@@ -1,10 +1,9 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:ecoparking_management/widgets/dropdown_currency/supported_currencies.dart';
 import 'package:flutter/material.dart';
 
-class DropdownCurrencyStyles {
+class DropdownPreviousViewTypeStyles {
   static const double buttonHeight = 56.0;
-  static const double buttonWidth = 100.0;
+  static const double buttonWidth = 175.0;
 
   static ButtonStyleData get buttonStyleData => const ButtonStyleData(
       padding: buttonPadding,
@@ -16,16 +15,13 @@ class DropdownCurrencyStyles {
   static IconStyleData iconStyleData(
     BuildContext context,
     bool isFocus,
-    SupportedCurrency? selectedCurrency,
   ) =>
       IconStyleData(
         icon: Icon(
           Icons.arrow_drop_down_rounded,
           color: isFocus
               ? Theme.of(context).colorScheme.primary
-              : selectedCurrency != null
-                  ? Colors.black
-                  : Theme.of(context).colorScheme.outlineVariant,
+              : Theme.of(context).colorScheme.outlineVariant,
         ),
       );
   static DropdownStyleData dropdownStyleData(
