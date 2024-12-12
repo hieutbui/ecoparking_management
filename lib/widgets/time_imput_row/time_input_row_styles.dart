@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class DateInputRowStyles {
+class TimeInputRowStyles {
   static const double suffixIconSize = 16.0;
   static const double width = 200.0;
 
