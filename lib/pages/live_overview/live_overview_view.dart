@@ -20,10 +20,6 @@ class LiveOverviewView extends StatelessWidget with ViewLoggy {
   Widget build(BuildContext context) {
     return AppScaffold(
       title: AppPaths.liveOverview.label,
-      onCheckInPressed:
-          controller.isEmployee ? controller.onCheckInPressed : null,
-      onCheckOutPressed:
-          controller.isEmployee ? controller.onCheckOutPressed : null,
       body: SingleChildScrollView(
         physics: const ClampingScrollPhysics(),
         child: Padding(
