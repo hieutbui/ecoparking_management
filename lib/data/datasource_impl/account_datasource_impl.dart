@@ -1,6 +1,8 @@
 import 'package:ecoparking_management/data/datasource/account_datasource.dart';
 import 'package:ecoparking_management/data/models/user_profile.dart';
-import 'package:ecoparking_management/data/supabase_data/database_function_name.dart';
+import 'package:ecoparking_management/data/supabase_data/tables/parking_employee_table.dart';
+import 'package:ecoparking_management/data/supabase_data/tables/parking_owner_table.dart';
+import 'package:ecoparking_management/data/supabase_data/tables/parking_table.dart';
 import 'package:ecoparking_management/data/supabase_data/tables/profile_table.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -30,16 +32,6 @@ class AccountDataSourceImpl implements AccountDataSource {
   }
 
   @override
-  Future<Map<String, dynamic>?> getUserParking({
-    required String userId,
-  }) async {
-    return Supabase.instance.client.rpc(
-      DatabaseFunctionName.getParkingRolesByUser.functionName,
-      params: {'user_id': userId},
-    );
-  }
-
-  @override
   Future<Map<String, dynamic>> updateProfile({
     required UserProfile profile,
   }) async {
@@ -50,6 +42,38 @@ class AccountDataSourceImpl implements AccountDataSource {
         .update(profile.toJson())
         .eq(table.id, profile.id)
         .select()
+        .single();
+  }
+
+  @override
+  Future<Map<String, dynamic>> getEmployeeInfo({
+    required String profileId,
+  }) async {
+    const table = ParkingEmployeeTable();
+    const parkingTable = ParkingTable();
+
+    final queryString = '*, parking(${parkingTable.name})';
+
+    return Supabase.instance.client
+        .from(table.tableName)
+        .select(queryString)
+        .eq(table.profileId, profileId)
+        .single();
+  }
+
+  @override
+  Future<Map<String, dynamic>> getOwnerInfo({
+    required String profileId,
+  }) async {
+    const table = ParkingOwnerTable();
+    const parkingTable = ParkingTable();
+
+    final queryString = '*, parking(${parkingTable.name})';
+
+    return Supabase.instance.client
+        .from(table.tableName)
+        .select(queryString)
+        .eq(table.profileId, profileId)
         .single();
   }
 

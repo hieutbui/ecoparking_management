@@ -64,6 +64,17 @@ enum AccountType {
         return 'parkingOwner';
     }
   }
+
+  String toDisplayString() {
+    switch (this) {
+      case user:
+        return 'User';
+      case employee:
+        return 'Employee';
+      case parkingOwner:
+        return 'Owner';
+    }
+  }
 }
 
 enum Gender {

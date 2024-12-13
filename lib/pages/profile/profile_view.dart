@@ -1,6 +1,7 @@
 import 'package:ecoparking_management/config/app_paths.dart';
 import 'package:ecoparking_management/data/models/user_profile.dart';
-import 'package:ecoparking_management/domain/state/account/get_user_parking_state.dart';
+import 'package:ecoparking_management/domain/state/account/get_employee_info_state.dart';
+import 'package:ecoparking_management/domain/state/account/get_owner_info_state.dart';
 import 'package:ecoparking_management/domain/state/account/get_user_profile_state.dart';
 import 'package:ecoparking_management/pages/profile/profile.dart';
 import 'package:ecoparking_management/pages/profile/profile_ui_state.dart';
@@ -401,114 +402,15 @@ class ProfileView extends StatelessWidget with ViewLoggy {
                       },
                     ),
                   ),
-                  Padding(
-                    padding: ProfileViewStyles.cardPadding,
-                    child: InfoCardWithTitle(
-                      title: 'Parking position',
-                      child: ValueListenableBuilder(
-                        valueListenable: controller.getUserParkingStateNotifier,
-                        builder: (context, getUserParking, child) {
-                          if (getUserParking is GetUserParkingLoading ||
-                              getUserParking is GetUserParkingInitial) {
-                            return const Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          }
-
-                          if (getUserParking is GetUserParkingFailure) {
-                            return Center(
-                              child: Text(
-                                'Failed to get parking position',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .displaySmall!
-                                    .copyWith(
-                                      color:
-                                          Theme.of(context).colorScheme.error,
-                                    ),
-                              ),
-                            );
-                          }
-
-                          if (getUserParking is GetUserParkingSuccess) {
-                            return Padding(
-                              padding: ProfileViewStyles.cardPadding,
-                              child: Column(
-                                children: <Widget>[
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        'Parking Name: ',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyMedium!
-                                            .copyWith(
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .onSurface,
-                                            ),
-                                      ),
-                                      const SizedBox(
-                                          width: ProfileViewStyles
-                                              .infoLineSpacing),
-                                      Text(
-                                        getUserParking.userParking.parkingName,
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                        softWrap: true,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyMedium!
-                                            .copyWith(
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .inversePrimary,
-                                            ),
-                                      ),
-                                    ],
-                                  ),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        'Role: ',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyMedium!
-                                            .copyWith(
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .onSurface,
-                                            ),
-                                      ),
-                                      Text(
-                                        getUserParking.userParking.userRole
-                                            .toDisplayString(),
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyMedium!
-                                            .copyWith(
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .inversePrimary,
-                                            ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            );
-                          }
-
-                          return child!;
-                        },
-                        child: const SizedBox.shrink(),
-                      ),
-                    ),
+                  _buildParkingPosition(
+                    context: context,
+                    profile: profile,
+                    getEmployeeInfoStateNotifier:
+                        controller.getEmployeeInfoStateNotifier,
+                    getOwnerInfoStateNotifier:
+                        controller.getOwnerInfoStateNotifier,
                   ),
+                  const SizedBox(height: ProfileViewStyles.spacing),
                   Padding(
                     padding: ProfileViewStyles.padding,
                     child: InfoCardWithTitle(
@@ -652,4 +554,224 @@ class ProfileView extends StatelessWidget with ViewLoggy {
       ),
     );
   }
+}
+
+Widget _buildParkingPosition({
+  required BuildContext context,
+  required UserProfile profile,
+  required ValueNotifier<GetEmployeeInfoState> getEmployeeInfoStateNotifier,
+  required ValueNotifier<GetOwnerInfoState> getOwnerInfoStateNotifier,
+}) {
+  const cardTitle = 'Parking position';
+
+  if (profile.accountType == AccountType.parkingOwner) {
+    return Padding(
+      padding: ProfileViewStyles.cardPadding,
+      child: InfoCardWithTitle(
+        title: cardTitle,
+        child: ValueListenableBuilder(
+          valueListenable: getOwnerInfoStateNotifier,
+          builder: (context, state, child) {
+            if (state is GetOwnerInfoEmpty || state is GetOwnerInfoFailure) {
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(
+                    ProfileViewStyles.infoLineSpacing,
+                  ),
+                  child: Text(
+                    'Failed to get parking position',
+                    style: Theme.of(context).textTheme.displaySmall!.copyWith(
+                          color: Theme.of(context).colorScheme.error,
+                        ),
+                  ),
+                ),
+              );
+            }
+
+            if (state is GetOwnerInfoLoading) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+
+            if (state is GetOwnerInfoSuccess) {
+              final ownerInfo = state.ownerInfo;
+
+              return Padding(
+                padding: ProfileViewStyles.cardPadding,
+                child: _buildParkingPositionInfo(
+                  context: context,
+                  parkingName: ownerInfo.parking.parkingName,
+                  role: profile.accountType,
+                ),
+              );
+            }
+
+            return child!;
+          },
+          child: const SizedBox.shrink(),
+        ),
+      ),
+    );
+  } else if (profile.accountType == AccountType.employee) {
+    return Padding(
+      padding: ProfileViewStyles.cardPadding,
+      child: InfoCardWithTitle(
+        title: cardTitle,
+        child: ValueListenableBuilder(
+          valueListenable: getEmployeeInfoStateNotifier,
+          builder: (context, state, child) {
+            if (state is GetEmployeeInfoEmpty ||
+                state is GetEmployeeInfoFailure) {
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(
+                    ProfileViewStyles.infoLineSpacing,
+                  ),
+                  child: Text(
+                    'Failed to get parking position',
+                    style: Theme.of(context).textTheme.displaySmall!.copyWith(
+                          color: Theme.of(context).colorScheme.error,
+                        ),
+                  ),
+                ),
+              );
+            }
+
+            if (state is GetEmployeeInfoLoading) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+
+            if (state is GetEmployeeInfoSuccess) {
+              final employeeInfo = state.employeeInfo;
+
+              return Padding(
+                padding: ProfileViewStyles.cardPadding,
+                child: _buildParkingPositionInfo(
+                  context: context,
+                  parkingName: employeeInfo.parking.parkingName,
+                  role: profile.accountType,
+                  workingStartTime: employeeInfo.workingStartTime,
+                  workingEndTime: employeeInfo.workingEndTime,
+                ),
+              );
+            }
+
+            return child!;
+          },
+          child: const SizedBox.shrink(),
+        ),
+      ),
+    );
+  } else {
+    return const SizedBox.shrink();
+  }
+}
+
+Widget _buildParkingPositionInfo({
+  required BuildContext context,
+  required String parkingName,
+  required AccountType role,
+  TimeOfDay? workingStartTime,
+  TimeOfDay? workingEndTime,
+}) {
+  return Padding(
+    padding: ProfileViewStyles.cardPadding,
+    child: Column(
+      children: <Widget>[
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Parking Name: ',
+              style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+            ),
+            const SizedBox(
+              width: ProfileViewStyles.infoLineSpacing,
+            ),
+            Text(
+              parkingName,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              softWrap: true,
+              style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                    color: Theme.of(context).colorScheme.inversePrimary,
+                  ),
+            ),
+          ],
+        ),
+        const SizedBox(
+          height: ProfileViewStyles.infoLineSpacing,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Role: ',
+              style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+            ),
+            Text(
+              role.toDisplayString(),
+              style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                    color: Theme.of(context).colorScheme.inversePrimary,
+                  ),
+            ),
+          ],
+        ),
+        if (workingStartTime != null) ...[
+          const SizedBox(
+            height: ProfileViewStyles.infoLineSpacing,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Start shift: ',
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+              ),
+              Text(
+                workingStartTime.format(context),
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                      color: Theme.of(context).colorScheme.inversePrimary,
+                    ),
+              ),
+            ],
+          ),
+        ],
+        if (workingEndTime != null) ...[
+          const SizedBox(
+            height: ProfileViewStyles.infoLineSpacing,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'End shift: ',
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+              ),
+              Text(
+                workingEndTime.format(context),
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                      color: Theme.of(context).colorScheme.inversePrimary,
+                    ),
+              ),
+            ],
+          ),
+        ],
+        const SizedBox(
+          height: ProfileViewStyles.infoLineSpacing,
+        ),
+      ],
+    ),
+  );
 }
