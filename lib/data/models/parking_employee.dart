@@ -10,7 +10,6 @@ class ParkingEmployee with EquatableMixin {
   final String id;
   @JsonKey(name: 'parking_id')
   final String parkingId;
-  final ParkingPositionNestedInfo parking;
   @JsonKey(name: 'profile_id')
   final String profileId;
   @JsonKey(name: 'currency_locale')
@@ -29,6 +28,7 @@ class ParkingEmployee with EquatableMixin {
   final TimeOfDay? workingEndTime;
   @JsonKey(name: 'created_at')
   final DateTime createdAt;
+  final ParkingPositionNestedInfo? parking;
 
   const ParkingEmployee({
     required this.id,

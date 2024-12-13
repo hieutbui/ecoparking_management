@@ -436,10 +436,15 @@ class ProfileView extends StatelessWidget with ViewLoggy {
                                 const SizedBox(
                                   width: ProfileViewStyles.infoLineSpacing,
                                 ),
-                                DropdownCurrency(
-                                  initialCurrency:
-                                      controller.currencyNotifier.value,
-                                  onSelectCurrency: controller.onSelectCurrency,
+                                ValueListenableBuilder(
+                                  valueListenable: controller.currencyNotifier,
+                                  builder: (context, currency, child) {
+                                    return DropdownCurrency(
+                                      initialCurrency: currency,
+                                      onSelectCurrency:
+                                          controller.onSelectCurrency,
+                                    );
+                                  },
                                 ),
                               ],
                             ),
@@ -601,7 +606,7 @@ Widget _buildParkingPosition({
                 padding: ProfileViewStyles.cardPadding,
                 child: _buildParkingPositionInfo(
                   context: context,
-                  parkingName: ownerInfo.parking.parkingName,
+                  parkingName: ownerInfo.parking?.parkingName ?? '',
                   role: profile.accountType,
                 ),
               );
@@ -651,7 +656,7 @@ Widget _buildParkingPosition({
                 padding: ProfileViewStyles.cardPadding,
                 child: _buildParkingPositionInfo(
                   context: context,
-                  parkingName: employeeInfo.parking.parkingName,
+                  parkingName: employeeInfo.parking?.parkingName ?? '',
                   role: profile.accountType,
                   workingStartTime: employeeInfo.workingStartTime,
                   workingEndTime: employeeInfo.workingEndTime,

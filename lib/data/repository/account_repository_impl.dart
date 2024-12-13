@@ -44,6 +44,28 @@ class AccountRepositoryImpl implements AccountRepository {
   }
 
   @override
+  Future<Map<String, dynamic>> updateEmployeeCurrencyLocale({
+    required String employeeId,
+    required String currencyLocale,
+  }) {
+    return _dataSource.updateEmployeeCurrencyLocale(
+      employeeId: employeeId,
+      currencyLocale: currencyLocale,
+    );
+  }
+
+  @override
+  Future<Map<String, dynamic>> updateOwnerCurrencyLocale({
+    required String ownerId,
+    required String currencyLocale,
+  }) {
+    return _dataSource.updateOwnerCurrencyLocale(
+      ownerId: ownerId,
+      currencyLocale: currencyLocale,
+    );
+  }
+
+  @override
   Future<void> signOut() {
     return _dataSource.signOut();
   }

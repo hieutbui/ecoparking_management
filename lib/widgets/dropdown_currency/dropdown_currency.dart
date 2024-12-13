@@ -39,6 +39,17 @@ class _DropdownCurrencyState extends State<DropdownCurrency> {
   }
 
   @override
+  void didUpdateWidget(covariant DropdownCurrency oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (widget.initialCurrency != oldWidget.initialCurrency) {
+      setState(() {
+        _selectedCurrency = widget.initialCurrency;
+      });
+    }
+  }
+
+  @override
   void dispose() {
     _focusNode.dispose();
     super.dispose();

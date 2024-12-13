@@ -11,11 +11,11 @@ class ParkingOwner with EquatableMixin {
   final String profileId;
   @JsonKey(name: 'parking_id')
   final String parkingId;
-  final ParkingPositionNestedInfo parking;
   @JsonKey(name: 'created_at')
   final DateTime createdAt;
   @JsonKey(name: 'currency_locale')
   final String currencyLocale;
+  final ParkingPositionNestedInfo? parking;
 
   const ParkingOwner({
     required this.id,
