@@ -8,6 +8,8 @@ import 'package:ecoparking_management/domain/usecase/account/get_owner_info_inte
 import 'package:ecoparking_management/domain/usecase/account/get_user_profile_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/account/sign_in_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/account/sign_out_interactor.dart';
+import 'package:ecoparking_management/domain/usecase/account/update_employee_currency_locale_interactor.dart';
+import 'package:ecoparking_management/domain/usecase/account/update_owner_currency_locale_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/account/update_user_profile_interactor.dart';
 import 'package:ecoparking_management/utils/mixins/custom_logger.dart';
 import 'package:ecoparking_management/utils/responsive.dart';
@@ -84,6 +86,12 @@ class GetItInitializer with GetItLoggy {
     );
     getIt.registerLazySingleton<GetOwnerInfoInteractor>(
       () => GetOwnerInfoInteractor(),
+    );
+    getIt.registerLazySingleton<UpdateEmployeeCurrencyLocaleInteractor>(
+      () => UpdateEmployeeCurrencyLocaleInteractor(),
+    );
+    getIt.registerLazySingleton<UpdateOwnerCurrencyLocaleInteractor>(
+      () => UpdateOwnerCurrencyLocaleInteractor(),
     );
     loggy.info('_bindingInteractor(): Setup successfully');
   }

@@ -23,5 +23,15 @@ abstract class AccountDataSource {
     required String profileId,
   });
 
+  Future<Map<String, dynamic>> updateEmployeeCurrencyLocale({
+    required String employeeId,
+    required String currencyLocale,
+  });
+
+  Future<Map<String, dynamic>> updateOwnerCurrencyLocale({
+    required String ownerId,
+    required String currencyLocale,
+  });
+
   Future<void> signOut();
 }

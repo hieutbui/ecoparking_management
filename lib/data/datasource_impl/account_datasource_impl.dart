@@ -78,6 +78,36 @@ class AccountDataSourceImpl implements AccountDataSource {
   }
 
   @override
+  Future<Map<String, dynamic>> updateEmployeeCurrencyLocale({
+    required String employeeId,
+    required String currencyLocale,
+  }) async {
+    const table = ParkingEmployeeTable();
+
+    return Supabase.instance.client
+        .from(table.tableName)
+        .update({table.currencyLocale: currencyLocale})
+        .eq(table.id, employeeId)
+        .select()
+        .single();
+  }
+
+  @override
+  Future<Map<String, dynamic>> updateOwnerCurrencyLocale({
+    required String ownerId,
+    required String currencyLocale,
+  }) async {
+    const table = ParkingOwnerTable();
+
+    return Supabase.instance.client
+        .from(table.tableName)
+        .update({table.currencyLocale: currencyLocale})
+        .eq(table.id, ownerId)
+        .select()
+        .single();
+  }
+
+  @override
   Future<void> signOut() async {
     return Supabase.instance.client.auth.signOut();
   }
