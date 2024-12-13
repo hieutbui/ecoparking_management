@@ -13,7 +13,6 @@ import 'package:ecoparking_management/widgets/dropdown_currency/dropdown_currenc
 import 'package:ecoparking_management/widgets/dropdown_gender/dropdown_gender.dart';
 import 'package:ecoparking_management/widgets/info_card_with_title.dart';
 import 'package:ecoparking_management/widgets/phone_input_row/phone_input_row.dart';
-import 'package:ecoparking_management/widgets/time_imput_row/time_input_row.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:getwidget/components/avatar/gf_avatar.dart';
@@ -542,56 +541,56 @@ class ProfileView extends StatelessWidget with ViewLoggy {
                                 ),
                               ],
                             ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text(
-                                  'Working start time: ',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyMedium!
-                                      .copyWith(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onSurface,
-                                      ),
-                                ),
-                                const SizedBox(
-                                  width: ProfileViewStyles.infoLineSpacing,
-                                ),
-                                TimeInputRow(
-                                  initialTime:
-                                      controller.workingStartTimeNotifier.value,
-                                  onSelectTime:
-                                      controller.onWorkingStartTimeSelected,
-                                )
-                              ],
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text(
-                                  'Working end time: ',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyMedium!
-                                      .copyWith(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onSurface,
-                                      ),
-                                ),
-                                const SizedBox(
-                                  width: ProfileViewStyles.infoLineSpacing,
-                                ),
-                                TimeInputRow(
-                                  initialTime:
-                                      controller.workingEndTimeNotifier.value,
-                                  onSelectTime:
-                                      controller.onWorkingEndTimeSelected,
-                                ),
-                              ],
-                            ),
+                            // Row(
+                            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            //   children: <Widget>[
+                            //     Text(
+                            //       'Working start time: ',
+                            //       style: Theme.of(context)
+                            //           .textTheme
+                            //           .bodyMedium!
+                            //           .copyWith(
+                            //             color: Theme.of(context)
+                            //                 .colorScheme
+                            //                 .onSurface,
+                            //           ),
+                            //     ),
+                            //     const SizedBox(
+                            //       width: ProfileViewStyles.infoLineSpacing,
+                            //     ),
+                            //     TimeInputRow(
+                            //       initialTime:
+                            //           controller.workingStartTimeNotifier.value,
+                            //       onSelectTime:
+                            //           controller.onWorkingStartTimeSelected,
+                            //     )
+                            //   ],
+                            // ),
+                            // Row(
+                            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            //   children: <Widget>[
+                            //     Text(
+                            //       'Working end time: ',
+                            //       style: Theme.of(context)
+                            //           .textTheme
+                            //           .bodyMedium!
+                            //           .copyWith(
+                            //             color: Theme.of(context)
+                            //                 .colorScheme
+                            //                 .onSurface,
+                            //           ),
+                            //     ),
+                            //     const SizedBox(
+                            //       width: ProfileViewStyles.infoLineSpacing,
+                            //     ),
+                            //     TimeInputRow(
+                            //       initialTime:
+                            //           controller.workingEndTimeNotifier.value,
+                            //       onSelectTime:
+                            //           controller.onWorkingEndTimeSelected,
+                            //     ),
+                            //   ],
+                            // ),
                             const SizedBox(
                               height: ProfileViewStyles.spacing,
                             ),
