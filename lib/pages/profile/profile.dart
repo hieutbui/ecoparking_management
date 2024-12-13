@@ -4,12 +4,14 @@ import 'package:ecoparking_management/config/app_paths.dart';
 import 'package:ecoparking_management/data/models/user_profile.dart';
 import 'package:ecoparking_management/di/global/get_it_initializer.dart';
 import 'package:ecoparking_management/domain/services/profile_service.dart';
-import 'package:ecoparking_management/domain/state/account/get_user_parking_state.dart';
+import 'package:ecoparking_management/domain/state/account/get_employee_info_state.dart';
+import 'package:ecoparking_management/domain/state/account/get_owner_info_state.dart';
 import 'package:ecoparking_management/domain/state/account/get_user_profile_state.dart';
 import 'package:ecoparking_management/domain/state/account/update_user_profile_state.dart';
 import 'package:ecoparking_management/domain/state/app_state/failure.dart';
 import 'package:ecoparking_management/domain/state/app_state/success.dart';
-import 'package:ecoparking_management/domain/usecase/account/get_user_parking_interactor.dart';
+import 'package:ecoparking_management/domain/usecase/account/get_employee_info_interactor.dart';
+import 'package:ecoparking_management/domain/usecase/account/get_owner_info_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/account/get_user_profile_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/account/sign_out_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/account/update_user_profile_interactor.dart';
@@ -31,22 +33,27 @@ class Profile extends StatefulWidget {
 
 class ProfileController extends State<Profile> with ControllerLoggy {
   final ProfileService _profileService = getIt.get<ProfileService>();
-  final GetUserParkingInteractor _getUserParkingInteractor =
-      getIt.get<GetUserParkingInteractor>();
+
   final GetUserProfileInteractor _getUserProfileInteractor =
       getIt.get<GetUserProfileInteractor>();
   final UpdateUserProfileInteractor _updateUserProfileInteractor =
       getIt.get<UpdateUserProfileInteractor>();
   final SignOutInteractor _signOutInteractor = getIt.get<SignOutInteractor>();
+  final GetEmployeeInfoInteractor _getEmployeeInfoInteractor =
+      getIt.get<GetEmployeeInfoInteractor>();
+  final GetOwnerInfoInteractor _getOwnerInfoInteractor =
+      getIt.get<GetOwnerInfoInteractor>();
 
   final ValueNotifier<ProfileUIState> profileUIStateNotifier =
       ValueNotifier(const ProfileUIInitial());
-  final ValueNotifier<GetUserParkingState> getUserParkingStateNotifier =
-      ValueNotifier(const GetUserParkingInitial());
   final ValueNotifier<GetUserProfileState> getUserProfileStateNotifier =
       ValueNotifier(const GetUserProfileInitial());
   final ValueNotifier<UpdateUserProfileState> updateUserProfileStateNotifier =
       ValueNotifier(const UpdateUserProfileInitial());
+  final ValueNotifier<GetEmployeeInfoState> getEmployeeInfoStateNotifier =
+      ValueNotifier(const GetEmployeeInfoInitial());
+  final ValueNotifier<GetOwnerInfoState> getOwnerInfoStateNotifier =
+      ValueNotifier(const GetOwnerInfoInitial());
 
   final ValueNotifier<Gender?> genderNotifier = ValueNotifier(null);
   final ValueNotifier<DateTime?> dateNotifier = ValueNotifier<DateTime?>(null);
@@ -62,16 +69,17 @@ class ProfileController extends State<Profile> with ControllerLoggy {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
 
-  StreamSubscription<Either<Failure, Success>>? _getUserParkingSubscription;
   StreamSubscription<Either<Failure, Success>>? _getUserProfileSubscription;
   StreamSubscription<Either<Failure, Success>>? _updateUserProfileSubscription;
+  StreamSubscription<Either<Failure, Success>>? _getEmployeeInfoSubscription;
+  StreamSubscription<Either<Failure, Success>>? _getOwnerInfoSubscription;
 
   @override
   void initState() {
     super.initState();
     _checkProfileIsEmpty();
     _initializeTextControllers();
-    getUserParking();
+    _getUserPosition();
   }
 
   @override
@@ -92,9 +100,22 @@ class ProfileController extends State<Profile> with ControllerLoggy {
     }
   }
 
+  void _getUserPosition() {
+    final profileUIStateValue = profileUIStateNotifier.value;
+
+    if (profileUIStateValue is ProfileUIAuthenticated) {
+      final profile = profileUIStateValue.userProfile;
+
+      if (profile.accountType == AccountType.employee) {
+        _getEmployeeInfo(profileId: profile.id);
+      } else if (profile.accountType == AccountType.parkingOwner) {
+        _getOwnerInfo(profileId: profile.id);
+      }
+    }
+  }
+
   void _disposeNotifiers() {
     profileUIStateNotifier.dispose();
-    getUserParkingStateNotifier.dispose();
     isEditing.dispose();
     genderNotifier.dispose();
     dateNotifier.dispose();
@@ -103,15 +124,19 @@ class ProfileController extends State<Profile> with ControllerLoggy {
     currencyNotifier.dispose();
     workingStartTimeNotifier.dispose();
     workingEndTimeNotifier.dispose();
+    getEmployeeInfoStateNotifier.dispose();
+    getOwnerInfoStateNotifier.dispose();
   }
 
   void _cancelSubscriptions() {
-    _getUserParkingSubscription?.cancel();
     _getUserProfileSubscription?.cancel();
     _updateUserProfileSubscription?.cancel();
-    _getUserParkingSubscription = null;
+    _getEmployeeInfoSubscription?.cancel();
+    _getOwnerInfoSubscription?.cancel();
     _getUserProfileSubscription = null;
     _updateUserProfileSubscription = null;
+    _getEmployeeInfoSubscription = null;
+    _getOwnerInfoSubscription = null;
   }
 
   void _disposeTextControllers() {
@@ -193,17 +218,28 @@ class ProfileController extends State<Profile> with ControllerLoggy {
     dateNotifier.value = date;
   }
 
-  void getUserParking() async {
-    await _checkProfileIsEmpty();
-
-    _getUserParkingSubscription = _getUserParkingInteractor
+  void _getEmployeeInfo({required String profileId}) {
+    _getEmployeeInfoSubscription = _getEmployeeInfoInteractor
         .execute(
-          userId: _profileService.user!.id,
+          profileId: profileId,
         )
         .listen(
           (result) => result.fold(
-            _handleGetUserParkingFailure,
-            _handleGetUserParkingSuccess,
+            _handleGetEmployeeInfoFailure,
+            _handleGetEmployeeInfoSuccess,
+          ),
+        );
+  }
+
+  void _getOwnerInfo({required String profileId}) {
+    _getOwnerInfoSubscription = _getOwnerInfoInteractor
+        .execute(
+          profileId: profileId,
+        )
+        .listen(
+          (result) => result.fold(
+            _handleGetOwnerInfoFailure,
+            _handleGetOwnerInfoSuccess,
           ),
         );
   }
@@ -243,27 +279,6 @@ class ProfileController extends State<Profile> with ControllerLoggy {
   void onWorkingEndTimeSelected(TimeOfDay? time) {
     workingEndTimeNotifier.value = time;
     //TODO: Save working end time
-  }
-
-  void _handleGetUserParkingFailure(Failure failure) {
-    loggy.error('Get user parking failure: $failure');
-    if (failure is GetUserParkingEmpty) {
-      getUserParkingStateNotifier.value = const GetUserParkingEmpty();
-    } else if (failure is GetUserParkingFailure) {
-      getUserParkingStateNotifier.value = failure;
-    } else {
-      getUserParkingStateNotifier.value =
-          GetUserParkingFailure(exception: failure);
-    }
-  }
-
-  void _handleGetUserParkingSuccess(Success success) {
-    loggy.info('Get user parking success: $success');
-    if (success is GetUserParkingSuccess) {
-      getUserParkingStateNotifier.value = success;
-    } else if (success is GetUserParkingLoading) {
-      getUserParkingStateNotifier.value = success;
-    }
   }
 
   void _handleGetUserProfileFailure(Failure failure) {
@@ -324,6 +339,49 @@ class ProfileController extends State<Profile> with ControllerLoggy {
   void _handleSignOutCommon() {
     _profileService.clear();
     navigateToLogin();
+  }
+
+  void _handleGetEmployeeInfoFailure(Failure failure) {
+    loggy.error('Get employee info failure: $failure');
+    if (failure is GetEmployeeInfoEmpty) {
+      getEmployeeInfoStateNotifier.value = const GetEmployeeInfoEmpty();
+    } else if (failure is GetEmployeeInfoFailure) {
+      getEmployeeInfoStateNotifier.value = failure;
+    } else {
+      getEmployeeInfoStateNotifier.value =
+          GetEmployeeInfoFailure(exception: failure);
+    }
+  }
+
+  void _handleGetEmployeeInfoSuccess(Success success) {
+    loggy.info('Get employee info success: $success');
+    if (success is GetEmployeeInfoSuccess) {
+      getEmployeeInfoStateNotifier.value = success;
+      _profileService.setParkingEmployee(success.employeeInfo);
+    } else if (success is GetEmployeeInfoLoading) {
+      getEmployeeInfoStateNotifier.value = success;
+    }
+  }
+
+  void _handleGetOwnerInfoFailure(Failure failure) {
+    loggy.error('Get owner info failure: $failure');
+    if (failure is GetOwnerInfoEmpty) {
+      getOwnerInfoStateNotifier.value = const GetOwnerInfoEmpty();
+    } else if (failure is GetOwnerInfoFailure) {
+      getOwnerInfoStateNotifier.value = failure;
+    } else {
+      getOwnerInfoStateNotifier.value = GetOwnerInfoFailure(exception: failure);
+    }
+  }
+
+  void _handleGetOwnerInfoSuccess(Success success) {
+    loggy.info('Get owner info success: $success');
+    if (success is GetOwnerInfoSuccess) {
+      getOwnerInfoStateNotifier.value = success;
+      _profileService.setParkingOwner(success.ownerInfo);
+    } else if (success is GetOwnerInfoLoading) {
+      getOwnerInfoStateNotifier.value = success;
+    }
   }
 
   @override

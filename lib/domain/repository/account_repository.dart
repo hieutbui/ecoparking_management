@@ -11,12 +11,16 @@ abstract class AccountRepository {
     required String userId,
   });
 
-  Future<Map<String, dynamic>?> getUserParking({
-    required String userId,
-  });
-
   Future<Map<String, dynamic>> updateProfile({
     required UserProfile profile,
+  });
+
+  Future<Map<String, dynamic>> getEmployeeInfo({
+    required String profileId,
+  });
+
+  Future<Map<String, dynamic>> getOwnerInfo({
+    required String profileId,
   });
 
   Future<void> signOut();

@@ -23,17 +23,24 @@ class AccountRepositoryImpl implements AccountRepository {
   }
 
   @override
-  Future<Map<String, dynamic>?> getUserParking({
-    required String userId,
-  }) {
-    return _dataSource.getUserParking(userId: userId);
-  }
-
-  @override
   Future<Map<String, dynamic>> updateProfile({
     required UserProfile profile,
   }) {
     return _dataSource.updateProfile(profile: profile);
+  }
+
+  @override
+  Future<Map<String, dynamic>> getEmployeeInfo({
+    required String profileId,
+  }) {
+    return _dataSource.getEmployeeInfo(profileId: profileId);
+  }
+
+  @override
+  Future<Map<String, dynamic>> getOwnerInfo({
+    required String profileId,
+  }) {
+    return _dataSource.getOwnerInfo(profileId: profileId);
   }
 
   @override
