@@ -7,6 +7,8 @@ import 'package:ecoparking_management/domain/services/profile_service.dart';
 import 'package:ecoparking_management/domain/state/account/get_employee_info_state.dart';
 import 'package:ecoparking_management/domain/state/account/get_owner_info_state.dart';
 import 'package:ecoparking_management/domain/state/account/get_user_profile_state.dart';
+import 'package:ecoparking_management/domain/state/account/update_employee_currency_locale_state.dart';
+import 'package:ecoparking_management/domain/state/account/update_owner_currency_locale_state.dart';
 import 'package:ecoparking_management/domain/state/account/update_user_profile_state.dart';
 import 'package:ecoparking_management/domain/state/app_state/failure.dart';
 import 'package:ecoparking_management/domain/state/app_state/success.dart';
@@ -14,6 +16,8 @@ import 'package:ecoparking_management/domain/usecase/account/get_employee_info_i
 import 'package:ecoparking_management/domain/usecase/account/get_owner_info_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/account/get_user_profile_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/account/sign_out_interactor.dart';
+import 'package:ecoparking_management/domain/usecase/account/update_employee_currency_locale_interactor.dart';
+import 'package:ecoparking_management/domain/usecase/account/update_owner_currency_locale_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/account/update_user_profile_interactor.dart';
 import 'package:ecoparking_management/pages/profile/profile_ui_state.dart';
 import 'package:ecoparking_management/pages/profile/profile_view.dart';
@@ -43,6 +47,12 @@ class ProfileController extends State<Profile> with ControllerLoggy {
       getIt.get<GetEmployeeInfoInteractor>();
   final GetOwnerInfoInteractor _getOwnerInfoInteractor =
       getIt.get<GetOwnerInfoInteractor>();
+  final UpdateEmployeeCurrencyLocaleInteractor
+      _updateEmployeeCurrencyLocaleInteractor =
+      getIt.get<UpdateEmployeeCurrencyLocaleInteractor>();
+  final UpdateOwnerCurrencyLocaleInteractor
+      _updateOwnerCurrencyLocaleInteractor =
+      getIt.get<UpdateOwnerCurrencyLocaleInteractor>();
 
   final ValueNotifier<ProfileUIState> profileUIStateNotifier =
       ValueNotifier(const ProfileUIInitial());
@@ -54,6 +64,12 @@ class ProfileController extends State<Profile> with ControllerLoggy {
       ValueNotifier(const GetEmployeeInfoInitial());
   final ValueNotifier<GetOwnerInfoState> getOwnerInfoStateNotifier =
       ValueNotifier(const GetOwnerInfoInitial());
+  final ValueNotifier<UpdateEmployeeCurrencyLocaleState>
+      updateEmployeeCurrencyLocaleStateNotifier =
+      ValueNotifier(const UpdateEmployeeCurrencyLocaleInitial());
+  final ValueNotifier<UpdateOwnerCurrencyLocaleState>
+      updateOwnerCurrencyLocaleStateNotifier =
+      ValueNotifier(const UpdateOwnerCurrencyLocaleInitial());
 
   final ValueNotifier<Gender?> genderNotifier = ValueNotifier(null);
   final ValueNotifier<DateTime?> dateNotifier = ValueNotifier<DateTime?>(null);
@@ -73,13 +89,18 @@ class ProfileController extends State<Profile> with ControllerLoggy {
   StreamSubscription<Either<Failure, Success>>? _updateUserProfileSubscription;
   StreamSubscription<Either<Failure, Success>>? _getEmployeeInfoSubscription;
   StreamSubscription<Either<Failure, Success>>? _getOwnerInfoSubscription;
+  StreamSubscription<Either<Failure, Success>>?
+      _updateEmployeeCurrencyLocaleSubscription;
+  StreamSubscription<Either<Failure, Success>>?
+      _updateOwnerCurrencyLocaleSubscription;
 
   @override
   void initState() {
     super.initState();
     _checkProfileIsEmpty();
-    _initializeTextControllers();
     _getUserPosition();
+    _initializeTextControllers();
+    _initializeCurrencyLocale();
   }
 
   @override
@@ -97,6 +118,32 @@ class ProfileController extends State<Profile> with ControllerLoggy {
       emailController.text = profile.email;
       nameController.text = profile.fullName ?? '';
       phoneController.text = profile.phone ?? '';
+    }
+  }
+
+  void _initializeCurrencyLocale() {
+    final profile = _profileService.userProfile;
+
+    if (profile == null) return;
+
+    if (profile.accountType == AccountType.employee) {
+      final employee = _profileService.parkingEmployee;
+
+      if (employee != null) {
+        currencyNotifier.value = supportedCurrencies.firstWhere(
+          (currency) => currency.locale == employee.currencyLocale,
+          orElse: () => supportedCurrencies.first,
+        );
+      }
+    } else if (profile.accountType == AccountType.parkingOwner) {
+      final owner = _profileService.parkingOwner;
+
+      if (owner != null) {
+        currencyNotifier.value = supportedCurrencies.firstWhere(
+          (currency) => currency.locale == owner.currencyLocale,
+          orElse: () => supportedCurrencies.first,
+        );
+      }
     }
   }
 
@@ -126,6 +173,8 @@ class ProfileController extends State<Profile> with ControllerLoggy {
     workingEndTimeNotifier.dispose();
     getEmployeeInfoStateNotifier.dispose();
     getOwnerInfoStateNotifier.dispose();
+    updateEmployeeCurrencyLocaleStateNotifier.dispose();
+    updateOwnerCurrencyLocaleStateNotifier.dispose();
   }
 
   void _cancelSubscriptions() {
@@ -133,10 +182,14 @@ class ProfileController extends State<Profile> with ControllerLoggy {
     _updateUserProfileSubscription?.cancel();
     _getEmployeeInfoSubscription?.cancel();
     _getOwnerInfoSubscription?.cancel();
+    _updateEmployeeCurrencyLocaleSubscription?.cancel();
+    _updateOwnerCurrencyLocaleSubscription?.cancel();
     _getUserProfileSubscription = null;
     _updateUserProfileSubscription = null;
     _getEmployeeInfoSubscription = null;
     _getOwnerInfoSubscription = null;
+    _updateEmployeeCurrencyLocaleSubscription = null;
+    _updateOwnerCurrencyLocaleSubscription = null;
   }
 
   void _disposeTextControllers() {
@@ -268,7 +321,51 @@ class ProfileController extends State<Profile> with ControllerLoggy {
 
   void onSelectCurrency(SupportedCurrency currency) {
     currencyNotifier.value = currency;
-    //TODO: Save currency
+
+    if (_profileService.userProfile?.accountType == AccountType.employee) {
+      _saveCurrencyForEmployee();
+    } else if (_profileService.userProfile?.accountType ==
+        AccountType.parkingOwner) {
+      _saveCurrencyForOwner();
+    }
+  }
+
+  void _saveCurrencyForEmployee() {
+    final employId = _profileService.parkingEmployee?.id;
+
+    if (employId == null || employId.isEmpty) return;
+
+    _updateEmployeeCurrencyLocaleSubscription =
+        _updateEmployeeCurrencyLocaleInteractor
+            .execute(
+              employeeId: employId,
+              currencyLocale: currencyNotifier.value.locale,
+            )
+            .listen(
+              (result) => result.fold(
+                _handleUpdateEmployeeCurrencyLocaleFailure,
+                _handleUpdateEmployeeCurrencyLocaleSuccess,
+              ),
+            );
+  }
+
+  void _saveCurrencyForOwner() {
+    final ownerId = _profileService.parkingOwner?.id;
+
+    if (ownerId == null || ownerId.isEmpty) return;
+
+    _updateOwnerCurrencyLocaleSubscription =
+        _updateOwnerCurrencyLocaleInteractor
+            .execute(
+              ownerId: ownerId,
+              currencyLocale: currencyNotifier.value.locale,
+            )
+            .listen(
+              (result) => result.fold(
+                _handleUpdateOwnerCurrencyLocaleFailure,
+                _handleUpdateOwnerCurrencyLocaleSuccess,
+              ),
+            );
   }
 
   void onWorkingStartTimeSelected(TimeOfDay? time) {
@@ -294,7 +391,7 @@ class ProfileController extends State<Profile> with ControllerLoggy {
   }
 
   void _handleGetUserProfileSuccess(Success success) {
-    loggy.info('Get user profile success: $success');
+    loggy.info('Get user profile success');
     if (success is GetUserProfileSuccess) {
       getUserProfileStateNotifier.value = success;
       _profileService.setUserProfile(success.response);
@@ -317,7 +414,7 @@ class ProfileController extends State<Profile> with ControllerLoggy {
   }
 
   void _handleUpdateUserProfileSuccess(Success success) {
-    loggy.info('Update user profile success: $success');
+    loggy.info('Update user profile success');
     if (success is UpdateUserProfileSuccess) {
       updateUserProfileStateNotifier.value = success;
       _getUserProfile(userId: success.userProfile.id);
@@ -332,7 +429,7 @@ class ProfileController extends State<Profile> with ControllerLoggy {
   }
 
   void _handleSignOutSuccess(Success success) {
-    loggy.info('Sign out success: $success');
+    loggy.info('Sign out success');
     _handleSignOutCommon();
   }
 
@@ -354,10 +451,14 @@ class ProfileController extends State<Profile> with ControllerLoggy {
   }
 
   void _handleGetEmployeeInfoSuccess(Success success) {
-    loggy.info('Get employee info success: $success');
+    loggy.info('Get employee info success');
     if (success is GetEmployeeInfoSuccess) {
       getEmployeeInfoStateNotifier.value = success;
       _profileService.setParkingEmployee(success.employeeInfo);
+      currencyNotifier.value = supportedCurrencies.firstWhere(
+        (currency) => currency.locale == success.employeeInfo.currencyLocale,
+        orElse: () => supportedCurrencies.first,
+      );
     } else if (success is GetEmployeeInfoLoading) {
       getEmployeeInfoStateNotifier.value = success;
     }
@@ -375,12 +476,62 @@ class ProfileController extends State<Profile> with ControllerLoggy {
   }
 
   void _handleGetOwnerInfoSuccess(Success success) {
-    loggy.info('Get owner info success: $success');
+    loggy.info('Get owner info success');
     if (success is GetOwnerInfoSuccess) {
       getOwnerInfoStateNotifier.value = success;
       _profileService.setParkingOwner(success.ownerInfo);
+      currencyNotifier.value = supportedCurrencies.firstWhere(
+        (currency) => currency.locale == success.ownerInfo.currencyLocale,
+        orElse: () => supportedCurrencies.first,
+      );
     } else if (success is GetOwnerInfoLoading) {
       getOwnerInfoStateNotifier.value = success;
+    }
+  }
+
+  void _handleUpdateEmployeeCurrencyLocaleFailure(Failure failure) {
+    loggy.error('Update employee currency locale failure: $failure');
+    if (failure is UpdateEmployeeCurrencyLocaleEmpty) {
+      updateEmployeeCurrencyLocaleStateNotifier.value =
+          const UpdateEmployeeCurrencyLocaleEmpty();
+    } else if (failure is UpdateEmployeeCurrencyLocaleFailure) {
+      updateEmployeeCurrencyLocaleStateNotifier.value = failure;
+    } else {
+      updateEmployeeCurrencyLocaleStateNotifier.value =
+          UpdateEmployeeCurrencyLocaleFailure(exception: failure);
+    }
+  }
+
+  void _handleUpdateEmployeeCurrencyLocaleSuccess(Success success) {
+    loggy.info('Update employee currency locale success');
+    if (success is UpdateEmployeeCurrencyLocaleSuccess) {
+      updateEmployeeCurrencyLocaleStateNotifier.value = success;
+      _profileService.setParkingEmployee(success.employee);
+    } else if (success is UpdateEmployeeCurrencyLocaleLoading) {
+      updateEmployeeCurrencyLocaleStateNotifier.value = success;
+    }
+  }
+
+  void _handleUpdateOwnerCurrencyLocaleFailure(Failure failure) {
+    loggy.error('Update owner currency locale failure: $failure');
+    if (failure is UpdateOwnerCurrencyLocaleEmpty) {
+      updateOwnerCurrencyLocaleStateNotifier.value =
+          const UpdateOwnerCurrencyLocaleEmpty();
+    } else if (failure is UpdateOwnerCurrencyLocaleFailure) {
+      updateOwnerCurrencyLocaleStateNotifier.value = failure;
+    } else {
+      updateOwnerCurrencyLocaleStateNotifier.value =
+          UpdateOwnerCurrencyLocaleFailure(exception: failure);
+    }
+  }
+
+  void _handleUpdateOwnerCurrencyLocaleSuccess(Success success) {
+    loggy.info('Update owner currency locale success');
+    if (success is UpdateOwnerCurrencyLocaleSuccess) {
+      updateOwnerCurrencyLocaleStateNotifier.value = success;
+      _profileService.setParkingOwner(success.owner);
+    } else if (success is UpdateOwnerCurrencyLocaleLoading) {
+      updateOwnerCurrencyLocaleStateNotifier.value = success;
     }
   }
 
