@@ -7,36 +7,44 @@ part 'parking_employee.g.dart';
 
 @JsonSerializable()
 class ParkingEmployee with EquatableMixin {
-  final String id;
+  @JsonKey(includeIfNull: false)
+  final String? id;
   @JsonKey(name: 'parking_id')
   final String parkingId;
   @JsonKey(name: 'profile_id')
-  final String profileId;
+  @JsonKey(includeIfNull: false)
+  final String? profileId;
   @JsonKey(name: 'currency_locale')
   final String currencyLocale;
   @JsonKey(
     name: 'working_start_time',
     fromJson: _timeOfDayFromString,
     toJson: _timeOfDayToString,
+    includeIfNull: false,
   )
   final TimeOfDay? workingStartTime;
   @JsonKey(
     name: 'working_end_time',
     fromJson: _timeOfDayFromString,
     toJson: _timeOfDayToString,
+    includeIfNull: false,
   )
   final TimeOfDay? workingEndTime;
-  @JsonKey(name: 'created_at')
-  final DateTime createdAt;
+  @JsonKey(
+    name: 'created_at',
+    includeIfNull: false,
+  )
+  final DateTime? createdAt;
+  @JsonKey(includeIfNull: false)
   final ParkingPositionNestedInfo? parking;
 
   const ParkingEmployee({
-    required this.id,
     required this.parkingId,
-    required this.parking,
-    required this.profileId,
     required this.currencyLocale,
-    required this.createdAt,
+    this.profileId,
+    this.createdAt,
+    this.parking,
+    this.id,
     this.workingStartTime,
     this.workingEndTime,
   });

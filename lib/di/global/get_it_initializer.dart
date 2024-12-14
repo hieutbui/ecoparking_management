@@ -15,6 +15,8 @@ import 'package:ecoparking_management/domain/usecase/account/sign_out_interactor
 import 'package:ecoparking_management/domain/usecase/account/update_employee_currency_locale_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/account/update_owner_currency_locale_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/account/update_user_profile_interactor.dart';
+import 'package:ecoparking_management/domain/usecase/employee/create_new_employee_interactor.dart';
+import 'package:ecoparking_management/domain/usecase/employee/delete_employee_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/employee/get_all_employee_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/employee/update_employee_working_time_interactor.dart';
 import 'package:ecoparking_management/utils/mixins/custom_logger.dart';
@@ -113,6 +115,12 @@ class GetItInitializer with GetItLoggy {
     );
     getIt.registerLazySingleton<UpdateEmployeeWorkingTimeInteractor>(
       () => UpdateEmployeeWorkingTimeInteractor(),
+    );
+    getIt.registerLazySingleton<CreateNewEmployeeInteractor>(
+      () => CreateNewEmployeeInteractor(),
+    );
+    getIt.registerLazySingleton<DeleteEmployeeInteractor>(
+      () => DeleteEmployeeInteractor(),
     );
     loggy.info('_bindingInteractor(): Setup successfully');
   }

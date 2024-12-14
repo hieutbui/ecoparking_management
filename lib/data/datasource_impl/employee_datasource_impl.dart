@@ -1,4 +1,5 @@
 import 'package:ecoparking_management/data/datasource/employee_datasource.dart';
+import 'package:ecoparking_management/data/models/parking_employee.dart';
 import 'package:ecoparking_management/data/supabase_data/tables/parking_employee_table.dart';
 import 'package:ecoparking_management/data/supabase_data/tables/profile_table.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -37,5 +38,46 @@ class EmployeeDataSourceImpl extends EmployeeDataSource {
         .eq(table.id, employeeId)
         .select()
         .single();
+  }
+
+  @override
+  Future<AuthResponse> signUp({
+    required String email,
+    required String password,
+    required String fullName,
+  }) async {
+    return Supabase.instance.client.auth.signUp(
+      password: password,
+      email: email,
+      data: {
+        'full_name': fullName,
+      },
+    );
+  }
+
+  @override
+  Future<Map<String, dynamic>> createEmployee({
+    required ParkingEmployee employee,
+  }) async {
+    const table = ParkingEmployeeTable();
+
+    return Supabase.instance.client
+        .from(table.tableName)
+        .insert(employee)
+        .select()
+        .single();
+  }
+
+  @override
+  Future<List<Map<String, dynamic>>> deleteEmployee({
+    required List<String> employeeId,
+  }) async {
+    const table = ParkingEmployeeTable();
+
+    return Supabase.instance.client
+        .from(table.tableName)
+        .delete()
+        .inFilter(table.id, employeeId)
+        .select();
   }
 }

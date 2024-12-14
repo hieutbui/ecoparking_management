@@ -1,6 +1,8 @@
 import 'package:ecoparking_management/data/datasource/employee_datasource.dart';
+import 'package:ecoparking_management/data/models/parking_employee.dart';
 import 'package:ecoparking_management/di/global/get_it_initializer.dart';
 import 'package:ecoparking_management/domain/repository/employee_repository.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class EmployeeRepositoryImpl implements EmployeeRepository {
   final EmployeeDataSource _dataSource = getIt.get<EmployeeDataSource>();
@@ -23,5 +25,32 @@ class EmployeeRepositoryImpl implements EmployeeRepository {
       startTime: startTime,
       endTime: endTime,
     );
+  }
+
+  @override
+  Future<AuthResponse> signUp({
+    required String email,
+    required String password,
+    required String fullName,
+  }) {
+    return _dataSource.signUp(
+      email: email,
+      password: password,
+      fullName: fullName,
+    );
+  }
+
+  @override
+  Future<Map<String, dynamic>> createEmployee({
+    required ParkingEmployee employee,
+  }) {
+    return _dataSource.createEmployee(employee: employee);
+  }
+
+  @override
+  Future<List<Map<String, dynamic>>> deleteEmployee({
+    required List<String> employeeId,
+  }) {
+    return _dataSource.deleteEmployee(employeeId: employeeId);
   }
 }

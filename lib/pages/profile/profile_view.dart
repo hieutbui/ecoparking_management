@@ -153,7 +153,8 @@ class ProfileView extends StatelessWidget with ViewLoggy {
                                         enabled: true,
                                       ),
                                       const SizedBox(
-                                          height: ProfileViewStyles.spacing),
+                                        height: ProfileViewStyles.spacing,
+                                      ),
                                       TextField(
                                         controller: controller.emailController,
                                         decoration: InputDecoration(

@@ -1,5 +1,7 @@
 import 'package:ecoparking_management/config/app_config.dart';
 import 'package:ecoparking_management/data/models/employee_nested_info.dart';
+import 'package:ecoparking_management/domain/state/employee/create_new_employee_state.dart';
+import 'package:ecoparking_management/domain/state/employee/delete_employee_state.dart';
 import 'package:ecoparking_management/widgets/time_imput_row/time_input_row.dart';
 import 'package:flutter/material.dart';
 
@@ -69,6 +71,53 @@ class DialogUtils {
         onStartShiftSelected: onStartShiftSelected,
         onEndShiftSelected: onEndShiftSelected,
       ),
+    );
+  }
+
+  static Future<ConfirmAction?> showCreateEmployeeDialog({
+    required BuildContext context,
+    required TextEditingController nameController,
+    required TextEditingController emailController,
+    required TextEditingController passwordController,
+    required void Function(TimeOfDay) onStartShiftSelected,
+    required void Function(TimeOfDay) onEndShiftSelected,
+    required ValueNotifier<CreateNewEmployeeState> notifier,
+    required void Function() onCreateEmployee,
+  }) async {
+    return show<ConfirmAction>(
+      context: context,
+      builder: _buildCreateEmployeeDialog(
+        nameController: nameController,
+        emailController: emailController,
+        passwordController: passwordController,
+        onStartShiftSelected: onStartShiftSelected,
+        onEndShiftSelected: onEndShiftSelected,
+        notifier: notifier,
+        onCreateEmployee: onCreateEmployee,
+      ),
+    );
+  }
+
+  static Future<ConfirmAction?> showDeleteEmployeeDialog({
+    required BuildContext context,
+    required void Function() onDeleteEmployee,
+    required ValueNotifier<DeleteEmployeeState> notifier,
+  }) async {
+    return show<ConfirmAction>(
+      context: context,
+      builder: _buildDeleteEmployeeDialog(
+        onDeleteEmployee: onDeleteEmployee,
+        notifier: notifier,
+      ),
+    );
+  }
+
+  static Future<ConfirmAction?> showNotSelectedEmployeeDialog({
+    required BuildContext context,
+  }) async {
+    return show<ConfirmAction>(
+      context: context,
+      builder: _buildNotSelectedEmployeeDialog,
     );
   }
 
@@ -331,7 +380,7 @@ class DialogUtils {
           title: Text(
             'Account Not Allowed',
             style: Theme.of(context).textTheme.displaySmall!.copyWith(
-                  color: Theme.of(context).colorScheme.error,
+                  color: Theme.of(context).colorScheme.inversePrimary,
                 ),
           ),
           content: SingleChildScrollView(
@@ -456,6 +505,839 @@ class DialogUtils {
                 color: AppConfig.negativeTextColor,
               ),
             ),
+            TextButton.icon(
+              onPressed: () => Navigator.of(context).pop(ConfirmAction.ok),
+              style: ButtonStyle(
+                backgroundColor: WidgetStatePropertyAll<Color>(
+                  Theme.of(context).colorScheme.secondary,
+                ),
+                shape: const WidgetStatePropertyAll<OutlinedBorder>(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(8.0),
+                    ),
+                  ),
+                ),
+              ),
+              label: Text(
+                'OK',
+                style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                      color: Theme.of(context).colorScheme.onSecondary,
+                    ),
+              ),
+              icon: Icon(
+                Icons.check,
+                color: Theme.of(context).colorScheme.onSecondary,
+              ),
+            ),
+          ],
+        );
+      };
+
+  static WidgetBuilder _buildCreateEmployeeDialog({
+    required TextEditingController nameController,
+    required TextEditingController emailController,
+    required TextEditingController passwordController,
+    required void Function(TimeOfDay) onStartShiftSelected,
+    required void Function(TimeOfDay) onEndShiftSelected,
+    required ValueNotifier<CreateNewEmployeeState> notifier,
+    required void Function() onCreateEmployee,
+  }) =>
+      (BuildContext context) {
+        return ValueListenableBuilder(
+          valueListenable: notifier,
+          builder: (context, state, child) {
+            if (state is CreateNewEmployeeInitial) {
+              final ValueNotifier<bool> isObscurePassword =
+                  ValueNotifier<bool>(true);
+
+              return AlertDialog(
+                title: Text(
+                  'Create Employee',
+                  style: Theme.of(context).textTheme.displaySmall!.copyWith(
+                        color: Theme.of(context).colorScheme.inversePrimary,
+                      ),
+                ),
+                content: SingleChildScrollView(
+                  physics: const ClampingScrollPhysics(),
+                  child: Column(
+                    children: <Widget>[
+                      TextField(
+                        controller: nameController,
+                        decoration: InputDecoration(
+                          labelText: 'Name',
+                          hintText: 'Enter name',
+                          labelStyle: Theme.of(context).textTheme.displaySmall,
+                          hintStyle: Theme.of(context).textTheme.headlineSmall,
+                        ),
+                        enabled: true,
+                      ),
+                      const SizedBox(height: 8.0),
+                      TextField(
+                        controller: emailController,
+                        decoration: InputDecoration(
+                          labelText: 'Email',
+                          hintText: 'Enter email',
+                          labelStyle: Theme.of(context).textTheme.displaySmall,
+                          hintStyle: Theme.of(context).textTheme.headlineSmall,
+                        ),
+                        enabled: true,
+                      ),
+                      const SizedBox(height: 8.0),
+                      ValueListenableBuilder(
+                        valueListenable: isObscurePassword,
+                        builder: (context, isObscure, child) {
+                          return TextField(
+                            controller: passwordController,
+                            obscureText: isObscure,
+                            decoration: InputDecoration(
+                              labelText: 'Password',
+                              hintText: 'Enter password',
+                              labelStyle:
+                                  Theme.of(context).textTheme.displaySmall,
+                              hintStyle:
+                                  Theme.of(context).textTheme.headlineSmall,
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  isObscure
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                ),
+                                onPressed: () {
+                                  isObscurePassword.value = !isObscure;
+                                },
+                              ),
+                            ),
+                            enabled: true,
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 8.0),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Text(
+                            'Working start time: ',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium!
+                                .copyWith(
+                                  color:
+                                      Theme.of(context).colorScheme.onSurface,
+                                ),
+                          ),
+                          const SizedBox(width: 24.0),
+                          TimeInputRow(
+                            onSelectTime: onStartShiftSelected,
+                          )
+                        ],
+                      ),
+                      const SizedBox(height: 8.0),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Text(
+                            'Working end time: ',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium!
+                                .copyWith(
+                                  color:
+                                      Theme.of(context).colorScheme.onSurface,
+                                ),
+                          ),
+                          const SizedBox(width: 24.0),
+                          TimeInputRow(
+                            onSelectTime: onEndShiftSelected,
+                          )
+                        ],
+                      ),
+                      const SizedBox(height: 8.0),
+                    ],
+                  ),
+                ),
+                actions: <Widget>[
+                  TextButton.icon(
+                    onPressed: () =>
+                        Navigator.of(context).pop(ConfirmAction.cancel),
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStatePropertyAll<Color>(
+                        Theme.of(context).colorScheme.outline,
+                      ),
+                      shape: const WidgetStatePropertyAll<OutlinedBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(8.0),
+                          ),
+                        ),
+                      ),
+                    ),
+                    label: Text(
+                      'Cancel',
+                      style:
+                          Theme.of(context).textTheme.headlineMedium!.copyWith(
+                                color: AppConfig.negativeTextColor,
+                              ),
+                    ),
+                    icon: const Icon(
+                      Icons.cancel,
+                      color: AppConfig.negativeTextColor,
+                    ),
+                  ),
+                  TextButton.icon(
+                    onPressed: onCreateEmployee,
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStatePropertyAll<Color>(
+                        Theme.of(context).colorScheme.secondary,
+                      ),
+                      shape: const WidgetStatePropertyAll<OutlinedBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(8.0),
+                          ),
+                        ),
+                      ),
+                    ),
+                    label: Text(
+                      'OK',
+                      style: Theme.of(context)
+                          .textTheme
+                          .headlineMedium!
+                          .copyWith(
+                            color: Theme.of(context).colorScheme.onSecondary,
+                          ),
+                    ),
+                    icon: Icon(
+                      Icons.check,
+                      color: Theme.of(context).colorScheme.onSecondary,
+                    ),
+                  ),
+                ],
+              );
+            }
+
+            if (state is CreateNewEmployeeLoading) {
+              return AlertDialog(
+                title: Text(
+                  'Creating Employee',
+                  style: Theme.of(context).textTheme.displaySmall!.copyWith(
+                        color: Theme.of(context).colorScheme.inversePrimary,
+                      ),
+                ),
+                content: const SizedBox(
+                  height: 48.0,
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
+                surfaceTintColor: AppConfig.baseBackgroundColor,
+              );
+            }
+
+            if (state is CreateNewEmployeeAuthFailure ||
+                state is CreateNewEmployeeEmpty ||
+                state is CreateNewEmployeeFailure) {
+              return AlertDialog(
+                title: Text(
+                  'Create Employee Error',
+                  style: Theme.of(context).textTheme.displaySmall!.copyWith(
+                        color: Theme.of(context).colorScheme.error,
+                      ),
+                ),
+                content: Text(
+                  'An error occurred while trying to create employee. Please try again.',
+                  style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                        fontWeight: FontWeight.normal,
+                        color: Theme.of(context).colorScheme.inversePrimary,
+                      ),
+                ),
+                surfaceTintColor: AppConfig.baseBackgroundColor,
+                actions: <Widget>[
+                  TextButton.icon(
+                    onPressed: () =>
+                        Navigator.of(context).pop(ConfirmAction.cancel),
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStatePropertyAll<Color>(
+                        Theme.of(context).colorScheme.outline,
+                      ),
+                      shape: const WidgetStatePropertyAll<OutlinedBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(8.0),
+                          ),
+                        ),
+                      ),
+                    ),
+                    label: Text(
+                      'Cancel',
+                      style:
+                          Theme.of(context).textTheme.headlineMedium!.copyWith(
+                                color: AppConfig.negativeTextColor,
+                              ),
+                    ),
+                    icon: const Icon(
+                      Icons.cancel,
+                      color: AppConfig.negativeTextColor,
+                    ),
+                  ),
+                  TextButton.icon(
+                    onPressed: () =>
+                        Navigator.of(context).pop(ConfirmAction.ok),
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStatePropertyAll<Color>(
+                        Theme.of(context).colorScheme.secondary,
+                      ),
+                      shape: const WidgetStatePropertyAll<OutlinedBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(8.0),
+                          ),
+                        ),
+                      ),
+                    ),
+                    label: Text(
+                      'OK',
+                      style: Theme.of(context)
+                          .textTheme
+                          .headlineMedium!
+                          .copyWith(
+                            color: Theme.of(context).colorScheme.onSecondary,
+                          ),
+                    ),
+                    icon: Icon(
+                      Icons.check,
+                      color: Theme.of(context).colorScheme.onSecondary,
+                    ),
+                  ),
+                ],
+              );
+            }
+
+            if (state is CreateNewEmployeeSuccess) {
+              return AlertDialog(
+                title: Text(
+                  'Create Employee Success',
+                  style: Theme.of(context).textTheme.displaySmall!.copyWith(
+                        color: Theme.of(context).colorScheme.onSecondary,
+                      ),
+                ),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.check_circle,
+                      color: Theme.of(context).colorScheme.onSecondary,
+                      size: 48.0,
+                    ),
+                    Text(
+                      'Employee has been created successfully.',
+                      style: Theme.of(context)
+                          .textTheme
+                          .headlineMedium!
+                          .copyWith(
+                            fontWeight: FontWeight.normal,
+                            color: Theme.of(context).colorScheme.inversePrimary,
+                          ),
+                    ),
+                  ],
+                ),
+                surfaceTintColor: AppConfig.baseBackgroundColor,
+                actions: <Widget>[
+                  TextButton.icon(
+                    onPressed: () =>
+                        Navigator.of(context).pop(ConfirmAction.cancel),
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStatePropertyAll<Color>(
+                        Theme.of(context).colorScheme.outline,
+                      ),
+                      shape: const WidgetStatePropertyAll<OutlinedBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(8.0),
+                          ),
+                        ),
+                      ),
+                    ),
+                    label: Text(
+                      'Cancel',
+                      style:
+                          Theme.of(context).textTheme.headlineMedium!.copyWith(
+                                color: AppConfig.negativeTextColor,
+                              ),
+                    ),
+                    icon: const Icon(
+                      Icons.cancel,
+                      color: AppConfig.negativeTextColor,
+                    ),
+                  ),
+                  TextButton.icon(
+                    onPressed: () =>
+                        Navigator.of(context).pop(ConfirmAction.ok),
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStatePropertyAll<Color>(
+                        Theme.of(context).colorScheme.secondary,
+                      ),
+                      shape: const WidgetStatePropertyAll<OutlinedBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(8.0),
+                          ),
+                        ),
+                      ),
+                    ),
+                    label: Text(
+                      'OK',
+                      style: Theme.of(context)
+                          .textTheme
+                          .headlineMedium!
+                          .copyWith(
+                            color: Theme.of(context).colorScheme.onSecondary,
+                          ),
+                    ),
+                    icon: Icon(
+                      Icons.check,
+                      color: Theme.of(context).colorScheme.onSecondary,
+                    ),
+                  ),
+                ],
+              );
+            }
+
+            return child!;
+          },
+          child: AlertDialog(
+            title: Text(
+              'Create Employee Error',
+              style: Theme.of(context).textTheme.displaySmall!.copyWith(
+                    color: Theme.of(context).colorScheme.error,
+                  ),
+            ),
+            content: Text(
+              'An error occurred while trying to create employee. Please try again.',
+              style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                    fontWeight: FontWeight.normal,
+                    color: Theme.of(context).colorScheme.inversePrimary,
+                  ),
+            ),
+            surfaceTintColor: AppConfig.baseBackgroundColor,
+            actions: <Widget>[
+              TextButton.icon(
+                onPressed: () =>
+                    Navigator.of(context).pop(ConfirmAction.cancel),
+                style: ButtonStyle(
+                  backgroundColor: WidgetStatePropertyAll<Color>(
+                    Theme.of(context).colorScheme.outline,
+                  ),
+                  shape: const WidgetStatePropertyAll<OutlinedBorder>(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(8.0),
+                      ),
+                    ),
+                  ),
+                ),
+                label: Text(
+                  'Cancel',
+                  style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                        color: AppConfig.negativeTextColor,
+                      ),
+                ),
+                icon: const Icon(
+                  Icons.cancel,
+                  color: AppConfig.negativeTextColor,
+                ),
+              ),
+              TextButton.icon(
+                onPressed: () => Navigator.of(context).pop(ConfirmAction.ok),
+                style: ButtonStyle(
+                  backgroundColor: WidgetStatePropertyAll<Color>(
+                    Theme.of(context).colorScheme.secondary,
+                  ),
+                  shape: const WidgetStatePropertyAll<OutlinedBorder>(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(8.0),
+                      ),
+                    ),
+                  ),
+                ),
+                label: Text(
+                  'OK',
+                  style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                        color: Theme.of(context).colorScheme.onSecondary,
+                      ),
+                ),
+                icon: Icon(
+                  Icons.check,
+                  color: Theme.of(context).colorScheme.onSecondary,
+                ),
+              ),
+            ],
+          ),
+        );
+      };
+
+  static WidgetBuilder _buildDeleteEmployeeDialog({
+    required void Function() onDeleteEmployee,
+    required ValueNotifier<DeleteEmployeeState> notifier,
+  }) =>
+      (BuildContext context) {
+        return ValueListenableBuilder(
+          valueListenable: notifier,
+          builder: (context, state, child) {
+            if (state is DeleteEmployeeInitial) {
+              return AlertDialog(
+                title: Text(
+                  'Confirm Delete Employee',
+                  style: Theme.of(context).textTheme.displaySmall!.copyWith(
+                        color: Theme.of(context).colorScheme.error,
+                      ),
+                ),
+                content: Text(
+                  'Are you sure you want to delete this employee?',
+                  style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                        fontWeight: FontWeight.normal,
+                        color: Theme.of(context).colorScheme.inversePrimary,
+                      ),
+                ),
+                surfaceTintColor: AppConfig.baseBackgroundColor,
+                actions: <Widget>[
+                  TextButton.icon(
+                    onPressed: () =>
+                        Navigator.of(context).pop(ConfirmAction.cancel),
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStatePropertyAll<Color>(
+                        Theme.of(context).colorScheme.outline,
+                      ),
+                      shape: const WidgetStatePropertyAll<OutlinedBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(8.0),
+                          ),
+                        ),
+                      ),
+                    ),
+                    label: Text(
+                      'Cancel',
+                      style:
+                          Theme.of(context).textTheme.headlineMedium!.copyWith(
+                                color: AppConfig.negativeTextColor,
+                              ),
+                    ),
+                    icon: const Icon(
+                      Icons.cancel,
+                      color: AppConfig.negativeTextColor,
+                    ),
+                  ),
+                  TextButton.icon(
+                    onPressed: onDeleteEmployee,
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStatePropertyAll<Color>(
+                        Theme.of(context).colorScheme.secondary,
+                      ),
+                      shape: const WidgetStatePropertyAll<OutlinedBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(8.0),
+                          ),
+                        ),
+                      ),
+                    ),
+                    label: Text(
+                      'OK',
+                      style: Theme.of(context)
+                          .textTheme
+                          .headlineMedium!
+                          .copyWith(
+                            color: Theme.of(context).colorScheme.onSecondary,
+                          ),
+                    ),
+                    icon: Icon(
+                      Icons.check,
+                      color: Theme.of(context).colorScheme.onSecondary,
+                    ),
+                  ),
+                ],
+              );
+            }
+
+            if (state is DeleteEmployeeLoading) {
+              return AlertDialog(
+                title: Text(
+                  'Deleting Employee',
+                  style: Theme.of(context).textTheme.displaySmall!.copyWith(
+                        color: Theme.of(context).colorScheme.inversePrimary,
+                      ),
+                ),
+                content: const SizedBox(
+                  height: 48.0,
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
+                surfaceTintColor: AppConfig.baseBackgroundColor,
+              );
+            }
+
+            if (state is DeleteEmployeeFailure) {
+              return AlertDialog(
+                title: Text(
+                  'Delete Employee Error',
+                  style: Theme.of(context).textTheme.displaySmall!.copyWith(
+                        color: Theme.of(context).colorScheme.error,
+                      ),
+                ),
+                content: Text(
+                  'An error occurred while trying to delete employee. Please try again.',
+                  style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                        fontWeight: FontWeight.normal,
+                        color: Theme.of(context).colorScheme.inversePrimary,
+                      ),
+                ),
+                surfaceTintColor: AppConfig.baseBackgroundColor,
+                actions: <Widget>[
+                  TextButton.icon(
+                    onPressed: () =>
+                        Navigator.of(context).pop(ConfirmAction.cancel),
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStatePropertyAll<Color>(
+                        Theme.of(context).colorScheme.outline,
+                      ),
+                      shape: const WidgetStatePropertyAll<OutlinedBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(8.0),
+                          ),
+                        ),
+                      ),
+                    ),
+                    label: Text(
+                      'Cancel',
+                      style:
+                          Theme.of(context).textTheme.headlineMedium!.copyWith(
+                                color: AppConfig.negativeTextColor,
+                              ),
+                    ),
+                    icon: const Icon(
+                      Icons.cancel,
+                      color: AppConfig.negativeTextColor,
+                    ),
+                  ),
+                  TextButton.icon(
+                    onPressed: () =>
+                        Navigator.of(context).pop(ConfirmAction.ok),
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStatePropertyAll<Color>(
+                        Theme.of(context).colorScheme.secondary,
+                      ),
+                      shape: const WidgetStatePropertyAll<OutlinedBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(8.0),
+                          ),
+                        ),
+                      ),
+                    ),
+                    label: Text(
+                      'OK',
+                      style: Theme.of(context)
+                          .textTheme
+                          .headlineMedium!
+                          .copyWith(
+                            color: Theme.of(context).colorScheme.onSecondary,
+                          ),
+                    ),
+                    icon: Icon(
+                      Icons.check,
+                      color: Theme.of(context).colorScheme.onSecondary,
+                    ),
+                  ),
+                ],
+              );
+            }
+
+            if (state is DeleteEmployeeSuccess) {
+              return AlertDialog(
+                title: Text(
+                  'Delete Employee Success',
+                  style: Theme.of(context).textTheme.displaySmall!.copyWith(
+                        color: Theme.of(context).colorScheme.onSecondary,
+                      ),
+                ),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.check_circle,
+                      color: Theme.of(context).colorScheme.onSecondary,
+                      size: 48.0,
+                    ),
+                    Text(
+                      'Employee has been deleted successfully.',
+                      style: Theme.of(context)
+                          .textTheme
+                          .headlineMedium!
+                          .copyWith(
+                            fontWeight: FontWeight.normal,
+                            color: Theme.of(context).colorScheme.inversePrimary,
+                          ),
+                    ),
+                  ],
+                ),
+                surfaceTintColor: AppConfig.baseBackgroundColor,
+                actions: <Widget>[
+                  TextButton.icon(
+                    onPressed: () =>
+                        Navigator.of(context).pop(ConfirmAction.cancel),
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStatePropertyAll<Color>(
+                        Theme.of(context).colorScheme.outline,
+                      ),
+                      shape: const WidgetStatePropertyAll<OutlinedBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(8.0),
+                          ),
+                        ),
+                      ),
+                    ),
+                    label: Text(
+                      'Cancel',
+                      style:
+                          Theme.of(context).textTheme.headlineMedium!.copyWith(
+                                color: AppConfig.negativeTextColor,
+                              ),
+                    ),
+                    icon: const Icon(
+                      Icons.cancel,
+                      color: AppConfig.negativeTextColor,
+                    ),
+                  ),
+                  TextButton.icon(
+                    onPressed: () =>
+                        Navigator.of(context).pop(ConfirmAction.ok),
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStatePropertyAll<Color>(
+                        Theme.of(context).colorScheme.secondary,
+                      ),
+                      shape: const WidgetStatePropertyAll<OutlinedBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(8.0),
+                          ),
+                        ),
+                      ),
+                    ),
+                    label: Text(
+                      'OK',
+                      style: Theme.of(context)
+                          .textTheme
+                          .headlineMedium!
+                          .copyWith(
+                            color: Theme.of(context).colorScheme.onSecondary,
+                          ),
+                    ),
+                    icon: Icon(
+                      Icons.check,
+                      color: Theme.of(context).colorScheme.onSecondary,
+                    ),
+                  ),
+                ],
+              );
+            }
+
+            return child!;
+          },
+          child: AlertDialog(
+            title: Text(
+              'Delete Employee Error',
+              style: Theme.of(context).textTheme.displaySmall!.copyWith(
+                    color: Theme.of(context).colorScheme.error,
+                  ),
+            ),
+            content: Text(
+              'An error occurred while trying to delete employee. Please try again.',
+              style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                    fontWeight: FontWeight.normal,
+                    color: Theme.of(context).colorScheme.inversePrimary,
+                  ),
+            ),
+            surfaceTintColor: AppConfig.baseBackgroundColor,
+            actions: <Widget>[
+              TextButton.icon(
+                onPressed: () =>
+                    Navigator.of(context).pop(ConfirmAction.cancel),
+                style: ButtonStyle(
+                  backgroundColor: WidgetStatePropertyAll<Color>(
+                    Theme.of(context).colorScheme.outline,
+                  ),
+                  shape: const WidgetStatePropertyAll<OutlinedBorder>(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(8.0),
+                      ),
+                    ),
+                  ),
+                ),
+                label: Text(
+                  'Cancel',
+                  style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                        color: AppConfig.negativeTextColor,
+                      ),
+                ),
+                icon: const Icon(
+                  Icons.cancel,
+                  color: AppConfig.negativeTextColor,
+                ),
+              ),
+              TextButton.icon(
+                onPressed: () => Navigator.of(context).pop(ConfirmAction.ok),
+                style: ButtonStyle(
+                  backgroundColor: WidgetStatePropertyAll<Color>(
+                    Theme.of(context).colorScheme.secondary,
+                  ),
+                  shape: const WidgetStatePropertyAll<OutlinedBorder>(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(8.0),
+                      ),
+                    ),
+                  ),
+                ),
+                label: Text(
+                  'OK',
+                  style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                        color: Theme.of(context).colorScheme.onSecondary,
+                      ),
+                ),
+                icon: Icon(
+                  Icons.check,
+                  color: Theme.of(context).colorScheme.onSecondary,
+                ),
+              ),
+            ],
+          ),
+        );
+      };
+
+  static WidgetBuilder get _buildNotSelectedEmployeeDialog =>
+      (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            'Employee Not Selected',
+            style: Theme.of(context).textTheme.displaySmall!.copyWith(
+                  color: Theme.of(context).colorScheme.error,
+                ),
+          ),
+          content: Text(
+            'Please select an employee to proceed.',
+            style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                  fontWeight: FontWeight.normal,
+                  color: Theme.of(context).colorScheme.inversePrimary,
+                ),
+          ),
+          surfaceTintColor: AppConfig.baseBackgroundColor,
+          actions: <Widget>[
             TextButton.icon(
               onPressed: () => Navigator.of(context).pop(ConfirmAction.ok),
               style: ButtonStyle(
