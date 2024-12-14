@@ -11,10 +11,12 @@ import 'package:ecoparking_management/domain/state/app_state/success.dart';
 import 'package:ecoparking_management/domain/state/employee/create_new_employee_state.dart';
 import 'package:ecoparking_management/domain/state/employee/delete_employee_state.dart';
 import 'package:ecoparking_management/domain/state/employee/get_all_employee_state.dart';
+import 'package:ecoparking_management/domain/state/employee/save_employee_to_xlsx_state.dart';
 import 'package:ecoparking_management/domain/state/employee/update_employee_working_time_state.dart';
 import 'package:ecoparking_management/domain/usecase/employee/create_new_employee_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/employee/delete_employee_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/employee/get_all_employee_interactor.dart';
+import 'package:ecoparking_management/domain/usecase/employee/save_employee_to_xlsx_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/employee/update_employee_working_time_interactor.dart';
 import 'package:ecoparking_management/pages/employee_management/employee_management_view.dart';
 import 'package:ecoparking_management/pages/employee_management/widgets/selectable_employee.dart';
@@ -43,6 +45,8 @@ class EmployeeManagementController extends State<EmployeeManagement>
       getIt.get<CreateNewEmployeeInteractor>();
   final DeleteEmployeeInteractor _deleteEmployeeInteractor =
       getIt.get<DeleteEmployeeInteractor>();
+  final SaveEmployeeToXlsxInteractor _saveEmployeeToXlsxInteractor =
+      getIt.get<SaveEmployeeToXlsxInteractor>();
 
   final List<String> listEmployeesTableTitles = <String>[
     'Employee ID',
@@ -62,6 +66,8 @@ class EmployeeManagementController extends State<EmployeeManagement>
       ValueNotifier<CreateNewEmployeeState>(const CreateNewEmployeeInitial());
   final ValueNotifier<DeleteEmployeeState> deleteEmployeeState =
       ValueNotifier<DeleteEmployeeState>(const DeleteEmployeeInitial());
+  final ValueNotifier<SaveEmployeeToXlsxState> saveEmployeeToXlsxState =
+      ValueNotifier<SaveEmployeeToXlsxState>(const SaveEmployeeToXlsxInitial());
 
   final ValueNotifier<int> rowPerPage =
       ValueNotifier<int>(PaginatedDataTable.defaultRowsPerPage);
@@ -85,6 +91,7 @@ class EmployeeManagementController extends State<EmployeeManagement>
       _updateEmployeeWorkingTimeSubscription;
   StreamSubscription<Either<Failure, Success>>? _createNewEmployeeSubscription;
   StreamSubscription<Either<Failure, Success>>? _deleteEmployeeSubscription;
+  StreamSubscription<Either<Failure, Success>>? _saveEmployeeToXlsxSubscription;
 
   @override
   void initState() {
@@ -110,6 +117,7 @@ class EmployeeManagementController extends State<EmployeeManagement>
     updateEmployeeWorkingTimeState.dispose();
     createNewEmployeeState.dispose();
     deleteEmployeeState.dispose();
+    saveEmployeeToXlsxState.dispose();
   }
 
   void _cancelSubscriptions() {
@@ -121,6 +129,7 @@ class EmployeeManagementController extends State<EmployeeManagement>
     _updateEmployeeWorkingTimeSubscription = null;
     _createNewEmployeeSubscription = null;
     _deleteEmployeeSubscription = null;
+    _saveEmployeeToXlsxSubscription?.cancel();
   }
 
   void _disposeControllers() {
@@ -386,9 +395,62 @@ class EmployeeManagementController extends State<EmployeeManagement>
             );
   }
 
-  void onExportEmployeePressed() {
+  void onExportEmployeePressed() async {
     loggy.info('Export Employee Pressed');
-    //TODO: Export employee
+    final listTitles = [
+      ...listEmployeesTableTitles,
+      'Start Shift',
+      'End Shift',
+    ];
+
+    final selectedEmployees = listEmployees.value
+        .where((e) => e.isSelected)
+        .map((e) => e.employeeNestedInfo)
+        .toList();
+
+    if (selectedEmployees.isEmpty) {
+      final action = await DialogUtils.showNotSelectedEmployeeDialog(
+        context: context,
+      );
+
+      switch (action) {
+        case ConfirmAction.ok:
+        case ConfirmAction.cancel:
+        default:
+          return;
+      }
+    } else {
+      final action = await DialogUtils.showSaveEmployeeToXlsxDialog(
+        context: context,
+        notifier: saveEmployeeToXlsxState,
+        onSaveEmployeeToXlsx: () =>
+            _saveEmployee(listTitles, selectedEmployees),
+      );
+
+      switch (action) {
+        case ConfirmAction.ok:
+        case ConfirmAction.cancel:
+        default:
+          return;
+      }
+    }
+  }
+
+  void _saveEmployee(
+    List<String> listTitles,
+    List<EmployeeNestedInfo> employees,
+  ) {
+    _saveEmployeeToXlsxSubscription = _saveEmployeeToXlsxInteractor
+        .execute(
+          listTitles: listTitles,
+          employees: employees,
+        )
+        .listen(
+          (result) => result.fold(
+            _handleSaveEmployeeToXlsxFailure,
+            _handleSaveEmployeeToXlsxSuccess,
+          ),
+        );
   }
 
   void onSearchEmployee(String value) {
@@ -516,6 +578,25 @@ class EmployeeManagementController extends State<EmployeeManagement>
       _getAllEmployees();
     } else if (success is DeleteEmployeeLoading) {
       deleteEmployeeState.value = success;
+    }
+  }
+
+  void _handleSaveEmployeeToXlsxFailure(Failure failure) {
+    loggy.error('Save Employee To Xlsx Failure: $failure');
+    if (failure is SaveEmployeeToXlsxFailure) {
+      saveEmployeeToXlsxState.value = failure;
+    } else {
+      saveEmployeeToXlsxState.value =
+          SaveEmployeeToXlsxFailure(exception: failure);
+    }
+  }
+
+  void _handleSaveEmployeeToXlsxSuccess(Success success) {
+    loggy.info('Save Employee To Xlsx Success: $success');
+    if (success is SaveEmployeeToXlsxSuccess) {
+      saveEmployeeToXlsxState.value = success;
+    } else if (success is SaveEmployeeToXlsxLoading) {
+      saveEmployeeToXlsxState.value = success;
     }
   }
 
