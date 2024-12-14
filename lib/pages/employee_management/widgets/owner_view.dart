@@ -1,6 +1,7 @@
 import 'package:ecoparking_management/config/app_config.dart';
 import 'package:ecoparking_management/pages/employee_management/employee_management.dart';
 import 'package:ecoparking_management/pages/employee_management/employee_management_view_styles.dart';
+import 'package:ecoparking_management/pages/employee_management/widgets/selectable_employee.dart';
 import 'package:ecoparking_management/pages/live_overview/widgets/info_multi_columns.dart';
 import 'package:ecoparking_management/pages/live_overview/widgets/table_info.dart';
 import 'package:ecoparking_management/widgets/info_card_with_title.dart';
@@ -25,11 +26,17 @@ class OwnerView extends StatelessWidget {
             InfoMultiColumns(
               columns: <ColumnArguments>[
                 ColumnArguments(
-                  highlightedChild: Text(
-                    controller.totalEmployees.toString(),
-                    style: Theme.of(context).textTheme.displaySmall!.copyWith(
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
+                  highlightedChild: ValueListenableBuilder(
+                    valueListenable: controller.totalEmployees,
+                    builder: (context, total, child) {
+                      return Text(
+                        total.toString(),
+                        style:
+                            Theme.of(context).textTheme.displaySmall!.copyWith(
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                      );
+                    },
                   ),
                   secondaryChild: Text(
                     'Total Employees',
@@ -41,11 +48,17 @@ class OwnerView extends StatelessWidget {
                   ),
                 ),
                 ColumnArguments(
-                  highlightedChild: Text(
-                    controller.onDutyEmployees.toString(),
-                    style: Theme.of(context).textTheme.displaySmall!.copyWith(
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
+                  highlightedChild: ValueListenableBuilder(
+                    valueListenable: controller.onDutyEmployees,
+                    builder: (context, onDuty, child) {
+                      return Text(
+                        onDuty.toString(),
+                        style:
+                            Theme.of(context).textTheme.displaySmall!.copyWith(
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                      );
+                    },
                   ),
                   secondaryChild: Text(
                     'On Time Employees',
@@ -63,123 +76,143 @@ class OwnerView extends StatelessWidget {
             ),
             InfoCardWithTitle(
               title: 'Employee List',
-              child: TableInfo(
-                titles: controller.listEmployeesTableTitles,
-                data: controller.currentEmployeeRow(controller.listEmployees),
-                rowPerPage: controller
-                            .currentEmployeeRow(controller.listEmployees)
-                            .length >
-                        controller.rowPerPage.value
-                    ? controller.rowPerPage.value
-                    : controller
-                        .currentEmployeeRow(controller.listEmployees)
-                        .length,
-                onRowsPerPageChanged: controller.onRowsPerPageChanged,
-                header: Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: TextField(
-                        onChanged: controller.onSearchEmployee,
-                        decoration: InputDecoration(
-                          hintText: 'Search',
-                          hintStyle: Theme.of(context)
+              child: ValueListenableBuilder(
+                valueListenable: controller.listEmployees,
+                builder: (context, employees, child) {
+                  final List<DataRow> dataRows = _employeeRow(
+                    context: context,
+                    employees: employees,
+                    onEmployeeSelected: controller.onEmployeeSelected,
+                    onLongPress: controller.onEmployeeLongPressed,
+                  );
+
+                  return TableInfo(
+                    titles: controller.listEmployeesTableTitles,
+                    data: dataRows,
+                    rowPerPage: _getRowPerPage(
+                      dataRows,
+                      controller.rowPerPage.value,
+                    ),
+                    onRowsPerPageChanged: controller.onRowsPerPageChanged,
+                    header: Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: TextField(
+                            onChanged: controller.onSearchEmployee,
+                            decoration: InputDecoration(
+                              hintText: 'Search',
+                              hintStyle: Theme.of(context)
+                                  .textTheme
+                                  .headlineMedium!
+                                  .copyWith(
+                                    color:
+                                        Theme.of(context).colorScheme.onSurface,
+                                  ),
+                              prefixIcon: Icon(
+                                Icons.search,
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
+                              filled: true,
+                              fillColor: AppConfig.baseBackgroundColor,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8.0),
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    actions: <Widget>[
+                      TextButton.icon(
+                        onPressed: controller.onAddEmployeePressed,
+                        icon: Icon(
+                          Icons.add,
+                          color: Theme.of(context).colorScheme.onSecondary,
+                        ),
+                        label: Text(
+                          'Add',
+                          style: Theme.of(context)
                               .textTheme
                               .headlineMedium!
                               .copyWith(
-                                color: Theme.of(context).colorScheme.onSurface,
+                                color:
+                                    Theme.of(context).colorScheme.onSecondary,
                               ),
-                          prefixIcon: Icon(
-                            Icons.search,
-                            color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                        style: ButtonStyle(
+                          backgroundColor: WidgetStatePropertyAll<Color>(
+                            Theme.of(context).colorScheme.secondary,
                           ),
-                          filled: true,
-                          fillColor: AppConfig.baseBackgroundColor,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8.0),
-                            borderSide: BorderSide.none,
+                          shape: const WidgetStatePropertyAll<OutlinedBorder>(
+                            RoundedRectangleBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(8.0),
+                              ),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                actions: <Widget>[
-                  TextButton.icon(
-                    onPressed: controller.onAddEmployeePressed,
-                    icon: Icon(
-                      Icons.add,
-                      color: Theme.of(context).colorScheme.onSecondary,
-                    ),
-                    label: Text(
-                      'Add',
-                      style: Theme.of(context)
-                          .textTheme
-                          .headlineMedium!
-                          .copyWith(
-                            color: Theme.of(context).colorScheme.onSecondary,
-                          ),
-                    ),
-                    style: ButtonStyle(
-                      backgroundColor: WidgetStatePropertyAll<Color>(
-                        Theme.of(context).colorScheme.secondary,
-                      ),
-                      shape: WidgetStatePropertyAll<OutlinedBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.0),
+                      TextButton.icon(
+                        onPressed: controller.onExportEmployeePressed,
+                        icon: Icon(
+                          Icons.download_rounded,
+                          color: Theme.of(context).colorScheme.onTertiary,
                         ),
-                      ),
-                    ),
-                  ),
-                  TextButton.icon(
-                    onPressed: controller.onExportEmployeePressed,
-                    icon: Icon(
-                      Icons.download_rounded,
-                      color: Theme.of(context).colorScheme.onTertiary,
-                    ),
-                    label: Text(
-                      'Export',
-                      style:
-                          Theme.of(context).textTheme.headlineMedium!.copyWith(
+                        label: Text(
+                          'Export',
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineMedium!
+                              .copyWith(
                                 color: Theme.of(context).colorScheme.onTertiary,
                               ),
-                    ),
-                    style: ButtonStyle(
-                      backgroundColor: WidgetStatePropertyAll<Color>(
-                        Theme.of(context).colorScheme.tertiary,
-                      ),
-                      shape: WidgetStatePropertyAll<OutlinedBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        style: ButtonStyle(
+                          backgroundColor: WidgetStatePropertyAll<Color>(
+                            Theme.of(context).colorScheme.tertiary,
+                          ),
+                          shape: const WidgetStatePropertyAll<OutlinedBorder>(
+                            RoundedRectangleBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(8.0),
+                              ),
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-                  //TODO: consier show remove button only when there is selected employee or always show and check if there is selected employee
-                  TextButton.icon(
-                    onPressed: controller.onRemoveEmployeePressed,
-                    icon: const Icon(
-                      Icons.remove,
-                      color: Colors.white,
-                    ),
-                    label: Text(
-                      'Remove',
-                      style:
-                          Theme.of(context).textTheme.headlineMedium!.copyWith(
+                      //TODO: consier show remove button only when there is selected employee or always show and check if there is selected employee
+                      TextButton.icon(
+                        onPressed: controller.onRemoveEmployeePressed,
+                        icon: const Icon(
+                          Icons.remove,
+                          color: Colors.white,
+                        ),
+                        label: Text(
+                          'Remove',
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineMedium!
+                              .copyWith(
                                 color: Colors.white,
                               ),
-                    ),
-                    style: ButtonStyle(
-                      backgroundColor: WidgetStatePropertyAll<Color>(
-                        Theme.of(context).colorScheme.error,
-                      ),
-                      shape: WidgetStatePropertyAll<OutlinedBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        style: ButtonStyle(
+                          backgroundColor: WidgetStatePropertyAll<Color>(
+                            Theme.of(context).colorScheme.error,
+                          ),
+                          shape: const WidgetStatePropertyAll<OutlinedBorder>(
+                            RoundedRectangleBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(8.0),
+                              ),
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-                ],
+                    ],
+                  );
+                },
               ),
             ),
           ],
@@ -187,4 +220,68 @@ class OwnerView extends StatelessWidget {
       ),
     );
   }
+}
+
+int _getRowPerPage(List<DataRow> dataRow, int rowPerPage) {
+  if (dataRow.length > rowPerPage) {
+    return rowPerPage;
+  }
+  return dataRow.length;
+}
+
+List<DataRow> _employeeRow({
+  required BuildContext context,
+  required List<SelectableEmployee> employees,
+  required void Function({
+    required bool? selected,
+    required SelectableEmployee employee,
+  }) onEmployeeSelected,
+  required void Function(SelectableEmployee employee) onLongPress,
+}) {
+  return employees
+      .map(
+        (e) => DataRow(
+          selected: e.isSelected,
+          onLongPress: () => onLongPress(e),
+          onSelectChanged: (selected) => onEmployeeSelected(
+            selected: selected,
+            employee: e,
+          ),
+          cells: <DataCell>[
+            DataCell(
+              Text(
+                e.employeeNestedInfo.id,
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+              ),
+            ),
+            DataCell(
+              Text(
+                e.employeeNestedInfo.profile.name,
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+              ),
+            ),
+            DataCell(
+              Text(
+                e.employeeNestedInfo.profile.email,
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+              ),
+            ),
+            DataCell(
+              Text(
+                e.employeeNestedInfo.profile.phone ?? '',
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+              ),
+            ),
+          ],
+        ),
+      )
+      .toList();
 }
