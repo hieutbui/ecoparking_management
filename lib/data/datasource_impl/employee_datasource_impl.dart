@@ -156,4 +156,28 @@ class EmployeeDataSourceImpl extends EmployeeDataSource {
       };
     }
   }
+
+  @override
+  Future<List<Map<String, dynamic>?>?> searchEmployee({
+    required String parkingId,
+    required String searchKey,
+  }) async {
+    const table = ParkingEmployeeTable();
+    const profileTable = ProfileTable();
+
+    final selectQueryString =
+        '*, profile(${profileTable.fullName}, ${profileTable.email}, ${profileTable.phone})';
+    final parsingSearchKey = '%${searchKey.trim()}%';
+    final orQueryString =
+        '${profileTable.email}.ilike.$parsingSearchKey,${profileTable.phone}.ilike.$parsingSearchKey,${profileTable.fullName}.ilike.$parsingSearchKey';
+
+    return Supabase.instance.client
+        .from(table.tableName)
+        .select(selectQueryString)
+        .eq(table.parkingId, parkingId)
+        .or(
+          orQueryString,
+          referencedTable: profileTable.tableName,
+        );
+  }
 }

@@ -89,6 +89,7 @@ class OwnerView extends StatelessWidget {
                   return TableInfo(
                     titles: controller.listEmployeesTableTitles,
                     data: dataRows,
+                    emptyData: _emptyEmployeeRow(context: context),
                     rowPerPage: _getRowPerPage(
                       dataRows,
                       controller.rowPerPage.value,
@@ -181,7 +182,6 @@ class OwnerView extends StatelessWidget {
                           ),
                         ),
                       ),
-                      //TODO: consier show remove button only when there is selected employee or always show and check if there is selected employee
                       TextButton.icon(
                         onPressed: controller.onRemoveEmployeePressed,
                         icon: const Icon(
@@ -284,4 +284,47 @@ List<DataRow> _employeeRow({
         ),
       )
       .toList();
+}
+
+List<DataRow> _emptyEmployeeRow({
+  required BuildContext context,
+}) {
+  return [
+    DataRow(
+      cells: <DataCell>[
+        DataCell(
+          Text(
+            'No data',
+            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+          ),
+        ),
+        DataCell(
+          Text(
+            'No data',
+            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+          ),
+        ),
+        DataCell(
+          Text(
+            'No data',
+            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+          ),
+        ),
+        DataCell(
+          Text(
+            'No data',
+            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+          ),
+        ),
+      ],
+    )
+  ];
 }
