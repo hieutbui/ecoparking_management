@@ -1,3 +1,4 @@
+import 'package:ecoparking_management/data/models/employee_nested_info.dart';
 import 'package:ecoparking_management/data/models/parking_employee.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -24,5 +25,10 @@ abstract class EmployeeDataSource {
 
   Future<List<Map<String, dynamic>>> deleteEmployee({
     required List<String> employeeId,
+  });
+
+  Future<Map<String, dynamic>> saveEmployeeToXlsx({
+    required List<String> listTitles,
+    required List<EmployeeNestedInfo> employees,
   });
 }
