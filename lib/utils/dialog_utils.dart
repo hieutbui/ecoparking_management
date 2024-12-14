@@ -2,6 +2,7 @@ import 'package:ecoparking_management/config/app_config.dart';
 import 'package:ecoparking_management/data/models/employee_nested_info.dart';
 import 'package:ecoparking_management/domain/state/employee/create_new_employee_state.dart';
 import 'package:ecoparking_management/domain/state/employee/delete_employee_state.dart';
+import 'package:ecoparking_management/domain/state/employee/save_employee_to_xlsx_state.dart';
 import 'package:ecoparking_management/widgets/time_imput_row/time_input_row.dart';
 import 'package:flutter/material.dart';
 
@@ -118,6 +119,21 @@ class DialogUtils {
     return show<ConfirmAction>(
       context: context,
       builder: _buildNotSelectedEmployeeDialog,
+    );
+  }
+
+  static Future<ConfirmAction?> showSaveEmployeeToXlsxDialog({
+    required BuildContext context,
+    required ValueNotifier<SaveEmployeeToXlsxState> notifier,
+    required void Function() onSaveEmployeeToXlsx,
+  }) async {
+    onSaveEmployeeToXlsx();
+
+    return show<ConfirmAction>(
+      context: context,
+      builder: _buildSaveEmployeeToXlsxDialog(
+        notifier: notifier,
+      ),
     );
   }
 
@@ -1364,6 +1380,196 @@ class DialogUtils {
               ),
             ),
           ],
+        );
+      };
+
+  static WidgetBuilder _buildSaveEmployeeToXlsxDialog({
+    required ValueNotifier<SaveEmployeeToXlsxState> notifier,
+  }) =>
+      (BuildContext context) {
+        return ValueListenableBuilder(
+          valueListenable: notifier,
+          builder: (context, state, child) {
+            if (state is SaveEmployeeToXlsxInitial ||
+                state is SaveEmployeeToXlsxLoading) {
+              return AlertDialog(
+                title: Text(
+                  'Saving Employee',
+                  style: Theme.of(context).textTheme.displaySmall!.copyWith(
+                        color: Theme.of(context).colorScheme.inversePrimary,
+                      ),
+                ),
+                content: const SizedBox(
+                  height: 48.0,
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
+                surfaceTintColor: AppConfig.baseBackgroundColor,
+              );
+            }
+
+            if (state is SaveEmployeeToXlsxSuccess) {
+              return AlertDialog(
+                title: Text(
+                  'Save Employee Success',
+                  style: Theme.of(context).textTheme.displaySmall!.copyWith(
+                        color: Theme.of(context).colorScheme.onSecondary,
+                      ),
+                ),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.check_circle,
+                      color: Theme.of(context).colorScheme.onSecondary,
+                      size: 48.0,
+                    ),
+                    Text(
+                      'Employee has been saved successfully.',
+                      style: Theme.of(context)
+                          .textTheme
+                          .headlineMedium!
+                          .copyWith(
+                            fontWeight: FontWeight.normal,
+                            color: Theme.of(context).colorScheme.inversePrimary,
+                          ),
+                    ),
+                  ],
+                ),
+                surfaceTintColor: AppConfig.baseBackgroundColor,
+                actions: <Widget>[
+                  TextButton.icon(
+                    onPressed: () =>
+                        Navigator.of(context).pop(ConfirmAction.cancel),
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStatePropertyAll<Color>(
+                        Theme.of(context).colorScheme.outline,
+                      ),
+                      shape: const WidgetStatePropertyAll<OutlinedBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(8.0),
+                          ),
+                        ),
+                      ),
+                    ),
+                    label: Text(
+                      'Cancel',
+                      style:
+                          Theme.of(context).textTheme.headlineMedium!.copyWith(
+                                color: AppConfig.negativeTextColor,
+                              ),
+                    ),
+                    icon: const Icon(
+                      Icons.cancel,
+                      color: AppConfig.negativeTextColor,
+                    ),
+                  ),
+                  TextButton.icon(
+                    onPressed: () =>
+                        Navigator.of(context).pop(ConfirmAction.ok),
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStatePropertyAll<Color>(
+                        Theme.of(context).colorScheme.secondary,
+                      ),
+                      shape: const WidgetStatePropertyAll<OutlinedBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(8.0),
+                          ),
+                        ),
+                      ),
+                    ),
+                    label: Text(
+                      'OK',
+                      style: Theme.of(context)
+                          .textTheme
+                          .headlineMedium!
+                          .copyWith(
+                            color: Theme.of(context).colorScheme.onSecondary,
+                          ),
+                    ),
+                    icon: Icon(
+                      Icons.check,
+                      color: Theme.of(context).colorScheme.onSecondary,
+                    ),
+                  ),
+                ],
+              );
+            }
+
+            return child!;
+          },
+          child: AlertDialog(
+            title: Text(
+              'Save Employee Error',
+              style: Theme.of(context).textTheme.displaySmall!.copyWith(
+                    color: Theme.of(context).colorScheme.error,
+                  ),
+            ),
+            content: Text(
+              'An error occurred while trying to save employee. Please try again.',
+              style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                    fontWeight: FontWeight.normal,
+                    color: Theme.of(context).colorScheme.inversePrimary,
+                  ),
+            ),
+            surfaceTintColor: AppConfig.baseBackgroundColor,
+            actions: <Widget>[
+              TextButton.icon(
+                onPressed: () =>
+                    Navigator.of(context).pop(ConfirmAction.cancel),
+                style: ButtonStyle(
+                  backgroundColor: WidgetStatePropertyAll<Color>(
+                    Theme.of(context).colorScheme.outline,
+                  ),
+                  shape: const WidgetStatePropertyAll<OutlinedBorder>(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(8.0),
+                      ),
+                    ),
+                  ),
+                ),
+                label: Text(
+                  'Cancel',
+                  style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                        color: AppConfig.negativeTextColor,
+                      ),
+                ),
+                icon: const Icon(
+                  Icons.cancel,
+                  color: AppConfig.negativeTextColor,
+                ),
+              ),
+              TextButton.icon(
+                onPressed: () => Navigator.of(context).pop(ConfirmAction.ok),
+                style: ButtonStyle(
+                  backgroundColor: WidgetStatePropertyAll<Color>(
+                    Theme.of(context).colorScheme.secondary,
+                  ),
+                  shape: const WidgetStatePropertyAll<OutlinedBorder>(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(8.0),
+                      ),
+                    ),
+                  ),
+                ),
+                label: Text(
+                  'OK',
+                  style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                        color: Theme.of(context).colorScheme.onSecondary,
+                      ),
+                ),
+                icon: Icon(
+                  Icons.check,
+                  color: Theme.of(context).colorScheme.onSecondary,
+                ),
+              ),
+            ],
+          ),
         );
       };
 }

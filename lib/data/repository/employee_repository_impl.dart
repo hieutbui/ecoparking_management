@@ -1,4 +1,5 @@
 import 'package:ecoparking_management/data/datasource/employee_datasource.dart';
+import 'package:ecoparking_management/data/models/employee_nested_info.dart';
 import 'package:ecoparking_management/data/models/parking_employee.dart';
 import 'package:ecoparking_management/di/global/get_it_initializer.dart';
 import 'package:ecoparking_management/domain/repository/employee_repository.dart';
@@ -52,5 +53,16 @@ class EmployeeRepositoryImpl implements EmployeeRepository {
     required List<String> employeeId,
   }) {
     return _dataSource.deleteEmployee(employeeId: employeeId);
+  }
+
+  @override
+  Future<Map<String, dynamic>> saveEmployeeToXlsx({
+    required List<String> listTitles,
+    required List<EmployeeNestedInfo> employees,
+  }) {
+    return _dataSource.saveEmployeeToXlsx(
+      listTitles: listTitles,
+      employees: employees,
+    );
   }
 }
