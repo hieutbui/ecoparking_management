@@ -19,6 +19,7 @@ import 'package:ecoparking_management/domain/usecase/employee/create_new_employe
 import 'package:ecoparking_management/domain/usecase/employee/delete_employee_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/employee/get_all_employee_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/employee/save_employee_to_xlsx_interactor.dart';
+import 'package:ecoparking_management/domain/usecase/employee/search_employee_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/employee/update_employee_working_time_interactor.dart';
 import 'package:ecoparking_management/utils/mixins/custom_logger.dart';
 import 'package:ecoparking_management/utils/responsive.dart';
@@ -125,6 +126,9 @@ class GetItInitializer with GetItLoggy {
     );
     getIt.registerLazySingleton<SaveEmployeeToXlsxInteractor>(
       () => SaveEmployeeToXlsxInteractor(),
+    );
+    getIt.registerLazySingleton<SearchEmployeeInteractor>(
+      () => SearchEmployeeInteractor(),
     );
     loggy.info('_bindingInteractor(): Setup successfully');
   }

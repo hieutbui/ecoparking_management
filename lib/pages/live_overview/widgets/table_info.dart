@@ -7,6 +7,7 @@ class TableInfo extends StatelessWidget {
   final List<Widget>? actions;
   final Widget? header;
   final void Function(int?)? onRowsPerPageChanged;
+  final List<DataRow>? emptyData;
 
   const TableInfo({
     super.key,
@@ -16,6 +17,7 @@ class TableInfo extends StatelessWidget {
     this.header,
     this.actions,
     this.onRowsPerPageChanged,
+    this.emptyData,
   });
 
   @override
@@ -41,11 +43,12 @@ class TableInfo extends StatelessWidget {
                   ),
                 )
                 .toList(),
-            source: TableInfoSource(data),
+            source: TableInfoSource(
+              data: data,
+              emptyData: emptyData,
+            ),
             onRowsPerPageChanged: onRowsPerPageChanged,
-            rowsPerPage: rowPerPage > 0
-                ? rowPerPage
-                : PaginatedDataTable.defaultRowsPerPage,
+            rowsPerPage: rowPerPage > 0 ? rowPerPage : 1,
             showEmptyRows: false,
             availableRowsPerPage: rowPerPage > 0
                 ? <int>[
@@ -55,10 +58,7 @@ class TableInfo extends StatelessWidget {
                     rowPerPage * 10,
                   ]
                 : const <int>[
-                    PaginatedDataTable.defaultRowsPerPage,
-                    PaginatedDataTable.defaultRowsPerPage * 2,
-                    PaginatedDataTable.defaultRowsPerPage * 5,
-                    PaginatedDataTable.defaultRowsPerPage * 10,
+                    1,
                   ],
           ),
         );
@@ -69,12 +69,30 @@ class TableInfo extends StatelessWidget {
 
 class TableInfoSource extends DataTableSource {
   final List<DataRow> data;
+  final List<DataRow>? emptyData;
 
-  TableInfoSource(this.data);
+  TableInfoSource({
+    required this.data,
+    this.emptyData,
+  });
 
   @override
   DataRow getRow(int index) {
-    return data[index];
+    if (data.isNotEmpty) {
+      return data[index];
+    }
+
+    if (emptyData != null && emptyData!.isNotEmpty) {
+      return emptyData![index];
+    }
+
+    return const DataRow(
+      cells: [
+        DataCell(
+          Text('No data'),
+        ),
+      ],
+    );
   }
 
   @override
