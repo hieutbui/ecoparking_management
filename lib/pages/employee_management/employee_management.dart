@@ -12,16 +12,19 @@ import 'package:ecoparking_management/domain/state/employee/create_new_employee_
 import 'package:ecoparking_management/domain/state/employee/delete_employee_state.dart';
 import 'package:ecoparking_management/domain/state/employee/get_all_employee_state.dart';
 import 'package:ecoparking_management/domain/state/employee/save_employee_to_xlsx_state.dart';
+import 'package:ecoparking_management/domain/state/employee/search_employee_state.dart';
 import 'package:ecoparking_management/domain/state/employee/update_employee_working_time_state.dart';
 import 'package:ecoparking_management/domain/usecase/employee/create_new_employee_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/employee/delete_employee_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/employee/get_all_employee_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/employee/save_employee_to_xlsx_interactor.dart';
+import 'package:ecoparking_management/domain/usecase/employee/search_employee_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/employee/update_employee_working_time_interactor.dart';
 import 'package:ecoparking_management/pages/employee_management/employee_management_view.dart';
 import 'package:ecoparking_management/pages/employee_management/widgets/selectable_employee.dart';
 import 'package:ecoparking_management/utils/dialog_utils.dart';
 import 'package:ecoparking_management/utils/mixins/custom_logger.dart';
+import 'package:ecoparking_management/utils/mixins/search_debounce_mixin.dart';
 import 'package:ecoparking_management/utils/navigation_utils.dart';
 import 'package:flutter/material.dart';
 
@@ -33,7 +36,7 @@ class EmployeeManagement extends StatefulWidget {
 }
 
 class EmployeeManagementController extends State<EmployeeManagement>
-    with ControllerLoggy {
+    with ControllerLoggy, SearchDebounceMixin {
   final ProfileService _profileService = getIt.get<ProfileService>();
 
   final GetAllEmployeeInteractor _getAllEmployeeInteractor =
@@ -47,6 +50,8 @@ class EmployeeManagementController extends State<EmployeeManagement>
       getIt.get<DeleteEmployeeInteractor>();
   final SaveEmployeeToXlsxInteractor _saveEmployeeToXlsxInteractor =
       getIt.get<SaveEmployeeToXlsxInteractor>();
+  final SearchEmployeeInteractor _searchEmployeeInteractor =
+      getIt.get<SearchEmployeeInteractor>();
 
   final List<String> listEmployeesTableTitles = <String>[
     'Employee ID',
@@ -68,6 +73,8 @@ class EmployeeManagementController extends State<EmployeeManagement>
       ValueNotifier<DeleteEmployeeState>(const DeleteEmployeeInitial());
   final ValueNotifier<SaveEmployeeToXlsxState> saveEmployeeToXlsxState =
       ValueNotifier<SaveEmployeeToXlsxState>(const SaveEmployeeToXlsxInitial());
+  final ValueNotifier<SearchEmployeeState> searchEmployeeState =
+      ValueNotifier<SearchEmployeeState>(const SearchEmployeeInitial());
 
   final ValueNotifier<int> rowPerPage =
       ValueNotifier<int>(PaginatedDataTable.defaultRowsPerPage);
@@ -92,17 +99,20 @@ class EmployeeManagementController extends State<EmployeeManagement>
   StreamSubscription<Either<Failure, Success>>? _createNewEmployeeSubscription;
   StreamSubscription<Either<Failure, Success>>? _deleteEmployeeSubscription;
   StreamSubscription<Either<Failure, Success>>? _saveEmployeeToXlsxSubscription;
+  StreamSubscription<Either<Failure, Success>>? _searchEmployeeSubscription;
 
   @override
   void initState() {
     super.initState();
     _checkPositionIsEmpty();
     _getAllEmployees();
+    initializeDebounce(onDebounce: _searchParking);
   }
 
   @override
   void dispose() {
     _disposeControllers();
+    cancelDebounce();
     _disposeNotifiers();
     _cancelSubscriptions();
     super.dispose();
@@ -118,6 +128,7 @@ class EmployeeManagementController extends State<EmployeeManagement>
     createNewEmployeeState.dispose();
     deleteEmployeeState.dispose();
     saveEmployeeToXlsxState.dispose();
+    searchEmployeeState.dispose();
   }
 
   void _cancelSubscriptions() {
@@ -125,11 +136,14 @@ class EmployeeManagementController extends State<EmployeeManagement>
     _updateEmployeeWorkingTimeSubscription?.cancel();
     _createNewEmployeeSubscription?.cancel();
     _deleteEmployeeSubscription?.cancel();
+    _saveEmployeeToXlsxSubscription?.cancel();
+    _searchEmployeeSubscription?.cancel();
     _getAllEmployeeSubscription = null;
     _updateEmployeeWorkingTimeSubscription = null;
     _createNewEmployeeSubscription = null;
     _deleteEmployeeSubscription = null;
-    _saveEmployeeToXlsxSubscription?.cancel();
+    _saveEmployeeToXlsxSubscription = null;
+    _searchEmployeeSubscription = null;
   }
 
   void _disposeControllers() {
@@ -455,7 +469,30 @@ class EmployeeManagementController extends State<EmployeeManagement>
 
   void onSearchEmployee(String value) {
     loggy.info('Search Employee: $value');
-    //TODO: Search employee
+    setSearchQuery(value);
+  }
+
+  void _searchParking(String? searchKey) {
+    final parkingId = _profileService.parkingOwner?.parkingId;
+
+    if (parkingId == null) return;
+
+    if (searchKey == null || searchKey.isEmpty) {
+      _getAllEmployees();
+      return;
+    }
+
+    _searchEmployeeSubscription = _searchEmployeeInteractor
+        .execute(
+          parkingId: parkingId,
+          searchKey: searchKey,
+        )
+        .listen(
+          (result) => result.fold(
+            _handleSearchEmployeeFailure,
+            _handleSearchEmployeeSuccess,
+          ),
+        );
   }
 
   void _updateOnDutyEmployees(List<EmployeeNestedInfo> employees) {
@@ -597,6 +634,36 @@ class EmployeeManagementController extends State<EmployeeManagement>
       saveEmployeeToXlsxState.value = success;
     } else if (success is SaveEmployeeToXlsxLoading) {
       saveEmployeeToXlsxState.value = success;
+    }
+  }
+
+  void _handleSearchEmployeeFailure(Failure failure) {
+    loggy.error('Search Employee Failure: $failure');
+    if (failure is SearchEmployeeEmpty) {
+      listEmployees.value = <SelectableEmployee>[];
+      searchEmployeeState.value = failure;
+    } else if (failure is SearchEmployeeFailure) {
+      listEmployees.value = <SelectableEmployee>[];
+      searchEmployeeState.value = failure;
+    } else {
+      listEmployees.value = <SelectableEmployee>[];
+      searchEmployeeState.value = SearchEmployeeFailure(exception: failure);
+    }
+  }
+
+  void _handleSearchEmployeeSuccess(Success success) {
+    loggy.info('Search Employee Success: $success');
+    if (success is SearchEmployeeSuccess) {
+      searchEmployeeState.value = success;
+      totalEmployees.value = success.employees.length;
+      listEmployees.value = success.employees
+          .map(
+            (e) => SelectableEmployee(employeeNestedInfo: e),
+          )
+          .toList();
+      _updateOnDutyEmployees(success.employees);
+    } else if (success is SearchEmployeeLoading) {
+      searchEmployeeState.value = success;
     }
   }
 

@@ -65,4 +65,15 @@ class EmployeeRepositoryImpl implements EmployeeRepository {
       employees: employees,
     );
   }
+
+  @override
+  Future<List<Map<String, dynamic>?>?> searchEmployee({
+    required String parkingId,
+    required String searchKey,
+  }) {
+    return _dataSource.searchEmployee(
+      parkingId: parkingId,
+      searchKey: searchKey,
+    );
+  }
 }

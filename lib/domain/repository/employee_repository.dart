@@ -31,4 +31,9 @@ abstract class EmployeeRepository {
     required List<String> listTitles,
     required List<EmployeeNestedInfo> employees,
   });
+
+  Future<List<Map<String, dynamic>?>?> searchEmployee({
+    required String parkingId,
+    required String searchKey,
+  });
 }
