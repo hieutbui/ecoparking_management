@@ -2,13 +2,18 @@ import 'dart:async';
 import 'package:dartz/dartz.dart' hide State;
 import 'package:ecoparking_management/config/app_paths.dart';
 import 'package:ecoparking_management/data/models/employee_nested_info.dart';
+import 'package:ecoparking_management/data/models/parking_employee.dart';
 import 'package:ecoparking_management/data/models/user_profile.dart';
 import 'package:ecoparking_management/di/global/get_it_initializer.dart';
 import 'package:ecoparking_management/domain/services/profile_service.dart';
 import 'package:ecoparking_management/domain/state/app_state/failure.dart';
 import 'package:ecoparking_management/domain/state/app_state/success.dart';
+import 'package:ecoparking_management/domain/state/employee/create_new_employee_state.dart';
+import 'package:ecoparking_management/domain/state/employee/delete_employee_state.dart';
 import 'package:ecoparking_management/domain/state/employee/get_all_employee_state.dart';
 import 'package:ecoparking_management/domain/state/employee/update_employee_working_time_state.dart';
+import 'package:ecoparking_management/domain/usecase/employee/create_new_employee_interactor.dart';
+import 'package:ecoparking_management/domain/usecase/employee/delete_employee_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/employee/get_all_employee_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/employee/update_employee_working_time_interactor.dart';
 import 'package:ecoparking_management/pages/employee_management/employee_management_view.dart';
@@ -34,6 +39,10 @@ class EmployeeManagementController extends State<EmployeeManagement>
   final UpdateEmployeeWorkingTimeInteractor
       _updateEmployeeWorkingTimeInteractor =
       getIt.get<UpdateEmployeeWorkingTimeInteractor>();
+  final CreateNewEmployeeInteractor _createNewEmployeeInteractor =
+      getIt.get<CreateNewEmployeeInteractor>();
+  final DeleteEmployeeInteractor _deleteEmployeeInteractor =
+      getIt.get<DeleteEmployeeInteractor>();
 
   final List<String> listEmployeesTableTitles = <String>[
     'Employee ID',
@@ -47,7 +56,12 @@ class EmployeeManagementController extends State<EmployeeManagement>
   final ValueNotifier<UpdateEmployeeWorkingTimeState>
       updateEmployeeWorkingTimeState =
       ValueNotifier<UpdateEmployeeWorkingTimeState>(
-          const UpdateEmployeeWorkingTimeInitial());
+    const UpdateEmployeeWorkingTimeInitial(),
+  );
+  final ValueNotifier<CreateNewEmployeeState> createNewEmployeeState =
+      ValueNotifier<CreateNewEmployeeState>(const CreateNewEmployeeInitial());
+  final ValueNotifier<DeleteEmployeeState> deleteEmployeeState =
+      ValueNotifier<DeleteEmployeeState>(const DeleteEmployeeInitial());
 
   final ValueNotifier<int> rowPerPage =
       ValueNotifier<int>(PaginatedDataTable.defaultRowsPerPage);
@@ -56,12 +70,21 @@ class EmployeeManagementController extends State<EmployeeManagement>
   final ValueNotifier<List<SelectableEmployee>> listEmployees =
       ValueNotifier<List<SelectableEmployee>>(<SelectableEmployee>[]);
 
+  final TextEditingController createEmployeeNameController =
+      TextEditingController();
+  final TextEditingController createEmployeeEmailController =
+      TextEditingController();
+  final TextEditingController createEmployeePasswordController =
+      TextEditingController();
+
   bool get isOwner =>
       _profileService.userProfile?.accountType == AccountType.parkingOwner;
 
   StreamSubscription<Either<Failure, Success>>? _getAllEmployeeSubscription;
   StreamSubscription<Either<Failure, Success>>?
       _updateEmployeeWorkingTimeSubscription;
+  StreamSubscription<Either<Failure, Success>>? _createNewEmployeeSubscription;
+  StreamSubscription<Either<Failure, Success>>? _deleteEmployeeSubscription;
 
   @override
   void initState() {
@@ -72,6 +95,7 @@ class EmployeeManagementController extends State<EmployeeManagement>
 
   @override
   void dispose() {
+    _disposeControllers();
     _disposeNotifiers();
     _cancelSubscriptions();
     super.dispose();
@@ -84,11 +108,25 @@ class EmployeeManagementController extends State<EmployeeManagement>
     onDutyEmployees.dispose();
     listEmployees.dispose();
     updateEmployeeWorkingTimeState.dispose();
+    createNewEmployeeState.dispose();
+    deleteEmployeeState.dispose();
   }
 
   void _cancelSubscriptions() {
     _getAllEmployeeSubscription?.cancel();
     _updateEmployeeWorkingTimeSubscription?.cancel();
+    _createNewEmployeeSubscription?.cancel();
+    _deleteEmployeeSubscription?.cancel();
+    _getAllEmployeeSubscription = null;
+    _updateEmployeeWorkingTimeSubscription = null;
+    _createNewEmployeeSubscription = null;
+    _deleteEmployeeSubscription = null;
+  }
+
+  void _disposeControllers() {
+    createEmployeeNameController.dispose();
+    createEmployeeEmailController.dispose();
+    createEmployeePasswordController.dispose();
   }
 
   Future<void> _checkPositionIsEmpty() async {
@@ -225,14 +263,127 @@ class EmployeeManagementController extends State<EmployeeManagement>
     }
   }
 
-  void onAddEmployeePressed() {
+  void onAddEmployeePressed() async {
     loggy.info('Add Employee Pressed');
-    //TODO: Add employee
+    final parkingId = _profileService.parkingOwner?.parkingId;
+
+    if (parkingId == null) return;
+
+    createNewEmployeeState.value = const CreateNewEmployeeInitial();
+
+    TimeOfDay? selectedStartShift;
+    TimeOfDay? selectedEndShift;
+
+    final ConfirmAction? action = await DialogUtils.showCreateEmployeeDialog(
+      context: context,
+      nameController: createEmployeeNameController,
+      emailController: createEmployeeEmailController,
+      passwordController: createEmployeePasswordController,
+      onStartShiftSelected: (onStartShiftSelected) =>
+          selectedStartShift = onStartShiftSelected,
+      onEndShiftSelected: (onEndShiftSelected) =>
+          selectedEndShift = onEndShiftSelected,
+      notifier: createNewEmployeeState,
+      onCreateEmployee: () {
+        final name = createEmployeeNameController.text;
+        final email = createEmployeeEmailController.text;
+        final password = createEmployeePasswordController.text;
+
+        if (name.isNotEmpty && email.isNotEmpty && password.isNotEmpty) {
+          final employee = ParkingEmployee(
+            parkingId: parkingId,
+            workingStartTime: selectedStartShift,
+            workingEndTime: selectedEndShift,
+            currencyLocale: 'vi_VN',
+          );
+
+          _createNewEmployee(
+            employee: employee,
+            email: email,
+            password: password,
+            fullName: name,
+          );
+        }
+      },
+    );
+
+    switch (action) {
+      case ConfirmAction.ok:
+      case ConfirmAction.cancel:
+      default:
+        return;
+    }
   }
 
-  void onRemoveEmployeePressed() {
+  void _createNewEmployee({
+    required ParkingEmployee employee,
+    required String email,
+    required String password,
+    required String fullName,
+  }) {
+    _createNewEmployeeSubscription = _createNewEmployeeInteractor
+        .execute(
+          employee: employee,
+          email: email,
+          password: password,
+          fullName: fullName,
+        )
+        .listen(
+          (result) => result.fold(
+            _handleCreateNewEmployeeFailure,
+            _handleCreateNewEmployeeSuccess,
+          ),
+        );
+  }
+
+  void onRemoveEmployeePressed() async {
     loggy.info('Remove Employee Pressed');
-    //TODO: Remove employee
+
+    final selectedEmployees = listEmployees.value
+        .where((e) => e.isSelected)
+        .map((e) => e.employeeNestedInfo.id)
+        .toList();
+
+    if (selectedEmployees.isEmpty) {
+      final action = await DialogUtils.showNotSelectedEmployeeDialog(
+        context: context,
+      );
+
+      switch (action) {
+        case ConfirmAction.ok:
+        case ConfirmAction.cancel:
+        default:
+          return;
+      }
+    } else {
+      deleteEmployeeState.value = const DeleteEmployeeInitial();
+
+      final action = await DialogUtils.showDeleteEmployeeDialog(
+        context: context,
+        onDeleteEmployee: () => _removeEmployee(employeeId: selectedEmployees),
+        notifier: deleteEmployeeState,
+      );
+
+      switch (action) {
+        case ConfirmAction.ok:
+        case ConfirmAction.cancel:
+        default:
+          return;
+      }
+    }
+  }
+
+  void _removeEmployee({
+    required List<String> employeeId,
+  }) {
+    loggy.info('Remove Employee: $employeeId');
+    _deleteEmployeeSubscription =
+        _deleteEmployeeInteractor.execute(employeeId: employeeId).listen(
+              (result) => result.fold(
+                _handleDeleteEmployeeFailure,
+                _handleDeleteEmployeeSuccess,
+              ),
+            );
   }
 
   void onExportEmployeePressed() {
@@ -320,6 +471,51 @@ class EmployeeManagementController extends State<EmployeeManagement>
       _getAllEmployees();
     } else if (success is UpdateEmployeeWorkingTimeLoading) {
       updateEmployeeWorkingTimeState.value = success;
+    }
+  }
+
+  void _handleCreateNewEmployeeFailure(Failure failure) {
+    loggy.error('Create New Employee Failure: $failure');
+    if (failure is CreateNewEmployeeEmpty) {
+      createNewEmployeeState.value = failure;
+    } else if (failure is CreateNewEmployeeFailure) {
+      createNewEmployeeState.value = failure;
+    } else if (failure is CreateNewEmployeeAuthFailure) {
+      createNewEmployeeState.value = failure;
+    } else {
+      createNewEmployeeState.value =
+          CreateNewEmployeeFailure(exception: failure);
+    }
+  }
+
+  void _handleCreateNewEmployeeSuccess(Success success) {
+    loggy.info('Create New Employee Success: $success');
+    if (success is CreateNewEmployeeSuccess) {
+      createNewEmployeeState.value = success;
+      _getAllEmployees();
+    } else if (success is CreateNewEmployeeLoading) {
+      createNewEmployeeState.value = success;
+    }
+  }
+
+  void _handleDeleteEmployeeFailure(Failure failure) {
+    loggy.error('Delete Employee Failure: $failure');
+    if (failure is DeleteEmployeeEmpty) {
+      deleteEmployeeState.value = failure;
+    } else if (failure is DeleteEmployeeFailure) {
+      deleteEmployeeState.value = failure;
+    } else {
+      deleteEmployeeState.value = DeleteEmployeeFailure(exception: failure);
+    }
+  }
+
+  void _handleDeleteEmployeeSuccess(Success success) {
+    loggy.info('Delete Employee Success: $success');
+    if (success is DeleteEmployeeSuccess) {
+      deleteEmployeeState.value = success;
+      _getAllEmployees();
+    } else if (success is DeleteEmployeeLoading) {
+      deleteEmployeeState.value = success;
     }
   }
 
