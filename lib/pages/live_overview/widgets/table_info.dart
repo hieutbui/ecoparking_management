@@ -25,6 +25,7 @@ class TableInfo extends StatelessWidget {
         return SizedBox(
           width: constraint.maxWidth,
           child: PaginatedDataTable(
+            showCheckboxColumn: true,
             header: header,
             actions: actions,
             columns: titles
@@ -42,14 +43,23 @@ class TableInfo extends StatelessWidget {
                 .toList(),
             source: TableInfoSource(data),
             onRowsPerPageChanged: onRowsPerPageChanged,
-            rowsPerPage: rowPerPage,
+            rowsPerPage: rowPerPage > 0
+                ? rowPerPage
+                : PaginatedDataTable.defaultRowsPerPage,
             showEmptyRows: false,
-            availableRowsPerPage: <int>[
-              rowPerPage,
-              rowPerPage * 2,
-              rowPerPage * 5,
-              rowPerPage * 10,
-            ],
+            availableRowsPerPage: rowPerPage > 0
+                ? <int>[
+                    rowPerPage,
+                    rowPerPage * 2,
+                    rowPerPage * 5,
+                    rowPerPage * 10,
+                  ]
+                : const <int>[
+                    PaginatedDataTable.defaultRowsPerPage,
+                    PaginatedDataTable.defaultRowsPerPage * 2,
+                    PaginatedDataTable.defaultRowsPerPage * 5,
+                    PaginatedDataTable.defaultRowsPerPage * 10,
+                  ],
           ),
         );
       },

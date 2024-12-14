@@ -1,7 +1,11 @@
 import 'package:ecoparking_management/data/datasource/account_datasource.dart';
+import 'package:ecoparking_management/data/datasource/employee_datasource.dart';
 import 'package:ecoparking_management/data/datasource_impl/account_datasource_impl.dart';
+import 'package:ecoparking_management/data/datasource_impl/employee_datasource_impl.dart';
 import 'package:ecoparking_management/data/repository/account_repository_impl.dart';
+import 'package:ecoparking_management/data/repository/employee_repository_impl.dart';
 import 'package:ecoparking_management/domain/repository/account_repository.dart';
+import 'package:ecoparking_management/domain/repository/employee_repository.dart';
 import 'package:ecoparking_management/domain/services/profile_service.dart';
 import 'package:ecoparking_management/domain/usecase/account/get_employee_info_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/account/get_owner_info_interactor.dart';
@@ -11,6 +15,8 @@ import 'package:ecoparking_management/domain/usecase/account/sign_out_interactor
 import 'package:ecoparking_management/domain/usecase/account/update_employee_currency_locale_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/account/update_owner_currency_locale_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/account/update_user_profile_interactor.dart';
+import 'package:ecoparking_management/domain/usecase/employee/get_all_employee_interactor.dart';
+import 'package:ecoparking_management/domain/usecase/employee/update_employee_working_time_interactor.dart';
 import 'package:ecoparking_management/utils/mixins/custom_logger.dart';
 import 'package:ecoparking_management/utils/responsive.dart';
 import 'package:get_it/get_it.dart';
@@ -51,6 +57,9 @@ class GetItInitializer with GetItLoggy {
     getIt.registerFactory<AccountDataSource>(
       () => AccountDataSourceImpl(),
     );
+    getIt.registerFactory<EmployeeDataSource>(
+      () => EmployeeDataSourceImpl(),
+    );
     loggy.info('_bindingDataSource(): Setup successfully');
   }
 
@@ -58,12 +67,18 @@ class GetItInitializer with GetItLoggy {
     getIt.registerFactory<AccountDataSourceImpl>(
       () => AccountDataSourceImpl(),
     );
+    getIt.registerFactory<EmployeeDataSourceImpl>(
+      () => EmployeeDataSourceImpl(),
+    );
     loggy.info('_bindingDataSourceImpl(): Setup successfully');
   }
 
   void _bindingRepository() {
     getIt.registerLazySingleton<AccountRepository>(
       () => AccountRepositoryImpl(),
+    );
+    getIt.registerLazySingleton<EmployeeRepository>(
+      () => EmployeeRepositoryImpl(),
     );
     loggy.info('_bindingRepository(): Setup successfully');
   }
@@ -92,6 +107,12 @@ class GetItInitializer with GetItLoggy {
     );
     getIt.registerLazySingleton<UpdateOwnerCurrencyLocaleInteractor>(
       () => UpdateOwnerCurrencyLocaleInteractor(),
+    );
+    getIt.registerLazySingleton<GetAllEmployeeInteractor>(
+      () => GetAllEmployeeInteractor(),
+    );
+    getIt.registerLazySingleton<UpdateEmployeeWorkingTimeInteractor>(
+      () => UpdateEmployeeWorkingTimeInteractor(),
     );
     loggy.info('_bindingInteractor(): Setup successfully');
   }

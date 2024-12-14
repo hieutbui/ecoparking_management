@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:ecoparking_management/config/app_paths.dart';
+import 'package:ecoparking_management/data/models/user_profile.dart';
 import 'package:ecoparking_management/di/global/get_it_initializer.dart';
 import 'package:ecoparking_management/domain/services/profile_service.dart';
 import 'package:ecoparking_management/pages/employee_management/employee_management.dart';
@@ -76,6 +77,29 @@ class AppRoutes {
             const EmployeeManagement(),
             name: AppPaths.employee.name,
           ),
+          redirect: (context, state) {
+            if (!_profileService.isAuthenticated) {
+              return AppPaths.login.path;
+            }
+
+            final profile = _profileService.userProfile;
+
+            if (profile == null) {
+              return AppPaths.login.path;
+            }
+
+            if (profile.accountType == AccountType.parkingOwner &&
+                _profileService.parkingOwner == null) {
+              return AppPaths.login.path;
+            }
+
+            if (profile.accountType == AccountType.employee &&
+                _profileService.parkingEmployee == null) {
+              return AppPaths.login.path;
+            }
+
+            return null;
+          },
         ),
         GoRoute(
           path: AppPaths.profile.path,
