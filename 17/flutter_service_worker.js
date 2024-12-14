@@ -4,10 +4,10 @@ const TEMP = 'flutter-temp-cache';
 const CACHE_NAME = 'flutter-app-cache';
 
 const RESOURCES = {"flutter.js": "f393d3c16b631f36852323de8e583132",
-"main.dart.js": "ea48b8999f3c8672b243df4b961348ff",
+"main.dart.js": "e494ce5689fcfad7932fa0a1541690a3",
 "assets/FontManifest.json": "dc3d03800ccca4601324923c0b1d6d57",
 "assets/AssetManifest.bin": "a8430ba04fca7356a30c69ec55bcdde7",
-"assets/fonts/MaterialIcons-Regular.otf": "e20081d6b7050e05de33f68f3ab7688c",
+"assets/fonts/MaterialIcons-Regular.otf": "d45d6ae85368d1f7ef207f055492d201",
 "assets/packages/cupertino_icons/assets/CupertinoIcons.ttf": "e986ebe42ef785b27164c36a9abc7818",
 "assets/packages/getwidget/icons/line.png": "da8d1b531d8189396d68dfcd8cb37a79",
 "assets/packages/getwidget/icons/slack.png": "19155b848beeb39c1ffcf743608e2fde",
@@ -290,7 +290,7 @@ const RESOURCES = {"flutter.js": "f393d3c16b631f36852323de8e583132",
 "icons/Icon-maskable-512.png": "301a7604d45b3e739efc881eb04896ea",
 "favicon.png": "5dcef449791fa27946b3d35ad8803796",
 "version.json": "efefede4b04e76eb815bf2dbdcf2cad0",
-"flutter_bootstrap.js": "b79963360a5705d84c9f13a8fcc60b6e"};
+"flutter_bootstrap.js": "5feb670223431b156d19eff1c5948785"};
 // The application shell files that are downloaded before a service worker can
 // start.
 const CORE = ["main.dart.js",
