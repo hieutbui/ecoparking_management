@@ -1,5 +1,6 @@
 import 'package:ecoparking_management/config/app_config.dart';
 import 'package:ecoparking_management/data/models/employee_nested_info.dart';
+import 'package:ecoparking_management/domain/state/analysis/export_data_state.dart';
 import 'package:ecoparking_management/domain/state/employee/create_new_employee_state.dart';
 import 'package:ecoparking_management/domain/state/employee/delete_employee_state.dart';
 import 'package:ecoparking_management/domain/state/employee/save_employee_to_xlsx_state.dart';
@@ -132,6 +133,21 @@ class DialogUtils {
     return show<ConfirmAction>(
       context: context,
       builder: _buildSaveEmployeeToXlsxDialog(
+        notifier: notifier,
+      ),
+    );
+  }
+
+  static Future<ConfirmAction?> showExportDataDialog({
+    required BuildContext context,
+    required ValueNotifier<ExportDataState> notifier,
+    required void Function() onExportData,
+  }) async {
+    onExportData();
+
+    return show<ConfirmAction>(
+      context: context,
+      builder: _buildExportDataDialog(
         notifier: notifier,
       ),
     );
@@ -1510,6 +1526,195 @@ class DialogUtils {
             ),
             content: Text(
               'An error occurred while trying to save employee. Please try again.',
+              style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                    fontWeight: FontWeight.normal,
+                    color: Theme.of(context).colorScheme.inversePrimary,
+                  ),
+            ),
+            surfaceTintColor: AppConfig.baseBackgroundColor,
+            actions: <Widget>[
+              TextButton.icon(
+                onPressed: () =>
+                    Navigator.of(context).pop(ConfirmAction.cancel),
+                style: ButtonStyle(
+                  backgroundColor: WidgetStatePropertyAll<Color>(
+                    Theme.of(context).colorScheme.outline,
+                  ),
+                  shape: const WidgetStatePropertyAll<OutlinedBorder>(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(8.0),
+                      ),
+                    ),
+                  ),
+                ),
+                label: Text(
+                  'Cancel',
+                  style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                        color: AppConfig.negativeTextColor,
+                      ),
+                ),
+                icon: const Icon(
+                  Icons.cancel,
+                  color: AppConfig.negativeTextColor,
+                ),
+              ),
+              TextButton.icon(
+                onPressed: () => Navigator.of(context).pop(ConfirmAction.ok),
+                style: ButtonStyle(
+                  backgroundColor: WidgetStatePropertyAll<Color>(
+                    Theme.of(context).colorScheme.secondary,
+                  ),
+                  shape: const WidgetStatePropertyAll<OutlinedBorder>(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(8.0),
+                      ),
+                    ),
+                  ),
+                ),
+                label: Text(
+                  'OK',
+                  style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                        color: Theme.of(context).colorScheme.onSecondary,
+                      ),
+                ),
+                icon: Icon(
+                  Icons.check,
+                  color: Theme.of(context).colorScheme.onSecondary,
+                ),
+              ),
+            ],
+          ),
+        );
+      };
+
+  static WidgetBuilder _buildExportDataDialog({
+    required ValueNotifier<ExportDataState> notifier,
+  }) =>
+      (BuildContext context) {
+        return ValueListenableBuilder(
+          valueListenable: notifier,
+          builder: (context, state, child) {
+            if (state is ExportDataInitial || state is ExportDataLoading) {
+              return AlertDialog(
+                title: Text(
+                  'Exporting Data',
+                  style: Theme.of(context).textTheme.displaySmall!.copyWith(
+                        color: Theme.of(context).colorScheme.inversePrimary,
+                      ),
+                ),
+                content: const SizedBox(
+                  height: 48.0,
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
+                surfaceTintColor: AppConfig.baseBackgroundColor,
+              );
+            }
+
+            if (state is ExportDataSuccess) {
+              return AlertDialog(
+                title: Text(
+                  'Export data Success',
+                  style: Theme.of(context).textTheme.displaySmall!.copyWith(
+                        color: Theme.of(context).colorScheme.onSecondary,
+                      ),
+                ),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.check_circle,
+                      color: Theme.of(context).colorScheme.onSecondary,
+                      size: 48.0,
+                    ),
+                    Text(
+                      'Data has been exported successfully.',
+                      style: Theme.of(context)
+                          .textTheme
+                          .headlineMedium!
+                          .copyWith(
+                            fontWeight: FontWeight.normal,
+                            color: Theme.of(context).colorScheme.inversePrimary,
+                          ),
+                    ),
+                  ],
+                ),
+                surfaceTintColor: AppConfig.baseBackgroundColor,
+                actions: <Widget>[
+                  TextButton.icon(
+                    onPressed: () =>
+                        Navigator.of(context).pop(ConfirmAction.cancel),
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStatePropertyAll<Color>(
+                        Theme.of(context).colorScheme.outline,
+                      ),
+                      shape: const WidgetStatePropertyAll<OutlinedBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(8.0),
+                          ),
+                        ),
+                      ),
+                    ),
+                    label: Text(
+                      'Cancel',
+                      style:
+                          Theme.of(context).textTheme.headlineMedium!.copyWith(
+                                color: AppConfig.negativeTextColor,
+                              ),
+                    ),
+                    icon: const Icon(
+                      Icons.cancel,
+                      color: AppConfig.negativeTextColor,
+                    ),
+                  ),
+                  TextButton.icon(
+                    onPressed: () =>
+                        Navigator.of(context).pop(ConfirmAction.ok),
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStatePropertyAll<Color>(
+                        Theme.of(context).colorScheme.secondary,
+                      ),
+                      shape: const WidgetStatePropertyAll<OutlinedBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(8.0),
+                          ),
+                        ),
+                      ),
+                    ),
+                    label: Text(
+                      'OK',
+                      style: Theme.of(context)
+                          .textTheme
+                          .headlineMedium!
+                          .copyWith(
+                            color: Theme.of(context).colorScheme.onSecondary,
+                          ),
+                    ),
+                    icon: Icon(
+                      Icons.check,
+                      color: Theme.of(context).colorScheme.onSecondary,
+                    ),
+                  ),
+                ],
+              );
+            }
+
+            return child!;
+          },
+          child: AlertDialog(
+            title: Text(
+              'Export Data Error',
+              style: Theme.of(context).textTheme.displaySmall!.copyWith(
+                    color: Theme.of(context).colorScheme.error,
+                  ),
+            ),
+            content: Text(
+              'An error occurred while trying to export data. Please try again.',
               style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                     fontWeight: FontWeight.normal,
                     color: Theme.of(context).colorScheme.inversePrimary,

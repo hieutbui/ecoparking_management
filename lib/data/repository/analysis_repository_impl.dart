@@ -1,4 +1,5 @@
 import 'package:ecoparking_management/data/datasource/analysis_datasource.dart';
+import 'package:ecoparking_management/data/models/analysis_data.dart';
 import 'package:ecoparking_management/di/global/get_it_initializer.dart';
 import 'package:ecoparking_management/domain/repository/analysis_repository.dart';
 
@@ -59,5 +60,13 @@ class AnalysisRepositoryImpl implements AnalysisRepository {
     required String parkingId,
   }) {
     return _dataSource.getYesterdayTicketCount(parkingId: parkingId);
+  }
+
+  @override
+  Future<Map<String, dynamic>> exportData({
+    required List<String> listTitles,
+    required List<AnalysisData> listDatas,
+  }) {
+    return _dataSource.exportData(listTitles: listTitles, listDatas: listDatas);
   }
 }
