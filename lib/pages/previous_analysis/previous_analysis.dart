@@ -1,7 +1,34 @@
+import 'dart:async';
+import 'package:dartz/dartz.dart' hide State;
+import 'package:ecoparking_management/config/app_paths.dart';
+import 'package:ecoparking_management/data/models/user_profile.dart';
+import 'package:ecoparking_management/di/global/get_it_initializer.dart';
+import 'package:ecoparking_management/domain/services/profile_service.dart';
+import 'package:ecoparking_management/domain/state/analysis/get_last_12_months_ticket_count_state.dart';
+import 'package:ecoparking_management/domain/state/analysis/get_last_12_months_total_state.dart';
+import 'package:ecoparking_management/domain/state/analysis/get_last_month_ticket_count_state.dart';
+import 'package:ecoparking_management/domain/state/analysis/get_last_month_total_state.dart';
+import 'package:ecoparking_management/domain/state/analysis/get_last_year_ticket_count_state.dart';
+import 'package:ecoparking_management/domain/state/analysis/get_last_year_total_state.dart';
+import 'package:ecoparking_management/domain/state/analysis/get_yesterday_ticket_count_state.dart';
+import 'package:ecoparking_management/domain/state/analysis/get_yesterday_total_state.dart';
+import 'package:ecoparking_management/domain/state/app_state/failure.dart';
+import 'package:ecoparking_management/domain/state/app_state/success.dart';
+import 'package:ecoparking_management/domain/usecase/analysis/get_last_12_months_ticket_count_interactor.dart';
+import 'package:ecoparking_management/domain/usecase/analysis/get_last_12_months_total_interactor.dart';
+import 'package:ecoparking_management/domain/usecase/analysis/get_last_month_ticket_count_interactor.dart';
+import 'package:ecoparking_management/domain/usecase/analysis/get_last_month_total_interactor.dart';
+import 'package:ecoparking_management/domain/usecase/analysis/get_last_year_ticket_count_interactor.dart';
+import 'package:ecoparking_management/domain/usecase/analysis/get_last_year_total_interactor.dart';
+import 'package:ecoparking_management/domain/usecase/analysis/get_yesterday_ticket_count_interactor.dart';
+import 'package:ecoparking_management/domain/usecase/analysis/get_yesterday_total_interactor.dart';
+import 'package:ecoparking_management/pages/previous_analysis/dropdown_area.dart';
 import 'package:ecoparking_management/pages/previous_analysis/previous_analysis_view.dart';
 import 'package:ecoparking_management/pages/previous_analysis/previous_analysis_view_type.dart';
 import 'package:ecoparking_management/pages/previous_analysis/widgets/bar_chart_info/bar_chart_info_args.dart';
+import 'package:ecoparking_management/utils/dialog_utils.dart';
 import 'package:ecoparking_management/utils/mixins/custom_logger.dart';
+import 'package:ecoparking_management/utils/navigation_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -16,815 +43,71 @@ class PreviousAnalysisController extends State<PreviousAnalysis>
     with ControllerLoggy {
   //TODO: Implement fetch data from API
   final String dummyLocale = 'vi_VN';
-  final List<BarValue> dummyLast12MonthValues = <BarValue>[
-    const BarValue(
-      valueX: 0,
-      name: 'Jan',
-      valueY: 2000000000,
-    ),
-    const BarValue(
-      valueX: 1,
-      name: 'Feb',
-      valueY: 11000000000,
-    ),
-    const BarValue(
-      valueX: 2,
-      name: 'Mar',
-      valueY: 6000000000,
-    ),
-    const BarValue(
-      valueX: 3,
-      name: 'Apr',
-      valueY: 1000000000,
-    ),
-    const BarValue(
-      valueX: 4,
-      name: 'May',
-      valueY: 3000000000,
-    ),
-    const BarValue(
-      valueX: 5,
-      name: 'Jun',
-      valueY: 5000000000,
-    ),
-    const BarValue(
-      valueX: 6,
-      name: 'Jul',
-      valueY: 7000000000,
-    ),
-    const BarValue(
-      valueX: 7,
-      name: 'Aug',
-      valueY: 3000000000,
-    ),
-    const BarValue(
-      valueX: 8,
-      name: 'Sep',
-      valueY: 5000000000,
-    ),
-    const BarValue(
-      valueX: 9,
-      name: 'Oct',
-      valueY: 7000000000,
-    ),
-    const BarValue(
-      valueX: 10,
-      name: 'Nov',
-      valueY: 3000000000,
-    ),
-    const BarValue(
-      valueX: 11,
-      name: 'Dec',
-      valueY: 5000000000,
-    ),
-  ];
 
-  final List<BarValue> dummyLastYearValues = <BarValue>[
-    const BarValue(
-      valueX: 0,
-      name: 'Jan',
-      valueY: 2000000000,
-    ),
-    const BarValue(
-      valueX: 1,
-      name: 'Feb',
-      valueY: 11000000000,
-    ),
-    const BarValue(
-      valueX: 2,
-      name: 'Mar',
-      valueY: 6000000000,
-    ),
-    const BarValue(
-      valueX: 3,
-      name: 'Apr',
-      valueY: 1000000000,
-    ),
-    const BarValue(
-      valueX: 4,
-      name: 'May',
-      valueY: 3000000000,
-    ),
-    const BarValue(
-      valueX: 5,
-      name: 'Jun',
-      valueY: 5000000000,
-    ),
-    const BarValue(
-      valueX: 6,
-      name: 'Jul',
-      valueY: 7000000000,
-    ),
-    const BarValue(
-      valueX: 7,
-      name: 'Aug',
-      valueY: 3000000000,
-    ),
-    const BarValue(
-      valueX: 8,
-      name: 'Sep',
-      valueY: 5000000000,
-    ),
-    const BarValue(
-      valueX: 9,
-      name: 'Oct',
-      valueY: 7000000000,
-    ),
-    const BarValue(
-      valueX: 10,
-      name: 'Nov',
-      valueY: 3000000000,
-    ),
-    const BarValue(
-      valueX: 11,
-      name: 'Dec',
-      valueY: 5000000000,
-    ),
-  ];
+  final ProfileService _profileService = getIt.get<ProfileService>();
 
-  final List<BarValue> dummyLastMonthValues = <BarValue>[
-    const BarValue(
-      valueX: 0,
-      name: '1',
-      valueY: 2000000000,
-    ),
-    const BarValue(
-      valueX: 1,
-      name: '2',
-      valueY: 11000000000,
-    ),
-    const BarValue(
-      valueX: 2,
-      name: '3',
-      valueY: 6000000000,
-    ),
-    const BarValue(
-      valueX: 3,
-      name: '4',
-      valueY: 1000000000,
-    ),
-    const BarValue(
-      valueX: 4,
-      name: '5',
-      valueY: 3000000000,
-    ),
-    const BarValue(
-      valueX: 5,
-      name: '6',
-      valueY: 5000000000,
-    ),
-    const BarValue(
-      valueX: 6,
-      name: '7',
-      valueY: 7000000000,
-    ),
-    const BarValue(
-      valueX: 7,
-      name: '8',
-      valueY: 3000000000,
-    ),
-    const BarValue(
-      valueX: 8,
-      name: '9',
-      valueY: 5000000000,
-    ),
-    const BarValue(
-      valueX: 9,
-      name: '10',
-      valueY: 7000000000,
-    ),
-    const BarValue(
-      valueX: 10,
-      name: '11',
-      valueY: 3000000000,
-    ),
-    const BarValue(
-      valueX: 11,
-      name: '12',
-      valueY: 5000000000,
-    ),
-    const BarValue(
-      valueX: 12,
-      name: '13',
-      valueY: 2000000000,
-    ),
-    const BarValue(
-      valueX: 13,
-      name: '14',
-      valueY: 11000000000,
-    ),
-    const BarValue(
-      valueX: 14,
-      name: '15',
-      valueY: 6000000000,
-    ),
-    const BarValue(
-      valueX: 15,
-      name: '16',
-      valueY: 1000000000,
-    ),
-    const BarValue(
-      valueX: 16,
-      name: '17',
-      valueY: 3000000000,
-    ),
-    const BarValue(
-      valueX: 17,
-      name: '18',
-      valueY: 5000000000,
-    ),
-    const BarValue(
-      valueX: 18,
-      name: '19',
-      valueY: 7000000000,
-    ),
-    const BarValue(
-      valueX: 19,
-      name: '20',
-      valueY: 3000000000,
-    ),
-    const BarValue(
-      valueX: 20,
-      name: '21',
-      valueY: 5000000000,
-    ),
-    const BarValue(
-      valueX: 21,
-      name: '22',
-      valueY: 7000000000,
-    ),
-    const BarValue(
-      valueX: 22,
-      name: '23',
-      valueY: 3000000000,
-    ),
-    const BarValue(
-      valueX: 23,
-      name: '24',
-      valueY: 5000000000,
-    ),
-    const BarValue(
-      valueX: 24,
-      name: '25',
-      valueY: 7000000000,
-    ),
-    const BarValue(
-      valueX: 25,
-      name: '26',
-      valueY: 3000000000,
-    ),
-    const BarValue(
-      valueX: 26,
-      name: '27',
-      valueY: 5000000000,
-    ),
-    const BarValue(
-      valueX: 27,
-      name: '28',
-      valueY: 7000000000,
-    ),
-    const BarValue(
-      valueX: 28,
-      name: '29',
-      valueY: 3000000000,
-    ),
-    const BarValue(
-      valueX: 29,
-      name: '30',
-      valueY: 5000000000,
-    ),
-  ];
-  final List<BarValue> dummyYesterdayValues = <BarValue>[
-    const BarValue(
-      valueX: 0,
-      name: '1',
-      valueY: 2000000000,
-    ),
-    const BarValue(
-      valueX: 1,
-      name: '2',
-      valueY: 11000000000,
-    ),
-    const BarValue(
-      valueX: 2,
-      name: '3',
-      valueY: 6000000000,
-    ),
-    const BarValue(
-      valueX: 3,
-      name: '4',
-      valueY: 1000000000,
-    ),
-    const BarValue(
-      valueX: 4,
-      name: '5',
-      valueY: 3000000000,
-    ),
-    const BarValue(
-      valueX: 5,
-      name: '6',
-      valueY: 5000000000,
-    ),
-    const BarValue(
-      valueX: 6,
-      name: '7',
-      valueY: 7000000000,
-    ),
-    const BarValue(
-      valueX: 7,
-      name: '8',
-      valueY: 3000000000,
-    ),
-    const BarValue(
-      valueX: 8,
-      name: '9',
-      valueY: 5000000000,
-    ),
-    const BarValue(
-      valueX: 9,
-      name: '10',
-      valueY: 7000000000,
-    ),
-    const BarValue(
-      valueX: 10,
-      name: '11',
-      valueY: 3000000000,
-    ),
-    const BarValue(
-      valueX: 11,
-      name: '12',
-      valueY: 5000000000,
-    ),
-    const BarValue(
-      valueX: 12,
-      name: '13',
-      valueY: 2000000000,
-    ),
-    const BarValue(
-      valueX: 13,
-      name: '14',
-      valueY: 11000000000,
-    ),
-    const BarValue(
-      valueX: 14,
-      name: '15',
-      valueY: 6000000000,
-    ),
-    const BarValue(
-      valueX: 15,
-      name: '16',
-      valueY: 1000000000,
-    ),
-    const BarValue(
-      valueX: 16,
-      name: '17',
-      valueY: 3000000000,
-    ),
-    const BarValue(
-      valueX: 17,
-      name: '18',
-      valueY: 5000000000,
-    ),
-    const BarValue(
-      valueX: 18,
-      name: '19',
-      valueY: 7000000000,
-    ),
-    const BarValue(
-      valueX: 19,
-      name: '20',
-      valueY: 3000000000,
-    ),
-    const BarValue(
-      valueX: 20,
-      name: '21',
-      valueY: 5000000000,
-    ),
-    const BarValue(
-      valueX: 21,
-      name: '22',
-      valueY: 7000000000,
-    ),
-    const BarValue(
-      valueX: 22,
-      name: '23',
-      valueY: 3000000000,
-    ),
-    const BarValue(
-      valueX: 23,
-      name: '24',
-      valueY: 5000000000,
-    ),
-  ];
+  final GetLast12MonthsTotalInteractor _getLast12MonthsTotalInteractor =
+      getIt.get<GetLast12MonthsTotalInteractor>();
+  final GetLastYearTotalInteractor _getLastYearTotalInteractor =
+      getIt.get<GetLastYearTotalInteractor>();
+  final GetLastMonthTotalInteractor _getLastMonthTotalInteractor =
+      getIt.get<GetLastMonthTotalInteractor>();
+  final GetYesterdayTotalInteractor _getYesterdayTotalInteractor =
+      getIt.get<GetYesterdayTotalInteractor>();
+  final GetLast12MonthsTicketCountInteractor
+      _getLast12MonthsTicketCountInteractor =
+      getIt.get<GetLast12MonthsTicketCountInteractor>();
+  final GetLastYearTicketCountInteractor _getLastYearTicketCountInteractor =
+      getIt.get<GetLastYearTicketCountInteractor>();
+  final GetLastMonthTicketCountInteractor _getLastMonthTicketCountInteractor =
+      getIt.get<GetLastMonthTicketCountInteractor>();
+  final GetYesterdayTicketCountInteractor _getYesterdayTicketCountInteractor =
+      getIt.get<GetYesterdayTicketCountInteractor>();
 
-  final List<BarValue> dummyVehicleCount12MonthValues = <BarValue>[
-    const BarValue(
-      valueX: 0,
-      name: 'Jan',
-      valueY: 200,
-    ),
-    const BarValue(
-      valueX: 1,
-      name: 'Feb',
-      valueY: 1100,
-    ),
-    const BarValue(
-      valueX: 2,
-      name: 'Mar',
-      valueY: 600,
-    ),
-    const BarValue(
-      valueX: 3,
-      name: 'Apr',
-      valueY: 100,
-    ),
-    const BarValue(
-      valueX: 4,
-      name: 'May',
-      valueY: 300,
-    ),
-    const BarValue(
-      valueX: 5,
-      name: 'Jun',
-      valueY: 500,
-    ),
-    const BarValue(
-      valueX: 6,
-      name: 'Jul',
-      valueY: 700,
-    ),
-    const BarValue(
-      valueX: 7,
-      name: 'Aug',
-      valueY: 300,
-    ),
-    const BarValue(
-      valueX: 8,
-      name: 'Sep',
-      valueY: 500,
-    ),
-    const BarValue(
-      valueX: 9,
-      name: 'Oct',
-      valueY: 700,
-    ),
-    const BarValue(
-      valueX: 10,
-      name: 'Nov',
-      valueY: 300,
-    ),
-    const BarValue(
-      valueX: 11,
-      name: 'Dec',
-      valueY: 500,
-    ),
-  ];
-  final List<BarValue> dummyVehicleCountLastYearValues = <BarValue>[
-    const BarValue(
-      valueX: 0,
-      name: 'Jan',
-      valueY: 200,
-    ),
-    const BarValue(
-      valueX: 1,
-      name: 'Feb',
-      valueY: 1100,
-    ),
-    const BarValue(
-      valueX: 2,
-      name: 'Mar',
-      valueY: 600,
-    ),
-    const BarValue(
-      valueX: 3,
-      name: 'Apr',
-      valueY: 100,
-    ),
-    const BarValue(
-      valueX: 4,
-      name: 'May',
-      valueY: 300,
-    ),
-    const BarValue(
-      valueX: 5,
-      name: 'Jun',
-      valueY: 500,
-    ),
-    const BarValue(
-      valueX: 6,
-      name: 'Jul',
-      valueY: 700,
-    ),
-    const BarValue(
-      valueX: 7,
-      name: 'Aug',
-      valueY: 300,
-    ),
-    const BarValue(
-      valueX: 8,
-      name: 'Sep',
-      valueY: 500,
-    ),
-    const BarValue(
-      valueX: 9,
-      name: 'Oct',
-      valueY: 700,
-    ),
-    const BarValue(
-      valueX: 10,
-      name: 'Nov',
-      valueY: 300,
-    ),
-    const BarValue(
-      valueX: 11,
-      name: 'Dec',
-      valueY: 500,
-    ),
-  ];
-  final List<BarValue> dummyVehicleCountLastMonthValues = <BarValue>[
-    const BarValue(
-      valueX: 0,
-      name: '1',
-      valueY: 200,
-    ),
-    const BarValue(
-      valueX: 1,
-      name: '2',
-      valueY: 1100,
-    ),
-    const BarValue(
-      valueX: 2,
-      name: '3',
-      valueY: 600,
-    ),
-    const BarValue(
-      valueX: 3,
-      name: '4',
-      valueY: 100,
-    ),
-    const BarValue(
-      valueX: 4,
-      name: '5',
-      valueY: 300,
-    ),
-    const BarValue(
-      valueX: 5,
-      name: '6',
-      valueY: 500,
-    ),
-    const BarValue(
-      valueX: 6,
-      name: '7',
-      valueY: 700,
-    ),
-    const BarValue(
-      valueX: 7,
-      name: '8',
-      valueY: 300,
-    ),
-    const BarValue(
-      valueX: 8,
-      name: '9',
-      valueY: 500,
-    ),
-    const BarValue(
-      valueX: 9,
-      name: '10',
-      valueY: 700,
-    ),
-    const BarValue(
-      valueX: 10,
-      name: '11',
-      valueY: 300,
-    ),
-    const BarValue(
-      valueX: 11,
-      name: '12',
-      valueY: 500,
-    ),
-    const BarValue(
-      valueX: 12,
-      name: '13',
-      valueY: 200,
-    ),
-    const BarValue(
-      valueX: 13,
-      name: '14',
-      valueY: 1100,
-    ),
-    const BarValue(
-      valueX: 14,
-      name: '15',
-      valueY: 600,
-    ),
-    const BarValue(
-      valueX: 15,
-      name: '16',
-      valueY: 100,
-    ),
-    const BarValue(
-      valueX: 16,
-      name: '17',
-      valueY: 300,
-    ),
-    const BarValue(
-      valueX: 17,
-      name: '18',
-      valueY: 500,
-    ),
-    const BarValue(
-      valueX: 18,
-      name: '19',
-      valueY: 700,
-    ),
-    const BarValue(
-      valueX: 19,
-      name: '20',
-      valueY: 300,
-    ),
-    const BarValue(
-      valueX: 20,
-      name: '21',
-      valueY: 500,
-    ),
-    const BarValue(
-      valueX: 21,
-      name: '22',
-      valueY: 700,
-    ),
-    const BarValue(
-      valueX: 22,
-      name: '23',
-      valueY: 300,
-    ),
-    const BarValue(
-      valueX: 23,
-      name: '24',
-      valueY: 500,
-    ),
-    const BarValue(
-      valueX: 24,
-      name: '25',
-      valueY: 700,
-    ),
-    const BarValue(
-      valueX: 25,
-      name: '26',
-      valueY: 300,
-    ),
-    const BarValue(
-      valueX: 26,
-      name: '27',
-      valueY: 500,
-    ),
-    const BarValue(
-      valueX: 27,
-      name: '28',
-      valueY: 700,
-    ),
-    const BarValue(
-      valueX: 28,
-      name: '29',
-      valueY: 300,
-    ),
-    const BarValue(
-      valueX: 29,
-      name: '30',
-      valueY: 500,
-    ),
-  ];
-  final List<BarValue> dummyVehicleCountYesterdayValues = <BarValue>[
-    const BarValue(
-      valueX: 0,
-      name: '1',
-      valueY: 200,
-    ),
-    const BarValue(
-      valueX: 1,
-      name: '2',
-      valueY: 1100,
-    ),
-    const BarValue(
-      valueX: 2,
-      name: '3',
-      valueY: 600,
-    ),
-    const BarValue(
-      valueX: 3,
-      name: '4',
-      valueY: 100,
-    ),
-    const BarValue(
-      valueX: 4,
-      name: '5',
-      valueY: 300,
-    ),
-    const BarValue(
-      valueX: 5,
-      name: '6',
-      valueY: 500,
-    ),
-    const BarValue(
-      valueX: 6,
-      name: '7',
-      valueY: 700,
-    ),
-    const BarValue(
-      valueX: 7,
-      name: '8',
-      valueY: 300,
-    ),
-    const BarValue(
-      valueX: 8,
-      name: '9',
-      valueY: 500,
-    ),
-    const BarValue(
-      valueX: 9,
-      name: '10',
-      valueY: 700,
-    ),
-    const BarValue(
-      valueX: 10,
-      name: '11',
-      valueY: 300,
-    ),
-    const BarValue(
-      valueX: 11,
-      name: '12',
-      valueY: 500,
-    ),
-    const BarValue(
-      valueX: 12,
-      name: '13',
-      valueY: 200,
-    ),
-    const BarValue(
-      valueX: 13,
-      name: '14',
-      valueY: 1100,
-    ),
-    const BarValue(
-      valueX: 14,
-      name: '15',
-      valueY: 600,
-    ),
-    const BarValue(
-      valueX: 15,
-      name: '16',
-      valueY: 100,
-    ),
-    const BarValue(
-      valueX: 16,
-      name: '17',
-      valueY: 300,
-    ),
-    const BarValue(
-      valueX: 17,
-      name: '18',
-      valueY: 500,
-    ),
-    const BarValue(
-      valueX: 18,
-      name: '19',
-      valueY: 700,
-    ),
-    const BarValue(
-      valueX: 19,
-      name: '20',
-      valueY: 300,
-    ),
-    const BarValue(
-      valueX: 20,
-      name: '21',
-      valueY: 500,
-    ),
-    const BarValue(
-      valueX: 21,
-      name: '22',
-      valueY: 700,
-    ),
-    const BarValue(
-      valueX: 22,
-      name: '23',
-      valueY: 300,
-    ),
-    const BarValue(
-      valueX: 23,
-      name: '24',
-      valueY: 500,
-    ),
-  ];
+  final ValueNotifier<GetLast12MonthsTotalState> getLast12MonthsTotalState =
+      ValueNotifier<GetLast12MonthsTotalState>(
+    const GetLast12MonthsTotalInitial(),
+  );
+  final ValueNotifier<GetLastMonthTotalState> getLastMonthTotalState =
+      ValueNotifier<GetLastMonthTotalState>(
+    const GetLastMonthTotalInitial(),
+  );
+  final ValueNotifier<GetLastYearTotalState> getLastYearTotalState =
+      ValueNotifier<GetLastYearTotalState>(
+    const GetLastYearTotalInitial(),
+  );
+  final ValueNotifier<GetYesterdayTotalState> getYesterdayTotalState =
+      ValueNotifier<GetYesterdayTotalState>(
+    const GetYesterdayTotalInitial(),
+  );
+  final ValueNotifier<GetLast12MonthsTicketCountState>
+      getLast12MonthsTicketCountState =
+      ValueNotifier<GetLast12MonthsTicketCountState>(
+    const GetLast12MonthsTicketCountInitial(),
+  );
+  final ValueNotifier<GetLastYearTicketCountState> getLastYearTicketCountState =
+      ValueNotifier<GetLastYearTicketCountState>(
+    const GetLastYearTicketCountInitial(),
+  );
+  final ValueNotifier<GetLastMonthTicketCountState>
+      getLastMonthTicketCountState =
+      ValueNotifier<GetLastMonthTicketCountState>(
+    const GetLastMonthTicketCountInitial(),
+  );
+  final ValueNotifier<GetYesterdayTicketCountState>
+      getYesterdayTicketCountState =
+      ValueNotifier<GetYesterdayTicketCountState>(
+    const GetYesterdayTicketCountInitial(),
+  );
 
-  final num totalRevenueLast12Month = 50000000000;
-  final num totalRevenueLastYear = 60000000000;
-  final num totalRevenueLastMonth = 7000000000;
-  final num totalRevenueYesterday = 8000000000;
-  final int totalVehicleCountLast12Month = 5000;
-  final int totalVehicleCountLastYear = 6000;
-  final int totalVehicleCountLastMonth = 700;
-  final int totalVehicleCountYesterday = 800;
+  final ValueNotifier<List<BarValue>> revenueChartValues =
+      ValueNotifier<List<BarValue>>(<BarValue>[]);
+  final ValueNotifier<List<BarValue>> vehicleCountChartValues =
+      ValueNotifier<List<BarValue>>(<BarValue>[]);
+  final ValueNotifier<num> totalRevenue = ValueNotifier<num>(0);
+  final ValueNotifier<int> totalVehicleCount = ValueNotifier<int>(0);
 
+  // TODO: Remove
   final ValueNotifier<PreviousAnalysisViewType> viewTypeRevenue =
       ValueNotifier<PreviousAnalysisViewType>(
     PreviousAnalysisViewType.last12months,
@@ -845,15 +128,89 @@ class PreviousAnalysisController extends State<PreviousAnalysis>
     PreviousAnalysisViewType.last12months,
   );
 
+  StreamSubscription<Either<Failure, Success>>? _last12MonthsTotalSubscription;
+  StreamSubscription<Either<Failure, Success>>? _lastYearTotalSubscription;
+  StreamSubscription<Either<Failure, Success>>? _lastMonthTotalSubscription;
+  StreamSubscription<Either<Failure, Success>>? _yesterdayTotalSubscription;
+  StreamSubscription<Either<Failure, Success>>?
+      _last12MonthsTicketCountSubscription;
+  StreamSubscription<Either<Failure, Success>>?
+      _lastYearTicketCountSubscription;
+  StreamSubscription<Either<Failure, Success>>?
+      _lastMonthTicketCountSubscription;
+  StreamSubscription<Either<Failure, Success>>?
+      _yesterdayTicketCountSubscription;
+
   @override
   void initState() {
     super.initState();
+    _getLast12MonthsTotal(
+      dropdownArea: DropdownArea.chart,
+    );
+    _getLast12MonthsTotal(
+      dropdownArea: DropdownArea.total,
+    );
+    _getLast12MonthsTicketCount(
+      dropdownArea: DropdownArea.chart,
+    );
+    _getLast12MonthsTicketCount(
+      dropdownArea: DropdownArea.total,
+    );
   }
 
   @override
   void dispose() {
+    _cancelSubscriptions();
     _disposeNotifiers();
     super.dispose();
+  }
+
+  Future<String?> _getParkingId() async {
+    final profile = _profileService.userProfile;
+
+    if (profile == null || !_profileService.isAuthenticated) {
+      await _showRequiredLogin();
+
+      return null;
+    }
+
+    if (profile.accountType == AccountType.employee) {
+      final parkingEmployee = _profileService.parkingEmployee;
+
+      if (parkingEmployee == null) {
+        await _showRequiredLogin();
+
+        return null;
+      } else {
+        return parkingEmployee.parkingId;
+      }
+    } else if (profile.accountType == AccountType.parkingOwner) {
+      final parkingOwner = _profileService.parkingOwner;
+
+      if (parkingOwner == null) {
+        await _showRequiredLogin();
+
+        return null;
+      } else {
+        return parkingOwner.parkingId;
+      }
+    }
+
+    return null;
+  }
+
+  Future<void> _showRequiredLogin() async {
+    await DialogUtils.showRequiredLogin(context);
+    _navigateToLogin();
+  }
+
+  void _navigateToLogin() {
+    if (mounted) {
+      NavigationUtils.navigateTo(
+        context: context,
+        path: AppPaths.login,
+      );
+    }
   }
 
   void _disposeNotifiers() {
@@ -861,6 +218,38 @@ class PreviousAnalysisController extends State<PreviousAnalysis>
     viewTypeVehicleCount.dispose();
     viewTypeTotalRevenue.dispose();
     viewTypeTotalVehicleCount.dispose();
+
+    getLast12MonthsTotalState.dispose();
+    getLastYearTotalState.dispose();
+    getLastMonthTotalState.dispose();
+    getYesterdayTotalState.dispose();
+    revenueChartValues.dispose();
+    vehicleCountChartValues.dispose();
+    getLast12MonthsTicketCountState.dispose();
+    getLastYearTicketCountState.dispose();
+    getLastMonthTicketCountState.dispose();
+    getYesterdayTicketCountState.dispose();
+    totalRevenue.dispose();
+    totalVehicleCount.dispose();
+  }
+
+  void _cancelSubscriptions() {
+    _last12MonthsTotalSubscription?.cancel();
+    _lastYearTotalSubscription?.cancel();
+    _lastMonthTotalSubscription?.cancel();
+    _yesterdayTotalSubscription?.cancel();
+    _last12MonthsTicketCountSubscription?.cancel();
+    _lastYearTicketCountSubscription?.cancel();
+    _lastMonthTicketCountSubscription?.cancel();
+    _yesterdayTicketCountSubscription?.cancel();
+    _last12MonthsTotalSubscription = null;
+    _lastYearTotalSubscription = null;
+    _lastMonthTotalSubscription = null;
+    _yesterdayTotalSubscription = null;
+    _last12MonthsTicketCountSubscription = null;
+    _lastYearTicketCountSubscription = null;
+    _lastMonthTicketCountSubscription = null;
+    _yesterdayTicketCountSubscription = null;
   }
 
   String getFormattedCurrency(num value, String locale) {
@@ -877,23 +266,108 @@ class PreviousAnalysisController extends State<PreviousAnalysis>
 
   void onSelectViewTypeRevenue(PreviousAnalysisViewType selectedViewType) {
     viewTypeRevenue.value = selectedViewType;
-    //TODO: Implement fetch data from API
+    switch (selectedViewType) {
+      case PreviousAnalysisViewType.last12months:
+        _getLast12MonthsTotal(
+          dropdownArea: DropdownArea.chart,
+        );
+        break;
+      case PreviousAnalysisViewType.lastYear:
+        _getLastYearTotal(
+          dropdownArea: DropdownArea.chart,
+        );
+        break;
+      case PreviousAnalysisViewType.lastMonth:
+        _getLastMonthTotal(
+          dropdownArea: DropdownArea.chart,
+        );
+        break;
+      case PreviousAnalysisViewType.yesterday:
+        _getYesterdayTotal(
+          dropdownArea: DropdownArea.chart,
+        );
+        break;
+    }
   }
 
   void onSelectViewTypeVehicleCount(PreviousAnalysisViewType selectedViewType) {
     viewTypeVehicleCount.value = selectedViewType;
-    //TODO: Implement fetch data from API
+    switch (selectedViewType) {
+      case PreviousAnalysisViewType.last12months:
+        _getLast12MonthsTicketCount(
+          dropdownArea: DropdownArea.chart,
+        );
+        break;
+      case PreviousAnalysisViewType.lastYear:
+        _getLastYearTicketCount(
+          dropdownArea: DropdownArea.chart,
+        );
+        break;
+      case PreviousAnalysisViewType.lastMonth:
+        _getLastMonthTicketCount(
+          dropdownArea: DropdownArea.chart,
+        );
+        break;
+      case PreviousAnalysisViewType.yesterday:
+        _getYesterdayTicketCount(
+          dropdownArea: DropdownArea.chart,
+        );
+        break;
+    }
   }
 
   void onSelectViewTypeTotalRevenue(PreviousAnalysisViewType selectedViewType) {
     viewTypeTotalRevenue.value = selectedViewType;
-    //TODO: Implement fetch data from API
+    switch (selectedViewType) {
+      case PreviousAnalysisViewType.last12months:
+        _getLast12MonthsTotal(
+          dropdownArea: DropdownArea.total,
+        );
+        break;
+      case PreviousAnalysisViewType.lastYear:
+        _getLastYearTotal(
+          dropdownArea: DropdownArea.total,
+        );
+        break;
+      case PreviousAnalysisViewType.lastMonth:
+        _getLastMonthTotal(
+          dropdownArea: DropdownArea.total,
+        );
+        break;
+      case PreviousAnalysisViewType.yesterday:
+        _getYesterdayTotal(
+          dropdownArea: DropdownArea.total,
+        );
+        break;
+    }
   }
 
   void onSelectViewTypeTotalVehicleCount(
-      PreviousAnalysisViewType selectedViewType) {
+    PreviousAnalysisViewType selectedViewType,
+  ) {
     viewTypeTotalVehicleCount.value = selectedViewType;
-    //TODO: Implement fetch data from API
+    switch (selectedViewType) {
+      case PreviousAnalysisViewType.last12months:
+        _getLast12MonthsTicketCount(
+          dropdownArea: DropdownArea.total,
+        );
+        break;
+      case PreviousAnalysisViewType.lastYear:
+        _getLastYearTicketCount(
+          dropdownArea: DropdownArea.total,
+        );
+        break;
+      case PreviousAnalysisViewType.lastMonth:
+        _getLastMonthTicketCount(
+          dropdownArea: DropdownArea.total,
+        );
+        break;
+      case PreviousAnalysisViewType.yesterday:
+        _getYesterdayTicketCount(
+          dropdownArea: DropdownArea.total,
+        );
+        break;
+    }
   }
 
   void onExportRevenue() {
@@ -904,6 +378,546 @@ class PreviousAnalysisController extends State<PreviousAnalysis>
   void onExportVehicleCount() {
     loggy.info('Export vehicle count');
     //TODO: Implement export vehicle count
+  }
+
+  Future<void> _getLast12MonthsTotal({
+    required DropdownArea dropdownArea,
+  }) async {
+    final parkingId = await _getParkingId();
+
+    if (parkingId == null) {
+      await _showRequiredLogin();
+
+      return;
+    }
+
+    _last12MonthsTotalSubscription =
+        _getLast12MonthsTotalInteractor.execute(parkingId: parkingId).listen(
+              (result) => result.fold(
+                _handleGetLast12MonthsTotalFailure,
+                (success) => _handleGetLast12MonthsTotalSuccess(
+                  success,
+                  dropdownArea: dropdownArea,
+                ),
+              ),
+            );
+  }
+
+  Future<void> _getLastYearTotal({
+    required DropdownArea dropdownArea,
+  }) async {
+    final parkingId = await _getParkingId();
+
+    if (parkingId == null) {
+      await _showRequiredLogin();
+
+      return;
+    }
+
+    _lastYearTotalSubscription =
+        _getLastYearTotalInteractor.execute(parkingId: parkingId).listen(
+              (result) => result.fold(
+                _handleGetLastYearTotalFailure,
+                (success) => _handleGetLastYearTotalSuccess(
+                  success,
+                  dropdownArea: dropdownArea,
+                ),
+              ),
+            );
+  }
+
+  Future<void> _getLastMonthTotal({
+    required DropdownArea dropdownArea,
+  }) async {
+    final parkingId = await _getParkingId();
+
+    if (parkingId == null) {
+      await _showRequiredLogin();
+
+      return;
+    }
+
+    _lastMonthTotalSubscription =
+        _getLastMonthTotalInteractor.execute(parkingId: parkingId).listen(
+              (result) => result.fold(
+                _handleGetLastMonthTotalFailure,
+                (success) => _handleGetLastMonthTotalSuccess(
+                  success,
+                  dropdownArea: dropdownArea,
+                ),
+              ),
+            );
+  }
+
+  Future<void> _getYesterdayTotal({
+    required DropdownArea dropdownArea,
+  }) async {
+    final parkingId = await _getParkingId();
+
+    if (parkingId == null) {
+      await _showRequiredLogin();
+
+      return;
+    }
+
+    _yesterdayTotalSubscription =
+        _getYesterdayTotalInteractor.execute(parkingId: parkingId).listen(
+              (result) => result.fold(
+                _handleGetYesterdayTotalFailure,
+                (success) => _handleGetYesterdayTotalSuccess(
+                  success,
+                  dropdownArea: dropdownArea,
+                ),
+              ),
+            );
+  }
+
+  Future<void> _getLast12MonthsTicketCount({
+    required DropdownArea dropdownArea,
+  }) async {
+    final parkingId = await _getParkingId();
+
+    if (parkingId == null) {
+      await _showRequiredLogin();
+
+      return;
+    }
+
+    _last12MonthsTicketCountSubscription = _getLast12MonthsTicketCountInteractor
+        .execute(parkingId: parkingId)
+        .listen(
+          (result) => result.fold(
+            _handleGetLast12MonthsTicketCountFailure,
+            (success) => _handleGetLast12MonthsTicketCountSuccess(
+              success,
+              dropdownArea: dropdownArea,
+            ),
+          ),
+        );
+  }
+
+  Future<void> _getLastYearTicketCount({
+    required DropdownArea dropdownArea,
+  }) async {
+    final parkingId = await _getParkingId();
+
+    if (parkingId == null) {
+      await _showRequiredLogin();
+
+      return;
+    }
+
+    _lastYearTicketCountSubscription =
+        _getLastYearTicketCountInteractor.execute(parkingId: parkingId).listen(
+              (result) => result.fold(
+                _handleGetLastYearTicketCountFailure,
+                (success) => _handleGetLastYearTicketCountSuccess(
+                  success,
+                  dropdownArea: dropdownArea,
+                ),
+              ),
+            );
+  }
+
+  Future<void> _getLastMonthTicketCount({
+    required DropdownArea dropdownArea,
+  }) async {
+    final parkingId = await _getParkingId();
+
+    if (parkingId == null) {
+      await _showRequiredLogin();
+
+      return;
+    }
+
+    _lastMonthTicketCountSubscription =
+        _getLastMonthTicketCountInteractor.execute(parkingId: parkingId).listen(
+              (result) => result.fold(
+                _handleGetLastMonthTicketCountFailure,
+                (success) => _handleGetLastMonthTicketCountSuccess(
+                  success,
+                  dropdownArea: dropdownArea,
+                ),
+              ),
+            );
+  }
+
+  Future<void> _getYesterdayTicketCount({
+    required DropdownArea dropdownArea,
+  }) async {
+    final parkingId = await _getParkingId();
+
+    if (parkingId == null) {
+      await _showRequiredLogin();
+
+      return;
+    }
+
+    _yesterdayTicketCountSubscription =
+        _getYesterdayTicketCountInteractor.execute(parkingId: parkingId).listen(
+              (result) => result.fold(
+                _handleGetYesterdayTicketCountFailure,
+                (success) => _handleGetYesterdayTicketCountSuccess(
+                  success,
+                  dropdownArea: dropdownArea,
+                ),
+              ),
+            );
+  }
+
+  void _handleGetLast12MonthsTotalFailure(Failure failure) {
+    loggy.error('Get last 12 months total failure: $failure');
+    if (failure is GetLast12MonthsTotalFailure) {
+      getLast12MonthsTotalState.value = failure;
+    } else {
+      getLast12MonthsTotalState.value =
+          GetLast12MonthsTotalFailure(exception: failure);
+    }
+  }
+
+  void _handleGetLast12MonthsTotalSuccess(
+    Success success, {
+    required DropdownArea dropdownArea,
+  }) {
+    loggy.info('Get last 12 months total success: $success');
+    if (success is GetLast12MonthsTotalEmpty) {
+      getLast12MonthsTotalState.value = success;
+      if (dropdownArea == DropdownArea.chart) {
+        revenueChartValues.value = <BarValue>[];
+      } else {
+        totalRevenue.value = 0;
+      }
+    } else if (success is GetLast12MonthsTotalLoading) {
+      getLast12MonthsTotalState.value = success;
+    } else if (success is GetLast12MonthsTotalSuccess) {
+      getLast12MonthsTotalState.value = success;
+
+      if (dropdownArea == DropdownArea.chart) {
+        revenueChartValues.value = success.data
+            .map(
+              (e) => BarValue(
+                valueX: e.valueX,
+                name: e.name,
+                valueY: e.valueY,
+              ),
+            )
+            .toList();
+      } else {
+        for (final item in success.data) {
+          totalRevenue.value += item.valueY;
+        }
+      }
+    }
+  }
+
+  void _handleGetLastYearTotalFailure(Failure failure) {
+    loggy.error('Get last year total failure: $failure');
+    if (failure is GetLastYearTotalFailure) {
+      getLastYearTotalState.value = failure;
+    } else {
+      getLastYearTotalState.value = GetLastYearTotalFailure(exception: failure);
+    }
+  }
+
+  void _handleGetLastYearTotalSuccess(
+    Success success, {
+    required DropdownArea dropdownArea,
+  }) {
+    loggy.info('Get last year total success: $success');
+    if (success is GetLastYearTotalEmpty) {
+      getLastYearTotalState.value = success;
+      if (dropdownArea == DropdownArea.chart) {
+        revenueChartValues.value = <BarValue>[];
+      } else {
+        totalRevenue.value = 0;
+      }
+    } else if (success is GetLastYearTotalLoading) {
+      getLastYearTotalState.value = success;
+    } else if (success is GetLastYearTotalSuccess) {
+      getLastYearTotalState.value = success;
+
+      if (dropdownArea == DropdownArea.chart) {
+        revenueChartValues.value = success.data
+            .map(
+              (e) => BarValue(
+                valueX: e.valueX,
+                name: e.name,
+                valueY: e.valueY,
+              ),
+            )
+            .toList();
+      } else {
+        for (final item in success.data) {
+          totalRevenue.value += item.valueY;
+        }
+      }
+    }
+  }
+
+  void _handleGetLastMonthTotalFailure(Failure failure) {
+    loggy.error('Get last month total failure: $failure');
+    if (failure is GetLastMonthTotalFailure) {
+      getLastMonthTotalState.value = failure;
+    } else {
+      getLastMonthTotalState.value =
+          GetLastMonthTotalFailure(exception: failure);
+    }
+  }
+
+  void _handleGetLastMonthTotalSuccess(
+    Success success, {
+    required DropdownArea dropdownArea,
+  }) {
+    loggy.info('Get last month total success: $success');
+    if (success is GetLastMonthTotalEmpty) {
+      getLastMonthTotalState.value = success;
+      if (dropdownArea == DropdownArea.chart) {
+        revenueChartValues.value = <BarValue>[];
+      } else {
+        totalRevenue.value = 0;
+      }
+    } else if (success is GetLastMonthTotalLoading) {
+      getLastMonthTotalState.value = success;
+    } else if (success is GetLastMonthTotalSuccess) {
+      getLastMonthTotalState.value = success;
+
+      if (dropdownArea == DropdownArea.chart) {
+        revenueChartValues.value = success.data
+            .map(
+              (e) => BarValue(
+                valueX: e.valueX,
+                name: e.name,
+                valueY: e.valueY,
+              ),
+            )
+            .toList();
+      } else {
+        for (final item in success.data) {
+          totalRevenue.value += item.valueY;
+        }
+      }
+    }
+  }
+
+  void _handleGetYesterdayTotalFailure(Failure failure) {
+    loggy.error('Get yesterday total failure: $failure');
+    if (failure is GetYesterdayTotalFailure) {
+      getYesterdayTotalState.value = failure;
+    } else {
+      getYesterdayTotalState.value =
+          GetYesterdayTotalFailure(exception: failure);
+    }
+  }
+
+  void _handleGetYesterdayTotalSuccess(
+    Success success, {
+    required DropdownArea dropdownArea,
+  }) {
+    loggy.info('Get yesterday total success: $success');
+    if (success is GetYesterdayTotalEmpty) {
+      getYesterdayTotalState.value = success;
+      if (dropdownArea == DropdownArea.chart) {
+        revenueChartValues.value = <BarValue>[];
+      } else {
+        totalRevenue.value = 0;
+      }
+    } else if (success is GetYesterdayTotalLoading) {
+      getYesterdayTotalState.value = success;
+    } else if (success is GetYesterdayTotalSuccess) {
+      getYesterdayTotalState.value = success;
+      if (dropdownArea == DropdownArea.chart) {
+        revenueChartValues.value = success.data
+            .map(
+              (e) => BarValue(
+                valueX: e.valueX,
+                name: e.name,
+                valueY: e.valueY,
+              ),
+            )
+            .toList();
+      } else {
+        for (final item in success.data) {
+          totalRevenue.value += item.valueY;
+        }
+      }
+    }
+  }
+
+  void _handleGetLast12MonthsTicketCountFailure(Failure failure) {
+    loggy.error('Get last 12 months ticket count failure: $failure');
+    if (failure is GetLast12MonthsTicketCountFailure) {
+      getLast12MonthsTicketCountState.value = failure;
+    } else {
+      getLast12MonthsTicketCountState.value =
+          GetLast12MonthsTicketCountFailure(exception: failure);
+    }
+  }
+
+  void _handleGetLast12MonthsTicketCountSuccess(
+    Success success, {
+    required DropdownArea dropdownArea,
+  }) {
+    loggy.info('Get last 12 months ticket count success: $success');
+    if (success is GetLast12MonthsTicketCountEmpty) {
+      getLast12MonthsTicketCountState.value = success;
+      if (dropdownArea == DropdownArea.chart) {
+        vehicleCountChartValues.value = <BarValue>[];
+      } else {
+        totalVehicleCount.value = 0;
+      }
+    } else if (success is GetLast12MonthsTicketCountLoading) {
+      getLast12MonthsTicketCountState.value = success;
+    } else if (success is GetLast12MonthsTicketCountSuccess) {
+      getLast12MonthsTicketCountState.value = success;
+
+      if (dropdownArea == DropdownArea.chart) {
+        vehicleCountChartValues.value = success.data
+            .map(
+              (e) => BarValue(
+                valueX: e.valueX,
+                name: e.name,
+                valueY: e.valueY,
+              ),
+            )
+            .toList();
+      } else {
+        for (final item in success.data) {
+          totalVehicleCount.value += item.valueY.toInt();
+        }
+      }
+    }
+  }
+
+  void _handleGetLastYearTicketCountFailure(Failure failure) {
+    loggy.error('Get last year ticket count failure: $failure');
+    if (failure is GetLastYearTicketCountFailure) {
+      getLastYearTicketCountState.value = failure;
+    } else {
+      getLastYearTicketCountState.value =
+          GetLastYearTicketCountFailure(exception: failure);
+    }
+  }
+
+  void _handleGetLastYearTicketCountSuccess(
+    Success success, {
+    required DropdownArea dropdownArea,
+  }) {
+    loggy.info('Get last year ticket count success: $success');
+    if (success is GetLastYearTicketCountEmpty) {
+      getLastYearTicketCountState.value = success;
+      if (dropdownArea == DropdownArea.chart) {
+        vehicleCountChartValues.value = <BarValue>[];
+      } else {
+        totalVehicleCount.value = 0;
+      }
+    } else if (success is GetLastYearTicketCountLoading) {
+      getLastYearTicketCountState.value = success;
+    } else if (success is GetLastYearTicketCountSuccess) {
+      getLastYearTicketCountState.value = success;
+      if (dropdownArea == DropdownArea.chart) {
+        vehicleCountChartValues.value = success.data
+            .map(
+              (e) => BarValue(
+                valueX: e.valueX,
+                name: e.name,
+                valueY: e.valueY,
+              ),
+            )
+            .toList();
+      } else {
+        for (final item in success.data) {
+          totalVehicleCount.value += item.valueY.toInt();
+        }
+      }
+    }
+  }
+
+  void _handleGetLastMonthTicketCountFailure(Failure failure) {
+    loggy.error('Get last month ticket count failure: $failure');
+    if (failure is GetLastMonthTicketCountFailure) {
+      getLastMonthTicketCountState.value = failure;
+    } else {
+      getLastMonthTicketCountState.value =
+          GetLastMonthTicketCountFailure(exception: failure);
+    }
+  }
+
+  void _handleGetLastMonthTicketCountSuccess(
+    Success success, {
+    required DropdownArea dropdownArea,
+  }) {
+    loggy.info('Get last month ticket count success: $success');
+    if (success is GetLastMonthTicketCountEmpty) {
+      getLastMonthTicketCountState.value = success;
+      if (dropdownArea == DropdownArea.chart) {
+        vehicleCountChartValues.value = <BarValue>[];
+      } else {
+        totalVehicleCount.value = 0;
+      }
+    } else if (success is GetLastMonthTicketCountLoading) {
+      getLastMonthTicketCountState.value = success;
+    } else if (success is GetLastMonthTicketCountSuccess) {
+      getLastMonthTicketCountState.value = success;
+      if (dropdownArea == DropdownArea.chart) {
+        vehicleCountChartValues.value = success.data
+            .map(
+              (e) => BarValue(
+                valueX: e.valueX,
+                name: e.name,
+                valueY: e.valueY,
+              ),
+            )
+            .toList();
+      } else {
+        for (final item in success.data) {
+          totalVehicleCount.value += item.valueY.toInt();
+        }
+      }
+    }
+  }
+
+  void _handleGetYesterdayTicketCountFailure(Failure failure) {
+    loggy.error('Get yesterday ticket count failure: $failure');
+    if (failure is GetYesterdayTicketCountFailure) {
+      getYesterdayTicketCountState.value = failure;
+    } else {
+      getYesterdayTicketCountState.value =
+          GetYesterdayTicketCountFailure(exception: failure);
+    }
+  }
+
+  void _handleGetYesterdayTicketCountSuccess(
+    Success success, {
+    required DropdownArea dropdownArea,
+  }) {
+    loggy.info('Get yesterday ticket count success: $success');
+    if (success is GetYesterdayTicketCountEmpty) {
+      getYesterdayTicketCountState.value = success;
+      if (dropdownArea == DropdownArea.chart) {
+        vehicleCountChartValues.value = <BarValue>[];
+      } else {
+        totalVehicleCount.value = 0;
+      }
+    } else if (success is GetYesterdayTicketCountLoading) {
+      getYesterdayTicketCountState.value = success;
+    } else if (success is GetYesterdayTicketCountSuccess) {
+      getYesterdayTicketCountState.value = success;
+      if (dropdownArea == DropdownArea.chart) {
+        vehicleCountChartValues.value = success.data
+            .map(
+              (e) => BarValue(
+                valueX: e.valueX,
+                name: e.name,
+                valueY: e.valueY,
+              ),
+            )
+            .toList();
+      } else {
+        for (final item in success.data) {
+          totalVehicleCount.value += item.valueY.toInt();
+        }
+      }
+    }
   }
 
   @override
