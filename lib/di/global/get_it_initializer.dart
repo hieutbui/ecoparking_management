@@ -19,6 +19,7 @@ import 'package:ecoparking_management/domain/usecase/account/sign_out_interactor
 import 'package:ecoparking_management/domain/usecase/account/update_employee_currency_locale_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/account/update_owner_currency_locale_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/account/update_user_profile_interactor.dart';
+import 'package:ecoparking_management/domain/usecase/analysis/export_data_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/analysis/get_last_12_months_ticket_count_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/analysis/get_last_12_months_total_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/analysis/get_last_month_ticket_count_interactor.dart';
@@ -174,6 +175,9 @@ class GetItInitializer with GetItLoggy {
     );
     getIt.registerLazySingleton<GetLastYearTicketCountInteractor>(
       () => GetLastYearTicketCountInteractor(),
+    );
+    getIt.registerLazySingleton<ExportDataInteractor>(
+      () => ExportDataInteractor(),
     );
     loggy.info('_bindingInteractor(): Setup successfully');
   }

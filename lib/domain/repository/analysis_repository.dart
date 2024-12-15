@@ -1,3 +1,5 @@
+import 'package:ecoparking_management/data/models/analysis_data.dart';
+
 abstract class AnalysisRepository {
   Future<List<Map<String, dynamic>>> getLast12MonthsTotal({
     required String parkingId,
@@ -22,5 +24,9 @@ abstract class AnalysisRepository {
   });
   Future<List<Map<String, dynamic>>> getYesterdayTicketCount({
     required String parkingId,
+  });
+  Future<Map<String, dynamic>> exportData({
+    required List<String> listTitles,
+    required List<AnalysisData> listDatas,
   });
 }
