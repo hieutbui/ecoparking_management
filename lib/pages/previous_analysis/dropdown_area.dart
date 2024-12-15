@@ -1,0 +1,4 @@
+enum DropdownArea {
+  total,
+  chart,
+}
