@@ -1,10 +1,14 @@
 import 'package:ecoparking_management/data/datasource/account_datasource.dart';
+import 'package:ecoparking_management/data/datasource/analysis_datasource.dart';
 import 'package:ecoparking_management/data/datasource/employee_datasource.dart';
 import 'package:ecoparking_management/data/datasource_impl/account_datasource_impl.dart';
+import 'package:ecoparking_management/data/datasource_impl/analysis_datasource_impl.dart';
 import 'package:ecoparking_management/data/datasource_impl/employee_datasource_impl.dart';
 import 'package:ecoparking_management/data/repository/account_repository_impl.dart';
+import 'package:ecoparking_management/data/repository/analysis_repository_impl.dart';
 import 'package:ecoparking_management/data/repository/employee_repository_impl.dart';
 import 'package:ecoparking_management/domain/repository/account_repository.dart';
+import 'package:ecoparking_management/domain/repository/analysis_repository.dart';
 import 'package:ecoparking_management/domain/repository/employee_repository.dart';
 import 'package:ecoparking_management/domain/services/profile_service.dart';
 import 'package:ecoparking_management/domain/usecase/account/get_employee_info_interactor.dart';
@@ -15,6 +19,14 @@ import 'package:ecoparking_management/domain/usecase/account/sign_out_interactor
 import 'package:ecoparking_management/domain/usecase/account/update_employee_currency_locale_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/account/update_owner_currency_locale_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/account/update_user_profile_interactor.dart';
+import 'package:ecoparking_management/domain/usecase/analysis/get_last_12_months_ticket_count_interactor.dart';
+import 'package:ecoparking_management/domain/usecase/analysis/get_last_12_months_total_interactor.dart';
+import 'package:ecoparking_management/domain/usecase/analysis/get_last_month_ticket_count_interactor.dart';
+import 'package:ecoparking_management/domain/usecase/analysis/get_last_month_total_interactor.dart';
+import 'package:ecoparking_management/domain/usecase/analysis/get_last_year_ticket_count_interactor.dart';
+import 'package:ecoparking_management/domain/usecase/analysis/get_last_year_total_interactor.dart';
+import 'package:ecoparking_management/domain/usecase/analysis/get_yesterday_ticket_count_interactor.dart';
+import 'package:ecoparking_management/domain/usecase/analysis/get_yesterday_total_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/employee/create_new_employee_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/employee/delete_employee_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/employee/get_all_employee_interactor.dart';
@@ -64,6 +76,9 @@ class GetItInitializer with GetItLoggy {
     getIt.registerFactory<EmployeeDataSource>(
       () => EmployeeDataSourceImpl(),
     );
+    getIt.registerFactory<AnalysisDataSource>(
+      () => AnalysisDataSourceImpl(),
+    );
     loggy.info('_bindingDataSource(): Setup successfully');
   }
 
@@ -74,6 +89,9 @@ class GetItInitializer with GetItLoggy {
     getIt.registerFactory<EmployeeDataSourceImpl>(
       () => EmployeeDataSourceImpl(),
     );
+    getIt.registerFactory<AnalysisDataSourceImpl>(
+      () => AnalysisDataSourceImpl(),
+    );
     loggy.info('_bindingDataSourceImpl(): Setup successfully');
   }
 
@@ -83,6 +101,9 @@ class GetItInitializer with GetItLoggy {
     );
     getIt.registerLazySingleton<EmployeeRepository>(
       () => EmployeeRepositoryImpl(),
+    );
+    getIt.registerLazySingleton<AnalysisRepository>(
+      () => AnalysisRepositoryImpl(),
     );
     loggy.info('_bindingRepository(): Setup successfully');
   }
@@ -129,6 +150,30 @@ class GetItInitializer with GetItLoggy {
     );
     getIt.registerLazySingleton<SearchEmployeeInteractor>(
       () => SearchEmployeeInteractor(),
+    );
+    getIt.registerLazySingleton<GetLast12MonthsTotalInteractor>(
+      () => GetLast12MonthsTotalInteractor(),
+    );
+    getIt.registerLazySingleton<GetYesterdayTotalInteractor>(
+      () => GetYesterdayTotalInteractor(),
+    );
+    getIt.registerLazySingleton<GetLastMonthTotalInteractor>(
+      () => GetLastMonthTotalInteractor(),
+    );
+    getIt.registerLazySingleton<GetLastYearTotalInteractor>(
+      () => GetLastYearTotalInteractor(),
+    );
+    getIt.registerLazySingleton<GetLast12MonthsTicketCountInteractor>(
+      () => GetLast12MonthsTicketCountInteractor(),
+    );
+    getIt.registerLazySingleton<GetYesterdayTicketCountInteractor>(
+      () => GetYesterdayTicketCountInteractor(),
+    );
+    getIt.registerLazySingleton<GetLastMonthTicketCountInteractor>(
+      () => GetLastMonthTicketCountInteractor(),
+    );
+    getIt.registerLazySingleton<GetLastYearTicketCountInteractor>(
+      () => GetLastYearTicketCountInteractor(),
     );
     loggy.info('_bindingInteractor(): Setup successfully');
   }
