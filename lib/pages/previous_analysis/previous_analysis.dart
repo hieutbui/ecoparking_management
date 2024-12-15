@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'package:dartz/dartz.dart' hide State;
 import 'package:ecoparking_management/config/app_paths.dart';
+import 'package:ecoparking_management/data/models/analysis_data.dart';
 import 'package:ecoparking_management/data/models/user_profile.dart';
 import 'package:ecoparking_management/di/global/get_it_initializer.dart';
 import 'package:ecoparking_management/domain/services/profile_service.dart';
+import 'package:ecoparking_management/domain/state/analysis/export_data_state.dart';
 import 'package:ecoparking_management/domain/state/analysis/get_last_12_months_ticket_count_state.dart';
 import 'package:ecoparking_management/domain/state/analysis/get_last_12_months_total_state.dart';
 import 'package:ecoparking_management/domain/state/analysis/get_last_month_ticket_count_state.dart';
@@ -14,6 +16,7 @@ import 'package:ecoparking_management/domain/state/analysis/get_yesterday_ticket
 import 'package:ecoparking_management/domain/state/analysis/get_yesterday_total_state.dart';
 import 'package:ecoparking_management/domain/state/app_state/failure.dart';
 import 'package:ecoparking_management/domain/state/app_state/success.dart';
+import 'package:ecoparking_management/domain/usecase/analysis/export_data_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/analysis/get_last_12_months_ticket_count_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/analysis/get_last_12_months_total_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/analysis/get_last_month_ticket_count_interactor.dart';
@@ -63,6 +66,8 @@ class PreviousAnalysisController extends State<PreviousAnalysis>
       getIt.get<GetLastMonthTicketCountInteractor>();
   final GetYesterdayTicketCountInteractor _getYesterdayTicketCountInteractor =
       getIt.get<GetYesterdayTicketCountInteractor>();
+  final ExportDataInteractor _exportDataInteractor =
+      getIt.get<ExportDataInteractor>();
 
   final ValueNotifier<GetLast12MonthsTotalState> getLast12MonthsTotalState =
       ValueNotifier<GetLast12MonthsTotalState>(
@@ -98,6 +103,14 @@ class PreviousAnalysisController extends State<PreviousAnalysis>
       getYesterdayTicketCountState =
       ValueNotifier<GetYesterdayTicketCountState>(
     const GetYesterdayTicketCountInitial(),
+  );
+  final ValueNotifier<ExportDataState> exportRevenueState =
+      ValueNotifier<ExportDataState>(
+    const ExportDataInitial(),
+  );
+  final ValueNotifier<ExportDataState> exportVehicleCountState =
+      ValueNotifier<ExportDataState>(
+    const ExportDataInitial(),
   );
 
   final ValueNotifier<List<BarValue>> revenueChartValues =
@@ -140,6 +153,8 @@ class PreviousAnalysisController extends State<PreviousAnalysis>
       _lastMonthTicketCountSubscription;
   StreamSubscription<Either<Failure, Success>>?
       _yesterdayTicketCountSubscription;
+  StreamSubscription<Either<Failure, Success>>? _exportRevenueSubscription;
+  StreamSubscription<Either<Failure, Success>>? _exportVehicleCountSubscription;
 
   @override
   void initState() {
@@ -231,6 +246,8 @@ class PreviousAnalysisController extends State<PreviousAnalysis>
     getYesterdayTicketCountState.dispose();
     totalRevenue.dispose();
     totalVehicleCount.dispose();
+    exportRevenueState.dispose();
+    exportVehicleCountState.dispose();
   }
 
   void _cancelSubscriptions() {
@@ -242,6 +259,8 @@ class PreviousAnalysisController extends State<PreviousAnalysis>
     _lastYearTicketCountSubscription?.cancel();
     _lastMonthTicketCountSubscription?.cancel();
     _yesterdayTicketCountSubscription?.cancel();
+    _exportRevenueSubscription?.cancel();
+    _exportVehicleCountSubscription?.cancel();
     _last12MonthsTotalSubscription = null;
     _lastYearTotalSubscription = null;
     _lastMonthTotalSubscription = null;
@@ -250,6 +269,8 @@ class PreviousAnalysisController extends State<PreviousAnalysis>
     _lastYearTicketCountSubscription = null;
     _lastMonthTicketCountSubscription = null;
     _yesterdayTicketCountSubscription = null;
+    _exportRevenueSubscription = null;
+    _exportVehicleCountSubscription = null;
   }
 
   String getFormattedCurrency(num value, String locale) {
@@ -370,14 +391,148 @@ class PreviousAnalysisController extends State<PreviousAnalysis>
     }
   }
 
-  void onExportRevenue() {
+  void onExportRevenue() async {
     loggy.info('Export revenue');
-    //TODO: Implement export revenue
+    List<String> listTitles;
+
+    switch (viewTypeRevenue.value) {
+      case PreviousAnalysisViewType.last12months:
+        listTitles = <String>[
+          'Tháng',
+          'Doanh thu',
+        ];
+        break;
+      case PreviousAnalysisViewType.lastYear:
+        listTitles = <String>[
+          'Tháng',
+          'Doanh thu',
+        ];
+        break;
+      case PreviousAnalysisViewType.lastMonth:
+        listTitles = <String>[
+          'Ngày',
+          'Doanh thu',
+        ];
+        break;
+      case PreviousAnalysisViewType.yesterday:
+        listTitles = <String>[
+          'Giờ',
+          'Doanh thu',
+        ];
+        break;
+    }
+
+    final listDatas = revenueChartValues.value
+        .map(
+          (e) => AnalysisData(
+            valueX: e.valueX,
+            name: e.name,
+            valueY: e.valueY,
+          ),
+        )
+        .toList();
+
+    final action = await DialogUtils.showExportDataDialog(
+      context: context,
+      onExportData: () => _exportRevenue(
+        listTitles: listTitles,
+        listDatas: listDatas,
+      ),
+      notifier: exportRevenueState,
+    );
+
+    switch (action) {
+      case ConfirmAction.ok:
+      case ConfirmAction.cancel:
+      default:
+        return;
+    }
   }
 
-  void onExportVehicleCount() {
+  void onExportVehicleCount() async {
     loggy.info('Export vehicle count');
-    //TODO: Implement export vehicle count
+    List<String> listTitles;
+
+    switch (viewTypeVehicleCount.value) {
+      case PreviousAnalysisViewType.last12months:
+        listTitles = <String>[
+          'Tháng',
+          'Số lượng xe',
+        ];
+        break;
+      case PreviousAnalysisViewType.lastYear:
+        listTitles = <String>[
+          'Tháng',
+          'Số lượng xe',
+        ];
+        break;
+      case PreviousAnalysisViewType.lastMonth:
+        listTitles = <String>[
+          'Ngày',
+          'Số lượng xe',
+        ];
+        break;
+      case PreviousAnalysisViewType.yesterday:
+        listTitles = <String>[
+          'Giờ',
+          'Số lượng xe',
+        ];
+        break;
+    }
+
+    final listDatas = vehicleCountChartValues.value
+        .map(
+          (e) => AnalysisData(
+            valueX: e.valueX,
+            name: e.name,
+            valueY: e.valueY,
+          ),
+        )
+        .toList();
+
+    final action = await DialogUtils.showExportDataDialog(
+      context: context,
+      onExportData: () => _exportVehicleCount(
+        listTitles: listTitles,
+        listDatas: listDatas,
+      ),
+      notifier: exportVehicleCountState,
+    );
+
+    switch (action) {
+      case ConfirmAction.ok:
+      case ConfirmAction.cancel:
+      default:
+        return;
+    }
+  }
+
+  void _exportRevenue({
+    required List<String> listTitles,
+    required List<AnalysisData> listDatas,
+  }) {
+    _exportRevenueSubscription = _exportDataInteractor
+        .execute(listTitles: listTitles, listDatas: listDatas)
+        .listen(
+          (result) => result.fold(
+            _handleExportRevenueFailure,
+            _handleExportRevenueSuccess,
+          ),
+        );
+  }
+
+  void _exportVehicleCount({
+    required List<String> listTitles,
+    required List<AnalysisData> listDatas,
+  }) {
+    _exportVehicleCountSubscription = _exportDataInteractor
+        .execute(listTitles: listTitles, listDatas: listDatas)
+        .listen(
+          (result) => result.fold(
+            _handleExportVehicleCountFailure,
+            _handleExportVehicleCountSuccess,
+          ),
+        );
   }
 
   Future<void> _getLast12MonthsTotal({
@@ -917,6 +1072,42 @@ class PreviousAnalysisController extends State<PreviousAnalysis>
           totalVehicleCount.value += item.valueY.toInt();
         }
       }
+    }
+  }
+
+  void _handleExportRevenueFailure(Failure failure) {
+    loggy.error('Export data failure: $failure');
+    if (failure is ExportDataFailure) {
+      exportRevenueState.value = failure;
+    } else {
+      exportRevenueState.value = ExportDataFailure(exception: failure);
+    }
+  }
+
+  void _handleExportRevenueSuccess(Success success) {
+    loggy.info('Export data success: $success');
+    if (success is ExportDataSuccess) {
+      exportRevenueState.value = success;
+    } else if (success is ExportDataLoading) {
+      exportRevenueState.value = success;
+    }
+  }
+
+  void _handleExportVehicleCountFailure(Failure failure) {
+    loggy.error('Export data failure: $failure');
+    if (failure is ExportDataFailure) {
+      exportVehicleCountState.value = failure;
+    } else {
+      exportVehicleCountState.value = ExportDataFailure(exception: failure);
+    }
+  }
+
+  void _handleExportVehicleCountSuccess(Success success) {
+    loggy.info('Export data success: $success');
+    if (success is ExportDataSuccess) {
+      exportVehicleCountState.value = success;
+    } else if (success is ExportDataLoading) {
+      exportVehicleCountState.value = success;
     }
   }
 
