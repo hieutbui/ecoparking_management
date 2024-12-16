@@ -25,6 +25,13 @@ class LiveOverviewView extends StatelessWidget with ViewLoggy {
   Widget build(BuildContext context) {
     return AppScaffold(
       title: AppPaths.liveOverview.label,
+      actionButton: IconButton(
+        icon: const Icon(
+          Icons.qr_code_rounded,
+          size: LiveOverviewViewStyles.scannerIconSize,
+        ),
+        onPressed: controller.openScanner,
+      ),
       body: SingleChildScrollView(
         physics: const ClampingScrollPhysics(),
         child: Padding(

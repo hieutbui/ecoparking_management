@@ -7,6 +7,7 @@ class AppScaffold extends StatelessWidget {
   final VoidCallback? onNotificationPressed;
   final VoidCallback? onCheckInPressed;
   final VoidCallback? onCheckOutPressed;
+  final Widget? actionButton;
 
   const AppScaffold({
     super.key,
@@ -15,6 +16,7 @@ class AppScaffold extends StatelessWidget {
     this.onNotificationPressed,
     this.onCheckInPressed,
     this.onCheckOutPressed,
+    this.actionButton,
   });
 
   @override
@@ -113,6 +115,10 @@ class AppScaffold extends StatelessWidget {
                 ),
               ),
             ),
+          ],
+          if (actionButton != null) ...[
+            const SizedBox(width: 8.0),
+            actionButton!,
           ],
           const SizedBox(width: 16.0),
         ],

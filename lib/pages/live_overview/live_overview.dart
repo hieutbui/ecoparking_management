@@ -811,6 +811,13 @@ class LiveOverviewController extends State<LiveOverview> with ControllerLoggy {
     //TODO: Check Out
   }
 
+  void openScanner() {
+    NavigationUtils.navigateTo(
+      context: context,
+      path: AppPaths.scanner,
+    );
+  }
+
   void _handleGetParkingInfoFailure(Failure failure) {
     if (failure is GetParkingInfoFailure) {
       getParkingInfoStateNotifier.value = failure;
