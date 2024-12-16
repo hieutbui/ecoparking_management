@@ -378,6 +378,13 @@ class ProfileController extends State<Profile> with ControllerLoggy {
     //TODO: Save working end time
   }
 
+  void openScanner() {
+    NavigationUtils.navigateTo(
+      context: context,
+      path: AppPaths.scanner,
+    );
+  }
+
   void _handleGetUserProfileFailure(Failure failure) {
     loggy.error('Get user profile failure: $failure');
     if (failure is GetUserProfileEmpty) {

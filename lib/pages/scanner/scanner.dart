@@ -1,8 +1,6 @@
 import 'dart:async';
-import 'package:ecoparking_management/config/app_paths.dart';
 import 'package:ecoparking_management/pages/scanner/scanner_view.dart';
 import 'package:ecoparking_management/utils/mixins/custom_logger.dart';
-import 'package:ecoparking_management/utils/navigation_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
