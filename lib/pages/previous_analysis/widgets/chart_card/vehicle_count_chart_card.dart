@@ -65,7 +65,7 @@ class VehicleCountChartCard extends StatelessWidget {
                 args: BarChartInfoArgs(
                   values: values,
                   chartKey: type.chartKey,
-                  locale: controller.dummyLocale,
+                  locale: controller.getCurrencyLocale(),
                   leftTitlesFormatType: LeftTitlesFormatType.number,
                 ),
               );

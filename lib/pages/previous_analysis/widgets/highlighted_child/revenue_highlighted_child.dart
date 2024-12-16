@@ -17,7 +17,7 @@ class RevenueHighlightedChild extends StatelessWidget {
         return Text(
           controller.getFormattedCurrency(
             total,
-            controller.dummyLocale,
+            controller.getCurrencyLocale(),
           ),
           style: Theme.of(context).textTheme.displaySmall!.copyWith(
                 color: Theme.of(context).colorScheme.primary,
