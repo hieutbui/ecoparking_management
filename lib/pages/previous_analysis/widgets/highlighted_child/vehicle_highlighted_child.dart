@@ -17,7 +17,7 @@ class VehicleHighlightedChild extends StatelessWidget {
         return Text(
           controller.getFormattedNumber(
             total,
-            controller.dummyLocale,
+            controller.getCurrencyLocale(),
           ),
           style: Theme.of(context).textTheme.displaySmall!.copyWith(
                 color: Theme.of(context).colorScheme.primary,

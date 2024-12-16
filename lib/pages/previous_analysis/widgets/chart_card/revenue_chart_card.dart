@@ -65,7 +65,7 @@ class RevenueChartCard extends StatelessWidget {
                 args: BarChartInfoArgs(
                   values: values,
                   chartKey: type.chartKey,
-                  locale: controller.dummyLocale,
+                  locale: controller.getCurrencyLocale(),
                 ),
               );
             },

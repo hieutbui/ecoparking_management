@@ -51,7 +51,7 @@ class BarChartInfo extends StatelessWidget {
                   leftTitles: AxisTitles(
                     sideTitles: SideTitles(
                       showTitles: true,
-                      reservedSize: 90,
+                      reservedSize: 120,
                       getTitlesWidget: (value, meta) => _leftTitles(
                         context: context,
                         value: value,
