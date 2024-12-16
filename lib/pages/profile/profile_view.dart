@@ -31,6 +31,13 @@ class ProfileView extends StatelessWidget with ViewLoggy {
   Widget build(BuildContext context) {
     return AppScaffold(
       title: AppPaths.profile.label,
+      actionButton: IconButton(
+        icon: const Icon(
+          Icons.qr_code_rounded,
+          size: ProfileViewStyles.scannerIconSize,
+        ),
+        onPressed: controller.openScanner,
+      ),
       body: ValueListenableBuilder(
         valueListenable: controller.profileUIStateNotifier,
         builder: (context, state, child) {

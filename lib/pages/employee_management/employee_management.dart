@@ -524,6 +524,13 @@ class EmployeeManagementController extends State<EmployeeManagement>
     onDutyEmployees.value = onDuty.length;
   }
 
+  void openScanner() {
+    NavigationUtils.navigateTo(
+      context: context,
+      path: AppPaths.scanner,
+    );
+  }
+
   void _handleGetAllEmployeeFailure(Failure failure) {
     loggy.error('Get All Employee Failure: $failure');
     if (failure is GetAllEmployeeEmpty) {
