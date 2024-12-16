@@ -23,6 +23,13 @@ class PreviousAnalysisView extends StatelessWidget with ViewLoggy {
   Widget build(BuildContext context) {
     return AppScaffold(
       title: AppPaths.previousAnalysis.label,
+      actionButton: IconButton(
+        icon: const Icon(
+          Icons.qr_code_rounded,
+          size: PreviousAnalysisViewStyles.scannerIconSize,
+        ),
+        onPressed: controller.openScanner,
+      ),
       body: SingleChildScrollView(
         physics: const ClampingScrollPhysics(),
         child: Padding(

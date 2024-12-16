@@ -7,6 +7,7 @@ class ProfileViewStyles {
   static const double dummyAvatarHeight = 100.0;
   static const double avatarBottomSpacing = 24.0;
   static const double infoLineSpacing = 8.0;
+  static const double scannerIconSize = 24.0;
 
   static const EdgeInsetsGeometry padding =
       EdgeInsets.symmetric(horizontal: 16.0);

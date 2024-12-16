@@ -749,6 +749,13 @@ class PreviousAnalysisController extends State<PreviousAnalysis>
     return locale;
   }
 
+  void openScanner() {
+    NavigationUtils.navigateTo(
+      context: context,
+      path: AppPaths.scanner,
+    );
+  }
+
   void _handleGetLast12MonthsTotalFailure(Failure failure) {
     loggy.error('Get last 12 months total failure: $failure');
     if (failure is GetLast12MonthsTotalFailure) {
