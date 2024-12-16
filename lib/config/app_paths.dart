@@ -6,7 +6,8 @@ enum AppPaths {
   previousAnalysis,
   profile,
   exceptionScreen,
-  login;
+  login,
+  scanner;
 
   String get path {
     switch (this) {
@@ -22,6 +23,8 @@ enum AppPaths {
         return '/exception-screen';
       case AppPaths.login:
         return '/login';
+      case AppPaths.scanner:
+        return '/scanner';
       default:
         return '/exception-screen';
     }
@@ -41,6 +44,8 @@ enum AppPaths {
         return '/exception-screen';
       case AppPaths.login:
         return '/login';
+      case AppPaths.scanner:
+        return '/scanner';
       default:
         return '/exception-screen';
     }
@@ -60,6 +65,8 @@ enum AppPaths {
         return 'Error';
       case AppPaths.login:
         return 'Login';
+      case AppPaths.scanner:
+        return 'Scanner';
       default:
         return 'Error';
     }
@@ -79,6 +86,8 @@ enum AppPaths {
         return Icons.error_rounded;
       case AppPaths.login:
         return Icons.login_rounded;
+      case AppPaths.scanner:
+        return Icons.qr_code_rounded;
       default:
         return Icons.error_rounded;
     }

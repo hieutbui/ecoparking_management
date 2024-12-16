@@ -9,6 +9,7 @@ import 'package:ecoparking_management/pages/live_overview/live_overview.dart';
 import 'package:ecoparking_management/pages/login/login.dart';
 import 'package:ecoparking_management/pages/previous_analysis/previous_analysis.dart';
 import 'package:ecoparking_management/pages/profile/profile.dart';
+import 'package:ecoparking_management/pages/scanner/scanner.dart';
 import 'package:ecoparking_management/utils/responsive.dart';
 import 'package:ecoparking_management/widgets/app_layout.dart';
 import 'package:flutter/cupertino.dart';
@@ -117,10 +118,19 @@ class AppRoutes {
             name: AppPaths.exceptionScreen.name,
           ),
         ),
+        GoRoute(
+          path: AppPaths.scanner.path,
+          pageBuilder: (context, state) => _defaultPageBuilder(
+            context,
+            const Scanner(),
+            name: AppPaths.scanner.name,
+          ),
+        ),
       ];
 
   static List<String> get _listFullScreenPages => [
         AppPaths.login.path,
+        AppPaths.scanner.path,
       ];
 
   static List<String> get _listScreenRequiredLogin => [
@@ -128,6 +138,7 @@ class AppRoutes {
         AppPaths.previousAnalysis.path,
         AppPaths.employee.path,
         AppPaths.profile.path,
+        AppPaths.scanner.path,
       ];
 
   static Map<String, int> get navBarPathToIndex => {
