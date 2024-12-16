@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:ecoparking_management/config/app_config.dart';
 import 'package:ecoparking_management/config/app_paths.dart';
 import 'package:ecoparking_management/data/models/employee_nested_info.dart';
-import 'package:ecoparking_management/data/models/live_overview/live_overview_infos.dart';
 import 'package:ecoparking_management/data/models/ticket_info.dart';
 import 'package:ecoparking_management/data/models/ticket_status.dart';
 import 'package:ecoparking_management/data/models/user_profile.dart';
@@ -82,11 +81,6 @@ class LiveOverviewController extends State<LiveOverview> with ControllerLoggy {
         'Duration',
         'Charge',
       ];
-
-  //TODO: Implement fetch data from API
-  final dummyLiveOverview = const LiveOverviewInfos(
-    currencyLocale: 'vi_VN',
-  );
 
   bool get isEmployee =>
       _profileService.userProfile?.accountType == AccountType.employee;
@@ -350,7 +344,29 @@ class LiveOverviewController extends State<LiveOverview> with ControllerLoggy {
     _currentEmployeeSubscription = null;
   }
 
-  String getFormattedCurrency(num value, String locale) {
+  String getFormattedCurrency(num value) {
+    const String defaultLocale = 'vi_VN';
+
+    String locale = defaultLocale;
+
+    final profile = _profileService.userProfile;
+
+    if (profile != null && _profileService.isAuthenticated) {
+      if (profile.accountType == AccountType.employee) {
+        final employee = _profileService.parkingEmployee;
+
+        if (employee != null) {
+          locale = employee.currencyLocale;
+        }
+      } else if (profile.accountType == AccountType.parkingOwner) {
+        final owner = _profileService.parkingOwner;
+
+        if (owner != null) {
+          locale = owner.currencyLocale;
+        }
+      }
+    }
+
     final format = NumberFormat.simpleCurrency(locale: locale);
 
     return format.format(value);
@@ -595,7 +611,7 @@ class LiveOverviewController extends State<LiveOverview> with ControllerLoggy {
               ),
               DataCell(
                 Text(
-                  getFormattedCurrency(e.total, 'vi_VN'),
+                  getFormattedCurrency(e.total),
                   style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                         color: Theme.of(context).colorScheme.onTertiary,
                       ),
@@ -761,7 +777,7 @@ class LiveOverviewController extends State<LiveOverview> with ControllerLoggy {
               ),
               DataCell(
                 Text(
-                  getFormattedCurrency(e.total, 'vi_VN'),
+                  getFormattedCurrency(e.total),
                   style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                         color: Theme.of(context).colorScheme.onTertiary,
                       ),

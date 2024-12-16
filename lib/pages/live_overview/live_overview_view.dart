@@ -255,10 +255,7 @@ class LiveOverviewView extends StatelessWidget with ViewLoggy {
                             valueListenable: controller.totalRevenueNotifier,
                             builder: (context, total, child) {
                               return Text(
-                                controller.getFormattedCurrency(
-                                  total,
-                                  controller.dummyLiveOverview.currencyLocale,
-                                ),
+                                controller.getFormattedCurrency(total),
                                 style: Theme.of(context)
                                     .textTheme
                                     .displaySmall!

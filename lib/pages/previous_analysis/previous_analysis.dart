@@ -44,9 +44,6 @@ class PreviousAnalysis extends StatefulWidget {
 
 class PreviousAnalysisController extends State<PreviousAnalysis>
     with ControllerLoggy {
-  //TODO: Implement fetch data from API
-  final String dummyLocale = 'vi_VN';
-
   final ProfileService _profileService = getIt.get<ProfileService>();
 
   final GetLast12MonthsTotalInteractor _getLast12MonthsTotalInteractor =
@@ -718,6 +715,38 @@ class PreviousAnalysisController extends State<PreviousAnalysis>
                 ),
               ),
             );
+  }
+
+  String getCurrencyLocale() {
+    const defaultLocale = 'vi_VN';
+
+    String locale = defaultLocale;
+
+    final profile = _profileService.userProfile;
+
+    if (profile == null || !_profileService.isAuthenticated) {
+      return locale;
+    }
+
+    if (profile.accountType == AccountType.employee) {
+      final parkingEmployee = _profileService.parkingEmployee;
+
+      if (parkingEmployee == null) {
+        return locale;
+      } else {
+        return parkingEmployee.currencyLocale;
+      }
+    } else if (profile.accountType == AccountType.parkingOwner) {
+      final parkingOwner = _profileService.parkingOwner;
+
+      if (parkingOwner == null) {
+        return locale;
+      } else {
+        return parkingOwner.currencyLocale;
+      }
+    }
+
+    return locale;
   }
 
   void _handleGetLast12MonthsTotalFailure(Failure failure) {
