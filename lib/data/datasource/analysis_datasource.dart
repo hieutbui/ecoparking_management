@@ -29,4 +29,13 @@ abstract class AnalysisDataSource {
     required List<String> listTitles,
     required List<AnalysisData> listDatas,
   });
+  Future<Map<String, dynamic>> getParkingInfo({
+    required String parkingId,
+  });
+  Future<List<Map<String, dynamic>>> getCurrentEmployee({
+    required String parkingId,
+  });
+  Future<List<Map<String, dynamic>>> getTicket({
+    required String parkingId,
+  });
 }

@@ -69,4 +69,25 @@ class AnalysisRepositoryImpl implements AnalysisRepository {
   }) {
     return _dataSource.exportData(listTitles: listTitles, listDatas: listDatas);
   }
+
+  @override
+  Future<Map<String, dynamic>> getParkingInfo({
+    required String parkingId,
+  }) {
+    return _dataSource.getParkingInfo(parkingId: parkingId);
+  }
+
+  @override
+  Future<List<Map<String, dynamic>>> getCurrentEmployee({
+    required String parkingId,
+  }) {
+    return _dataSource.getCurrentEmployee(parkingId: parkingId);
+  }
+
+  @override
+  Future<List<Map<String, dynamic>>> getTicket({
+    required String parkingId,
+  }) {
+    return _dataSource.getTicket(parkingId: parkingId);
+  }
 }
