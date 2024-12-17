@@ -1,15 +1,19 @@
 import 'package:ecoparking_management/data/datasource/account_datasource.dart';
 import 'package:ecoparking_management/data/datasource/analysis_datasource.dart';
 import 'package:ecoparking_management/data/datasource/employee_datasource.dart';
+import 'package:ecoparking_management/data/datasource/ticket_datasource.dart';
 import 'package:ecoparking_management/data/datasource_impl/account_datasource_impl.dart';
 import 'package:ecoparking_management/data/datasource_impl/analysis_datasource_impl.dart';
 import 'package:ecoparking_management/data/datasource_impl/employee_datasource_impl.dart';
+import 'package:ecoparking_management/data/datasource_impl/ticket_datasource_impl.dart';
 import 'package:ecoparking_management/data/repository/account_repository_impl.dart';
 import 'package:ecoparking_management/data/repository/analysis_repository_impl.dart';
 import 'package:ecoparking_management/data/repository/employee_repository_impl.dart';
+import 'package:ecoparking_management/data/repository/ticket_repository_impl.dart';
 import 'package:ecoparking_management/domain/repository/account_repository.dart';
 import 'package:ecoparking_management/domain/repository/analysis_repository.dart';
 import 'package:ecoparking_management/domain/repository/employee_repository.dart';
+import 'package:ecoparking_management/domain/repository/ticket_repository.dart';
 import 'package:ecoparking_management/domain/services/profile_service.dart';
 import 'package:ecoparking_management/domain/usecase/account/get_employee_info_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/account/get_owner_info_interactor.dart';
@@ -37,6 +41,7 @@ import 'package:ecoparking_management/domain/usecase/employee/get_all_employee_i
 import 'package:ecoparking_management/domain/usecase/employee/save_employee_to_xlsx_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/employee/search_employee_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/employee/update_employee_working_time_interactor.dart';
+import 'package:ecoparking_management/domain/usecase/ticket/scan_ticket_interactor.dart';
 import 'package:ecoparking_management/utils/mixins/custom_logger.dart';
 import 'package:ecoparking_management/utils/responsive.dart';
 import 'package:get_it/get_it.dart';
@@ -83,6 +88,9 @@ class GetItInitializer with GetItLoggy {
     getIt.registerFactory<AnalysisDataSource>(
       () => AnalysisDataSourceImpl(),
     );
+    getIt.registerFactory<TicketDataSource>(
+      () => TicketDataSourceImpl(),
+    );
     loggy.info('_bindingDataSource(): Setup successfully');
   }
 
@@ -96,6 +104,9 @@ class GetItInitializer with GetItLoggy {
     getIt.registerFactory<AnalysisDataSourceImpl>(
       () => AnalysisDataSourceImpl(),
     );
+    getIt.registerFactory<TicketDataSourceImpl>(
+      () => TicketDataSourceImpl(),
+    );
     loggy.info('_bindingDataSourceImpl(): Setup successfully');
   }
 
@@ -108,6 +119,9 @@ class GetItInitializer with GetItLoggy {
     );
     getIt.registerLazySingleton<AnalysisRepository>(
       () => AnalysisRepositoryImpl(),
+    );
+    getIt.registerLazySingleton<TicketRepository>(
+      () => TicketRepositoryImpl(),
     );
     loggy.info('_bindingRepository(): Setup successfully');
   }
@@ -190,6 +204,9 @@ class GetItInitializer with GetItLoggy {
     );
     getIt.registerLazySingleton<GetTicketInteractor>(
       () => GetTicketInteractor(),
+    );
+    getIt.registerLazySingleton<ScanTicketInteractor>(
+      () => ScanTicketInteractor(),
     );
     loggy.info('_bindingInteractor(): Setup successfully');
   }

@@ -34,7 +34,7 @@ class ScannerView extends StatelessWidget {
               color: Colors.black.withOpacity(0.4),
               child: Center(
                 child: ScannerBarCodeLabel(
-                  barcodes: controller.mobileScannerController.barcodes,
+                  controller: controller,
                 ),
               ),
             ),
