@@ -101,7 +101,7 @@ class LiveOverviewController extends State<LiveOverview> with ControllerLoggy {
   void dispose() {
     _disposeSubscriptions();
     _disposeNotifiers();
-    _disposeListenRealtime();
+    _unsubscribeListenRealtime();
     super.dispose();
   }
 
@@ -321,7 +321,7 @@ class LiveOverviewController extends State<LiveOverview> with ControllerLoggy {
         );
   }
 
-  void _disposeListenRealtime() {
+  void _unsubscribeListenRealtime() {
     Supabase.instance.client
         .channel('${AppConfig.appTitle}/live_overview')
         .unsubscribe();
@@ -335,6 +335,10 @@ class LiveOverviewController extends State<LiveOverview> with ControllerLoggy {
     parkingOccupied.dispose();
     countCurrentEmployee.dispose();
     currentEmployeesNotifier.dispose();
+    totalCustomersNotifier.dispose();
+    totalRevenueNotifier.dispose();
+    currentParkingLotAllotmentNotifier.dispose();
+    getTicketStateNotifier.dispose();
   }
 
   void _disposeSubscriptions() {
