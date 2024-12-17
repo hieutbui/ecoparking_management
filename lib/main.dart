@@ -8,7 +8,7 @@ import 'package:ecoparking_management/widgets/theme_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_web_plugins/flutter_web_plugins.dart';
+import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:loggy/loggy.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
