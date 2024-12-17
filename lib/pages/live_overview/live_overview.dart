@@ -99,9 +99,9 @@ class LiveOverviewController extends State<LiveOverview> with ControllerLoggy {
 
   @override
   void dispose() {
+    _unsubscribeListenRealtime();
     _disposeSubscriptions();
     _disposeNotifiers();
-    _unsubscribeListenRealtime();
     super.dispose();
   }
 

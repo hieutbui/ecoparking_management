@@ -7,7 +7,7 @@ enum DatabaseFunctionName {
   getLastYearTicketCount,
   getLastMonthTicketCount,
   getYesterDayTicketCount,
-  ;
+  updateTicketTimes;
 
   String get functionName {
     switch (this) {
@@ -27,6 +27,8 @@ enum DatabaseFunctionName {
         return 'get_last_month_ticket_count';
       case DatabaseFunctionName.getYesterDayTicketCount:
         return 'get_yesterday_ticket_count';
+      case DatabaseFunctionName.updateTicketTimes:
+        return 'update_ticket_times';
     }
   }
 }

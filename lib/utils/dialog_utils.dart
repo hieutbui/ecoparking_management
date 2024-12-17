@@ -153,6 +153,15 @@ class DialogUtils {
     );
   }
 
+  static Future<ConfirmAction?> showInvalidTicketDialog({
+    required BuildContext context,
+  }) async {
+    return show<ConfirmAction>(
+      context: context,
+      builder: _buildInvalidTicketDialog,
+    );
+  }
+
   static WidgetBuilder get _buildRequiredLoginDialog => (BuildContext context) {
         return AlertDialog(
           title: Text(
@@ -1775,6 +1784,77 @@ class DialogUtils {
               ),
             ],
           ),
+        );
+      };
+
+  static WidgetBuilder get _buildInvalidTicketDialog => (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            'Invalid Ticket',
+            style: Theme.of(context).textTheme.displaySmall!.copyWith(
+                  color: Theme.of(context).colorScheme.error,
+                ),
+          ),
+          content: Text(
+            'The ticket is invalid. Please try again.',
+            style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                  fontWeight: FontWeight.normal,
+                  color: Theme.of(context).colorScheme.inversePrimary,
+                ),
+          ),
+          surfaceTintColor: AppConfig.baseBackgroundColor,
+          actions: <Widget>[
+            TextButton.icon(
+              onPressed: () => Navigator.of(context).pop(ConfirmAction.cancel),
+              style: ButtonStyle(
+                backgroundColor: WidgetStatePropertyAll<Color>(
+                  Theme.of(context).colorScheme.outline,
+                ),
+                shape: const WidgetStatePropertyAll<OutlinedBorder>(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(8.0),
+                    ),
+                  ),
+                ),
+              ),
+              label: Text(
+                'Cancel',
+                style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                      color: AppConfig.negativeTextColor,
+                    ),
+              ),
+              icon: const Icon(
+                Icons.cancel,
+                color: AppConfig.negativeTextColor,
+              ),
+            ),
+            TextButton.icon(
+              onPressed: () => Navigator.of(context).pop(ConfirmAction.ok),
+              style: ButtonStyle(
+                backgroundColor: WidgetStatePropertyAll<Color>(
+                  Theme.of(context).colorScheme.secondary,
+                ),
+                shape: const WidgetStatePropertyAll<OutlinedBorder>(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(8.0),
+                    ),
+                  ),
+                ),
+              ),
+              label: Text(
+                'OK',
+                style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                      color: Theme.of(context).colorScheme.onSecondary,
+                    ),
+              ),
+              icon: Icon(
+                Icons.check,
+                color: Theme.of(context).colorScheme.onSecondary,
+              ),
+            ),
+          ],
         );
       };
 }
