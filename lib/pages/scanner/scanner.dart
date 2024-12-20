@@ -15,6 +15,7 @@ import 'package:ecoparking_management/utils/mixins/custom_logger.dart';
 import 'package:ecoparking_management/utils/navigation_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class Scanner extends StatefulWidget {
   const Scanner({super.key});
@@ -173,22 +174,46 @@ class ScannerController extends State<Scanner>
         )
         .listen(
           (result) => result.fold(
-            _handleScanTicketFailure,
+            (failure) => _handleScanTicketFailure(failure, ticketData.ticketId),
             _handleScanTicketSuccess,
           ),
         );
   }
 
-  void _handleScanTicketFailure(Failure failure) {
+  void sendBroadcastErrorMessage({
+    required String ticketId,
+    required dynamic error,
+  }) {
+    final channelName = 'error_$ticketId';
+
+    Supabase.instance.client
+        .channel(
+      channelName,
+      opts: RealtimeChannelConfig(
+        key: ticketId,
+      ),
+    )
+        .sendBroadcastMessage(
+      event: 'scan_ticket_error',
+      payload: {
+        'error': error,
+      },
+    );
+  }
+
+  void _handleScanTicketFailure(Failure failure, String ticketId) {
     if (failure is ScanTicketFailure) {
       loggy.error('Failed to update ticket: ${failure.exception}');
       scanTicketState.value = failure;
+      sendBroadcastErrorMessage(ticketId: ticketId, error: failure.exception);
     } else if (failure is ScanTicketEmpty) {
       loggy.error('Ticket is empty');
       scanTicketState.value = failure;
+      sendBroadcastErrorMessage(ticketId: ticketId, error: 'Ticket is empty');
     } else {
       loggy.error('Unknown failure: $failure');
       scanTicketState.value = ScanTicketFailure(exception: failure);
+      sendBroadcastErrorMessage(ticketId: ticketId, error: failure);
     }
   }
 

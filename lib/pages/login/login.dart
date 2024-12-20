@@ -138,7 +138,6 @@ class LoginController extends State<Login> with ControllerLoggy {
       return;
     }
 
-    loggy.info('Login');
     _signInSubscription = _signInInteractor
         .execute(
           email: email,
