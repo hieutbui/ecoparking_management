@@ -51,6 +51,11 @@ class ScannerBarCodeLabel extends StatelessWidget with ViewLoggy {
         final qrTime = DateTime.fromMillisecondsSinceEpoch(qrData.timestamp);
 
         if (now.difference(qrTime).inSeconds > 60) {
+          controller.sendBroadcastErrorMessage(
+            ticketId: qrData.ticketId,
+            error: 'Ticket expired',
+          );
+
           return Text(
             'Ticket expired. Please go back and navigate to ticket details',
             overflow: TextOverflow.fade,
