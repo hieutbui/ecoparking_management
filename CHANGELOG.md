@@ -1,3 +1,7 @@
+## v0.0.3 - 21/12/2024
+## Added
+- Send broadcast when scan ticket error
+
 ## v0.0.2 - 18/12/2024
 ### Added
 - Handle scan ticket's QR code
