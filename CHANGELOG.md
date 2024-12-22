@@ -1,5 +1,9 @@
+## v0.0.4 - 22/12/2024
+### Added
+- Building instruction
+
 ## v0.0.3 - 21/12/2024
-## Added
+### Added
 - Send broadcast when scan ticket error
 
 ## v0.0.2 - 18/12/2024
