@@ -1,3 +1,7 @@
+## v0.0.5 - 22/12/2024
+### Updated
+- README
+
 ## v0.0.4 - 22/12/2024
 ### Added
 - Building instruction
