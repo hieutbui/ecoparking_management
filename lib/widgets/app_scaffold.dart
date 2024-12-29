@@ -1,4 +1,5 @@
 import 'package:ecoparking_management/config/app_config.dart';
+import 'package:ecoparking_management/utils/navigation_utils.dart';
 import 'package:flutter/material.dart';
 
 class AppScaffold extends StatelessWidget {
@@ -7,6 +8,7 @@ class AppScaffold extends StatelessWidget {
   final VoidCallback? onNotificationPressed;
   final VoidCallback? onCheckInPressed;
   final VoidCallback? onCheckOutPressed;
+  final bool? showBackButton;
   final Widget? actionButton;
 
   const AppScaffold({
@@ -16,6 +18,7 @@ class AppScaffold extends StatelessWidget {
     this.onNotificationPressed,
     this.onCheckInPressed,
     this.onCheckOutPressed,
+    this.showBackButton = false,
     this.actionButton,
   });
 
@@ -31,6 +34,12 @@ class AppScaffold extends StatelessWidget {
                 color: AppConfig.appBarTitleTextColor,
               ),
         ),
+        leading: (showBackButton ?? false)
+            ? IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () => NavigationUtils.goBack(context),
+              )
+            : null,
         actions: <Widget>[
           if (onNotificationPressed != null) ...[
             IconButton(
