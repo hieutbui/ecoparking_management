@@ -18,6 +18,7 @@ class ScannerView extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppScaffold(
       title: AppPaths.scanner.label,
+      showBackButton: true,
       body: Stack(
         children: <Widget>[
           MobileScanner(
