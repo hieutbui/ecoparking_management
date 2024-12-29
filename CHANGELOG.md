@@ -1,3 +1,7 @@
+## v0.0.6 - 29/12/2024
+### Added
+- Config Android version
+
 ## v0.0.5 - 22/12/2024
 ### Updated
 - README
