@@ -34,12 +34,14 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: Generate localization files
+        run: flutter gen-l10n
+
       - name: Build Android version
         run: |
           flutter clean
           flutter pub run build_runner build --delete-conflicting-outputs
           flutter pub get
-          flutter gen-l10n
           flutter build apk --release --dart-define=SUPABASE_PROJECT_URL=${{ secrets.SUPABASE_PROJECT_URL }} --dart-define=SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
 
       - name: Rename Android APK
@@ -72,6 +74,9 @@ jobs:
         run: |
           echo "" > .env
 
+      - name: Generate localization files
+        run: flutter gen-l10n
+
       - name: Build Web version
         env:
           FOLDER: '/release/${{ github.ref_name }}/'
@@ -80,7 +85,6 @@ jobs:
           flutter clean
           flutter pub run build_runner build --delete-conflicting-outputs
           flutter pub get
-          flutter gen-l10n
           flutter build web --release --dart-define=SUPABASE_PROJECT_URL=${{ secrets.SUPABASE_PROJECT_URL }} --dart-define=SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }} --base-href="/${GITHUB_REPOSITORY##*/}/$FOLDER/"
 
       - name: Configure environments

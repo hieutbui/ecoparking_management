@@ -32,10 +32,13 @@ jobs:
           channel: 'stable'
           cache: true
           cache-key: "flutter-:os:-:channel:-:version:-:arch:-:hash:-${{ hashFiles('**/pubspec.lock') }}"
-          
+
       - name: Create .env file
         run: |
           echo "" > .env
+
+      - name: Generate localization files
+        run: flutter gen-l10n
 
       - name: Build Web version
         env:
@@ -45,7 +48,6 @@ jobs:
           flutter clean
           flutter pub run build_runner build --delete-conflicting-outputs
           flutter pub get
-          flutter gen-l10n
           flutter build web --release --verbose --source-maps --dart-define=SUPABASE_PROJECT_URL=${{ secrets.SUPABASE_PROJECT_URL }} --dart-define=SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }} --base-href="/${GITHUB_REPOSITORY##*/}/$FOLDER/"
 
       - name: Configure environments
@@ -79,7 +81,7 @@ jobs:
           body: |
             This PR has been deployed to ${{ steps.configure.outputs.URL }}
           edit-mode: replace
-      
+
       - name: Remove .env file
         run: |
           rm .env
