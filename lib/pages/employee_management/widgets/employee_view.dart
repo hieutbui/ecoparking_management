@@ -1,5 +1,6 @@
 import 'package:ecoparking_management/pages/employee_management/employee_management.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class EmployeeView extends StatelessWidget {
   final EmployeeManagementController controller;
@@ -13,7 +14,7 @@ class EmployeeView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Text(
-        'Only owner can access this page!',
+        AppLocalizations.of(context)!.onlyOwnerAccess,
         style: Theme.of(context).textTheme.displayMedium!.copyWith(
               color: Theme.of(context).colorScheme.inversePrimary,
             ),

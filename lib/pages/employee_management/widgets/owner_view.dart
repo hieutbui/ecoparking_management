@@ -6,6 +6,7 @@ import 'package:ecoparking_management/pages/live_overview/widgets/info_multi_col
 import 'package:ecoparking_management/pages/live_overview/widgets/table_info.dart';
 import 'package:ecoparking_management/widgets/info_card_with_title.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class OwnerView extends StatelessWidget {
   final EmployeeManagementController controller;
@@ -39,7 +40,7 @@ class OwnerView extends StatelessWidget {
                     },
                   ),
                   secondaryChild: Text(
-                    'Total Employees',
+                    AppLocalizations.of(context)!.totalEmployees,
                     style: Theme.of(context).textTheme.headlineLarge!.copyWith(
                           color: Theme.of(context)
                               .colorScheme
@@ -61,7 +62,7 @@ class OwnerView extends StatelessWidget {
                     },
                   ),
                   secondaryChild: Text(
-                    'On Time Employees',
+                    AppLocalizations.of(context)!.onTimeEmployees,
                     style: Theme.of(context).textTheme.headlineLarge!.copyWith(
                           color: Theme.of(context)
                               .colorScheme
@@ -75,7 +76,7 @@ class OwnerView extends StatelessWidget {
               height: EmployeeManagementViewStyles.spacing,
             ),
             InfoCardWithTitle(
-              title: 'Employee List',
+              title: AppLocalizations.of(context)!.employeeList,
               child: ValueListenableBuilder(
                 valueListenable: controller.listEmployees,
                 builder: (context, employees, child) {
@@ -101,7 +102,7 @@ class OwnerView extends StatelessWidget {
                           child: TextField(
                             onChanged: controller.onSearchEmployee,
                             decoration: InputDecoration(
-                              hintText: 'Search',
+                              hintText: AppLocalizations.of(context)!.search,
                               hintStyle: Theme.of(context)
                                   .textTheme
                                   .headlineMedium!
@@ -132,7 +133,7 @@ class OwnerView extends StatelessWidget {
                           color: Theme.of(context).colorScheme.onSecondary,
                         ),
                         label: Text(
-                          'Add',
+                          AppLocalizations.of(context)!.add,
                           style: Theme.of(context)
                               .textTheme
                               .headlineMedium!
@@ -161,7 +162,7 @@ class OwnerView extends StatelessWidget {
                           color: Theme.of(context).colorScheme.onTertiary,
                         ),
                         label: Text(
-                          'Export',
+                          AppLocalizations.of(context)!.export,
                           style: Theme.of(context)
                               .textTheme
                               .headlineMedium!
@@ -189,7 +190,7 @@ class OwnerView extends StatelessWidget {
                           color: Colors.white,
                         ),
                         label: Text(
-                          'Remove',
+                          AppLocalizations.of(context)!.remove,
                           style: Theme.of(context)
                               .textTheme
                               .headlineMedium!
@@ -294,7 +295,7 @@ List<DataRow> _emptyEmployeeRow({
       cells: <DataCell>[
         DataCell(
           Text(
-            'No data',
+            AppLocalizations.of(context)!.noData,
             style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                   color: Theme.of(context).colorScheme.onSurface,
                 ),
@@ -302,7 +303,7 @@ List<DataRow> _emptyEmployeeRow({
         ),
         DataCell(
           Text(
-            'No data',
+            AppLocalizations.of(context)!.noData,
             style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                   color: Theme.of(context).colorScheme.onSurface,
                 ),
@@ -310,7 +311,7 @@ List<DataRow> _emptyEmployeeRow({
         ),
         DataCell(
           Text(
-            'No data',
+            AppLocalizations.of(context)!.noData,
             style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                   color: Theme.of(context).colorScheme.onSurface,
                 ),
@@ -318,7 +319,7 @@ List<DataRow> _emptyEmployeeRow({
         ),
         DataCell(
           Text(
-            'No data',
+            AppLocalizations.of(context)!.noData,
             style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                   color: Theme.of(context).colorScheme.onSurface,
                 ),

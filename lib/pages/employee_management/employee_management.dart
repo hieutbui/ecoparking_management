@@ -27,6 +27,7 @@ import 'package:ecoparking_management/utils/mixins/custom_logger.dart';
 import 'package:ecoparking_management/utils/mixins/search_debounce_mixin.dart';
 import 'package:ecoparking_management/utils/navigation_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class EmployeeManagement extends StatefulWidget {
   const EmployeeManagement({super.key});
@@ -53,7 +54,7 @@ class EmployeeManagementController extends State<EmployeeManagement>
   final SearchEmployeeInteractor _searchEmployeeInteractor =
       getIt.get<SearchEmployeeInteractor>();
 
-  final List<String> listEmployeesTableTitles = <String>[
+  List<String> listEmployeesTableTitles = <String>[
     'Employee ID',
     'Name',
     'Email',
@@ -110,12 +111,28 @@ class EmployeeManagementController extends State<EmployeeManagement>
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _initializeListEmployeesTableTitles();
+  }
+
+  @override
   void dispose() {
     _disposeControllers();
     cancelDebounce();
     _disposeNotifiers();
     _cancelSubscriptions();
     super.dispose();
+  }
+
+  void _initializeListEmployeesTableTitles() {
+    final context = this.context;
+    listEmployeesTableTitles = <String>[
+      AppLocalizations.of(context)!.employeeId,
+      AppLocalizations.of(context)!.name,
+      AppLocalizations.of(context)!.email,
+      AppLocalizations.of(context)!.phone,
+    ];
   }
 
   void _disposeNotifiers() {
@@ -413,8 +430,8 @@ class EmployeeManagementController extends State<EmployeeManagement>
     loggy.info('Export Employee Pressed');
     final listTitles = [
       ...listEmployeesTableTitles,
-      'Start Shift',
-      'End Shift',
+      AppLocalizations.of(context)!.startShift,
+      AppLocalizations.of(context)!.endShift,
     ];
 
     final selectedEmployees = listEmployees.value
