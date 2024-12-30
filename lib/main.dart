@@ -3,6 +3,7 @@ import 'package:ecoparking_management/config/app_routes.dart';
 import 'package:ecoparking_management/config/env_loader.dart';
 import 'package:ecoparking_management/config/themes.dart';
 import 'package:ecoparking_management/di/global/get_it_initializer.dart';
+import 'package:ecoparking_management/l10n/l10n.dart';
 import 'package:ecoparking_management/utils/platform_infos.dart';
 import 'package:ecoparking_management/widgets/theme_builder.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:loggy/loggy.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -55,13 +57,13 @@ class EcoParkingManagement extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           themeMode: themeMode,
           localizationsDelegates: const [
+            AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          supportedLocales: const [
-            Locale('en', 'US'),
-          ],
+          supportedLocales: L10n.all,
+          locale: const Locale('vi'),
           theme: EcoParkingManagementThemes.buildTheme(context),
         );
       },
