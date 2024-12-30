@@ -319,7 +319,7 @@ List<DataRow> _emptyEmployeeRow({
         ),
         DataCell(
           Text(
-            'No Data',
+            AppLocalizations.of(context)!.noData,
             style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                   color: Theme.of(context).colorScheme.onSurface,
                 ),
