@@ -49,7 +49,7 @@ class _TimeInputRowState extends State<TimeInputRow> {
         controller: _controller,
         style: TimeInputRowStyles.inputtedTextStyle(context),
         decoration: InputDecoration(
-          hintText: 'Time',
+          hintText: 'Chọn giờ',
           hintStyle: TimeInputRowStyles.hintTextStyle(context),
           suffixIcon: Icon(
             Icons.access_time_rounded,

@@ -63,7 +63,7 @@ class _DropdownCurrencyState extends State<DropdownCurrency> {
         value: _selectedCurrency,
         isExpanded: true,
         hint: Text(
-          'Currency',
+          'Đơn vị tiền tệ',
           style: DropdownCurrencyStyles.hintStyle(context),
         ),
         items: supportedCurrencies

@@ -22,7 +22,7 @@ class ScannerBarCodeLabel extends StatelessWidget with ViewLoggy {
 
         if (scannedBarCodes.isEmpty) {
           return Text(
-            'Scan something',
+            'Quét mã QR',
             overflow: TextOverflow.fade,
             style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                   color: Colors.white,
@@ -35,7 +35,7 @@ class ScannerBarCodeLabel extends StatelessWidget with ViewLoggy {
         if (rawValue == null) {
           loggy.error('Raw value is null');
           return Text(
-            'Invalid ticket',
+            'Vé không hợp lệ',
             overflow: TextOverflow.fade,
             style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                   color: Colors.white,
@@ -53,11 +53,11 @@ class ScannerBarCodeLabel extends StatelessWidget with ViewLoggy {
         if (now.difference(qrTime).inSeconds > 60) {
           controller.sendBroadcastErrorMessage(
             ticketId: qrData.ticketId,
-            error: 'Ticket expired',
+            error: 'Vé đã hết hạn',
           );
 
           return Text(
-            'Ticket expired. Please go back and navigate to ticket details',
+            'Vé đã hết hạn. Vui lòng quét lại',
             overflow: TextOverflow.fade,
             style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                   color: Colors.white,
@@ -72,7 +72,7 @@ class ScannerBarCodeLabel extends StatelessWidget with ViewLoggy {
           builder: (context, state, child) {
             if (state is ScanTicketFailure || state is ScanTicketEmpty) {
               return Text(
-                'Cannot update ticket',
+                'Không thể cập nhật vé!',
                 overflow: TextOverflow.fade,
                 style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                       color: Colors.white,
@@ -92,7 +92,7 @@ class ScannerBarCodeLabel extends StatelessWidget with ViewLoggy {
 
               if (entryTime == null && exitTime == null) {
                 return Text(
-                  'Cannot update ticket',
+                  'Không thể cập nhật vé!',
                   overflow: TextOverflow.fade,
                   style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                         color: Colors.white,
@@ -101,7 +101,7 @@ class ScannerBarCodeLabel extends StatelessWidget with ViewLoggy {
               }
 
               return Text(
-                'Ticket ID: ${state.ticketInfo.id}',
+                'Mã vé: ${state.ticketInfo.id}',
                 overflow: TextOverflow.fade,
                 style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                       color: Colors.white,

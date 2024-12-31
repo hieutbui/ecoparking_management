@@ -46,7 +46,7 @@ class ProfileView extends StatelessWidget with ViewLoggy {
               child: Column(
                 children: <Widget>[
                   Text(
-                    'Empty Profile',
+                    'Không có thông tin người dùng!',
                     style: Theme.of(context).textTheme.displaySmall!.copyWith(
                           color: Theme.of(context).colorScheme.error,
                         ),
@@ -55,7 +55,7 @@ class ProfileView extends StatelessWidget with ViewLoggy {
                   ElevatedButton(
                     onPressed: controller.navigateToLogin,
                     child: Text(
-                      'Login to your account',
+                      'Đăng nhập lại',
                       style: Theme.of(context)
                           .textTheme
                           .headlineMedium!
@@ -108,7 +108,7 @@ class ProfileView extends StatelessWidget with ViewLoggy {
                       valueListenable: controller.isEditing,
                       builder: (context, isEdit, child) {
                         return InfoCardWithTitle(
-                          title: 'User Information',
+                          title: 'Thông tin cá nhân',
                           functionButton: isEdit
                               ? Row(
                                   children: <Widget>[
@@ -148,8 +148,8 @@ class ProfileView extends StatelessWidget with ViewLoggy {
                                       TextField(
                                         controller: controller.nameController,
                                         decoration: InputDecoration(
-                                          labelText: 'Name',
-                                          hintText: 'Enter your name',
+                                          labelText: 'Tên',
+                                          hintText: 'Nhập tên của bạn',
                                           labelStyle: Theme.of(context)
                                               .textTheme
                                               .displaySmall,
@@ -166,7 +166,7 @@ class ProfileView extends StatelessWidget with ViewLoggy {
                                         controller: controller.emailController,
                                         decoration: InputDecoration(
                                           labelText: 'Email',
-                                          hintText: 'Enter your email',
+                                          hintText: 'Nhập email của bạn',
                                           labelStyle: Theme.of(context)
                                               .textTheme
                                               .displaySmall,
@@ -192,7 +192,8 @@ class ProfileView extends StatelessWidget with ViewLoggy {
                                             controller.onSelectGender,
                                       ),
                                       const SizedBox(
-                                          height: ProfileViewStyles.spacing),
+                                        height: ProfileViewStyles.spacing,
+                                      ),
                                       DateInputRow(
                                         initialDate:
                                             controller.dateNotifier.value,
@@ -227,7 +228,7 @@ class ProfileView extends StatelessWidget with ViewLoggy {
                                           is GetUserProfileFailure) {
                                         return Center(
                                           child: Text(
-                                            'Failed to get user profile',
+                                            'Không thể lấy thông tin người dùng!',
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .displaySmall!
@@ -249,7 +250,7 @@ class ProfileView extends StatelessWidget with ViewLoggy {
                                                 MainAxisAlignment.spaceBetween,
                                             children: [
                                               Text(
-                                                'Name:',
+                                                'Tên:',
                                                 style: Theme.of(context)
                                                     .textTheme
                                                     .bodyMedium!
@@ -311,7 +312,7 @@ class ProfileView extends StatelessWidget with ViewLoggy {
                                                 MainAxisAlignment.spaceBetween,
                                             children: [
                                               Text(
-                                                'Phone:',
+                                                'SĐT:',
                                                 style: Theme.of(context)
                                                     .textTheme
                                                     .bodyMedium!
@@ -342,7 +343,7 @@ class ProfileView extends StatelessWidget with ViewLoggy {
                                                 MainAxisAlignment.spaceBetween,
                                             children: [
                                               Text(
-                                                'Gender:',
+                                                'Giới tính:',
                                                 style: Theme.of(context)
                                                     .textTheme
                                                     .bodyMedium!
@@ -376,7 +377,7 @@ class ProfileView extends StatelessWidget with ViewLoggy {
                                                 MainAxisAlignment.spaceBetween,
                                             children: [
                                               Text(
-                                                'Date of Birth: ${userProfile.dob ?? ''}',
+                                                'Ngày sinh: ${userProfile.dob ?? ''}',
                                                 style: Theme.of(context)
                                                     .textTheme
                                                     .bodyMedium!
@@ -422,7 +423,7 @@ class ProfileView extends StatelessWidget with ViewLoggy {
                   Padding(
                     padding: ProfileViewStyles.padding,
                     child: InfoCardWithTitle(
-                      title: 'Setting',
+                      title: 'Cài đặt',
                       child: Padding(
                         padding: ProfileViewStyles.padding,
                         child: Column(
@@ -431,7 +432,7 @@ class ProfileView extends StatelessWidget with ViewLoggy {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  'Currency: ',
+                                  'Đơn vị tiền: ',
                                   style: Theme.of(context)
                                       .textTheme
                                       .bodyMedium!
@@ -535,7 +536,7 @@ class ProfileView extends StatelessWidget with ViewLoggy {
                           const SizedBox(
                               width: ProfileViewStyles.infoLineSpacing),
                           Text(
-                            'Logout',
+                            'Đăng xuất',
                             style: Theme.of(context)
                                 .textTheme
                                 .headlineMedium!
@@ -557,7 +558,7 @@ class ProfileView extends StatelessWidget with ViewLoggy {
         child: Center(
           child: Center(
             child: Text(
-              'Something went wrong',
+              'Có lỗi xảy ra!',
               style: Theme.of(context).textTheme.displaySmall!.copyWith(
                     color: Theme.of(context).colorScheme.error,
                   ),
@@ -592,7 +593,7 @@ Widget _buildParkingPosition({
                     ProfileViewStyles.infoLineSpacing,
                   ),
                   child: Text(
-                    'Failed to get parking position',
+                    'Không thể lấy thông tin bãi đỗ!',
                     style: Theme.of(context).textTheme.displaySmall!.copyWith(
                           color: Theme.of(context).colorScheme.error,
                         ),
@@ -642,7 +643,7 @@ Widget _buildParkingPosition({
                     ProfileViewStyles.infoLineSpacing,
                   ),
                   child: Text(
-                    'Failed to get parking position',
+                    'Không thể lấy thông tin!',
                     style: Theme.of(context).textTheme.displaySmall!.copyWith(
                           color: Theme.of(context).colorScheme.error,
                         ),
@@ -698,7 +699,7 @@ Widget _buildParkingPositionInfo({
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Parking Name: ',
+              'Tên bãi đỗ: ',
               style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                     color: Theme.of(context).colorScheme.onSurface,
                   ),
@@ -724,7 +725,7 @@ Widget _buildParkingPositionInfo({
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Role: ',
+              'Chức danh: ',
               style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                     color: Theme.of(context).colorScheme.onSurface,
                   ),
@@ -745,7 +746,7 @@ Widget _buildParkingPositionInfo({
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Start shift: ',
+                'Bắt đầu ca: ',
                 style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                       color: Theme.of(context).colorScheme.onSurface,
                     ),
@@ -767,7 +768,7 @@ Widget _buildParkingPositionInfo({
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'End shift: ',
+                'Kết thúc ca: ',
                 style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                       color: Theme.of(context).colorScheme.onSurface,
                     ),
