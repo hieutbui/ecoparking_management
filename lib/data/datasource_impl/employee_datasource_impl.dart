@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:ecoparking_management/data/datasource/employee_datasource.dart';
 import 'package:ecoparking_management/data/models/employee_nested_info.dart';
 import 'package:ecoparking_management/data/models/parking_employee.dart';
+import 'package:ecoparking_management/data/supabase_data/tables/employee_attendance_table.dart';
 import 'package:ecoparking_management/data/supabase_data/tables/parking_employee_table.dart';
 import 'package:ecoparking_management/data/supabase_data/tables/profile_table.dart';
 import 'package:ecoparking_management/utils/platform_infos.dart';
@@ -179,5 +180,38 @@ class EmployeeDataSourceImpl extends EmployeeDataSource {
           orQueryString,
           referencedTable: profileTable.tableName,
         );
+  }
+
+  @override
+  Future<List<Map<String, dynamic>>?> getAttendance({
+    required String parkingId,
+    DateTime? startDate,
+    DateTime? endDate,
+  }) async {
+    const table = EmployeeAttendanceTable();
+
+    final now = DateTime.now();
+
+    String start =
+        '${now.year}/${now.month.toString().padLeft(2, '0')}/${now.day.toString().padLeft(2, '0')}';
+    String end =
+        '${now.year}/${now.month.toString().padLeft(2, '0')}/${now.day.toString().padLeft(2, '0')}';
+
+    if (startDate != null) {
+      start =
+          '${startDate.year}/${startDate.month.toString().padLeft(2, '0')}/${startDate.day.toString().padLeft(2, '0')}';
+    }
+
+    if (endDate != null) {
+      end =
+          '${endDate.year}/${endDate.month.toString().padLeft(2, '0')}/${endDate.day.toString().padLeft(2, '0')}';
+    }
+
+    return Supabase.instance.client
+        .from(table.tableName)
+        .select()
+        .eq(table.parkingId, parkingId)
+        .gte(table.date, start)
+        .lte(table.date, end);
   }
 }
