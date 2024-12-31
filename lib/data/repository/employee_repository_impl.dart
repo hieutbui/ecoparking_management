@@ -89,4 +89,41 @@ class EmployeeRepositoryImpl implements EmployeeRepository {
       endDate: endDate,
     );
   }
+
+  @override
+  Future<Map<String, dynamic>> checkIn({
+    required String employeeId,
+    required String parkingId,
+    required String clockIn,
+    required String date,
+  }) {
+    return _dataSource.checkIn(
+      employeeId: employeeId,
+      parkingId: parkingId,
+      clockIn: clockIn,
+      date: date,
+    );
+  }
+
+  @override
+  Future<Map<String, dynamic>> checkOut({
+    required String employeeId,
+    required String parkingId,
+    required String clockOut,
+    required String date,
+  }) {
+    return _dataSource.checkOut(
+      employeeId: employeeId,
+      parkingId: parkingId,
+      clockOut: clockOut,
+      date: date,
+    );
+  }
+
+  @override
+  Future<Map<String, dynamic>> getEmployeeAttendance({
+    required String employeeId,
+  }) {
+    return _dataSource.getEmployeeAttendance(employeeId: employeeId);
+  }
 }

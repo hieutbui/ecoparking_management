@@ -2,11 +2,13 @@ import 'dart:io';
 import 'package:ecoparking_management/data/datasource/employee_datasource.dart';
 import 'package:ecoparking_management/data/models/employee_nested_info.dart';
 import 'package:ecoparking_management/data/models/parking_employee.dart';
+import 'package:ecoparking_management/data/supabase_data/database_function_name.dart';
 import 'package:ecoparking_management/data/supabase_data/tables/employee_attendance_table.dart';
 import 'package:ecoparking_management/data/supabase_data/tables/parking_employee_table.dart';
 import 'package:ecoparking_management/data/supabase_data/tables/profile_table.dart';
 import 'package:ecoparking_management/utils/platform_infos.dart';
 import 'package:excel/excel.dart';
+import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:path/path.dart';
@@ -193,18 +195,18 @@ class EmployeeDataSourceImpl extends EmployeeDataSource {
     final now = DateTime.now();
 
     String start =
-        '${now.year}/${now.month.toString().padLeft(2, '0')}/${now.day.toString().padLeft(2, '0')}';
+        '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
     String end =
-        '${now.year}/${now.month.toString().padLeft(2, '0')}/${now.day.toString().padLeft(2, '0')}';
+        '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
 
     if (startDate != null) {
       start =
-          '${startDate.year}/${startDate.month.toString().padLeft(2, '0')}/${startDate.day.toString().padLeft(2, '0')}';
+          '${startDate.year}-${startDate.month.toString().padLeft(2, '0')}-${startDate.day.toString().padLeft(2, '0')}';
     }
 
     if (endDate != null) {
       end =
-          '${endDate.year}/${endDate.month.toString().padLeft(2, '0')}/${endDate.day.toString().padLeft(2, '0')}';
+          '${endDate.year}-${endDate.month.toString().padLeft(2, '0')}-${endDate.day.toString().padLeft(2, '0')}';
     }
 
     return Supabase.instance.client
@@ -213,5 +215,62 @@ class EmployeeDataSourceImpl extends EmployeeDataSource {
         .eq(table.parkingId, parkingId)
         .gte(table.date, start)
         .lte(table.date, end);
+  }
+
+  @override
+  Future<Map<String, dynamic>> checkIn({
+    required String employeeId,
+    required String parkingId,
+    required String clockIn,
+    required String date,
+  }) async {
+    final function = DatabaseFunctionName.upsertEmployeeAttendance.functionName;
+
+    return Supabase.instance.client.rpc(
+      function,
+      params: {
+        'p_employee_id': employeeId,
+        'p_parking_id': parkingId,
+        'p_clock_in': clockIn,
+        'p_date': date,
+      },
+    );
+  }
+
+  @override
+  Future<Map<String, dynamic>> checkOut({
+    required String employeeId,
+    required String parkingId,
+    required String clockOut,
+    required String date,
+  }) async {
+    final function = DatabaseFunctionName.upsertEmployeeAttendance.functionName;
+
+    return Supabase.instance.client.rpc(
+      function,
+      params: {
+        'p_employee_id': employeeId,
+        'p_parking_id': parkingId,
+        'p_clock_out': clockOut,
+        'p_date': date,
+      },
+    );
+  }
+
+  @override
+  Future<Map<String, dynamic>> getEmployeeAttendance({
+    required String employeeId,
+  }) async {
+    const table = EmployeeAttendanceTable();
+
+    final now = DateTime.now();
+    final dateFormatter = DateFormat('yyyy/MM/dd');
+
+    return Supabase.instance.client
+        .from(table.tableName)
+        .select()
+        .eq(table.employeeId, employeeId)
+        .eq(table.date, dateFormatter.format(now))
+        .single();
   }
 }
