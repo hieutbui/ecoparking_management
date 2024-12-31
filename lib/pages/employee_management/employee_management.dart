@@ -11,16 +11,19 @@ import 'package:ecoparking_management/domain/state/app_state/success.dart';
 import 'package:ecoparking_management/domain/state/employee/create_new_employee_state.dart';
 import 'package:ecoparking_management/domain/state/employee/delete_employee_state.dart';
 import 'package:ecoparking_management/domain/state/employee/get_all_employee_state.dart';
+import 'package:ecoparking_management/domain/state/employee/get_employee_attendance_state.dart';
 import 'package:ecoparking_management/domain/state/employee/save_employee_to_xlsx_state.dart';
 import 'package:ecoparking_management/domain/state/employee/search_employee_state.dart';
 import 'package:ecoparking_management/domain/state/employee/update_employee_working_time_state.dart';
 import 'package:ecoparking_management/domain/usecase/employee/create_new_employee_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/employee/delete_employee_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/employee/get_all_employee_interactor.dart';
+import 'package:ecoparking_management/domain/usecase/employee/get_employee_attendance_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/employee/save_employee_to_xlsx_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/employee/search_employee_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/employee/update_employee_working_time_interactor.dart';
 import 'package:ecoparking_management/pages/employee_management/employee_management_view.dart';
+import 'package:ecoparking_management/pages/employee_management/widgets/selectable_attendance.dart';
 import 'package:ecoparking_management/pages/employee_management/widgets/selectable_employee.dart';
 import 'package:ecoparking_management/utils/dialog_utils.dart';
 import 'package:ecoparking_management/utils/mixins/custom_logger.dart';
@@ -52,12 +55,21 @@ class EmployeeManagementController extends State<EmployeeManagement>
       getIt.get<SaveEmployeeToXlsxInteractor>();
   final SearchEmployeeInteractor _searchEmployeeInteractor =
       getIt.get<SearchEmployeeInteractor>();
+  final GetEmployeeAttendanceInteractor _getEmployeeAttendanceInteractor =
+      getIt.get<GetEmployeeAttendanceInteractor>();
 
   final List<String> listEmployeesTableTitles = <String>[
     'Mã NV',
     'Tên NV',
     'Email',
     'SĐT',
+  ];
+
+  final List<String> listAttendanceTableTitles = <String>[
+    'Mã NV',
+    'Ngày',
+    'Bắt Đầu',
+    'Kết Thúc',
   ];
 
   final ValueNotifier<GetAllEmployeeState> getAllEmployeeState =
@@ -75,6 +87,10 @@ class EmployeeManagementController extends State<EmployeeManagement>
       ValueNotifier<SaveEmployeeToXlsxState>(const SaveEmployeeToXlsxInitial());
   final ValueNotifier<SearchEmployeeState> searchEmployeeState =
       ValueNotifier<SearchEmployeeState>(const SearchEmployeeInitial());
+  final ValueNotifier<GetEmployeeAttendanceState> getEmployeeAttendanceState =
+      ValueNotifier<GetEmployeeAttendanceState>(
+    const GetEmployeeAttendanceInitial(),
+  );
 
   final ValueNotifier<int> rowPerPage =
       ValueNotifier<int>(PaginatedDataTable.defaultRowsPerPage);
@@ -82,6 +98,12 @@ class EmployeeManagementController extends State<EmployeeManagement>
   final ValueNotifier<int> onDutyEmployees = ValueNotifier<int>(0);
   final ValueNotifier<List<SelectableEmployee>> listEmployees =
       ValueNotifier<List<SelectableEmployee>>(<SelectableEmployee>[]);
+  final ValueNotifier<int> rowPerPageAttendance =
+      ValueNotifier<int>(PaginatedDataTable.defaultRowsPerPage);
+  final ValueNotifier<DateTime> attendanceStartDate =
+      ValueNotifier<DateTime>(DateTime.now());
+  final ValueNotifier<DateTime> attendanceEndDate =
+      ValueNotifier<DateTime>(DateTime.now());
 
   final TextEditingController createEmployeeNameController =
       TextEditingController();
@@ -100,12 +122,15 @@ class EmployeeManagementController extends State<EmployeeManagement>
   StreamSubscription<Either<Failure, Success>>? _deleteEmployeeSubscription;
   StreamSubscription<Either<Failure, Success>>? _saveEmployeeToXlsxSubscription;
   StreamSubscription<Either<Failure, Success>>? _searchEmployeeSubscription;
+  StreamSubscription<Either<Failure, Success>>?
+      _getEmployeeAttendanceSubscription;
 
   @override
   void initState() {
     super.initState();
     _checkPositionIsEmpty();
     _getAllEmployees();
+    _getEmployeeAttendance();
     initializeDebounce(onDebounce: _searchParking);
   }
 
@@ -129,6 +154,10 @@ class EmployeeManagementController extends State<EmployeeManagement>
     deleteEmployeeState.dispose();
     saveEmployeeToXlsxState.dispose();
     searchEmployeeState.dispose();
+    getEmployeeAttendanceState.dispose();
+    rowPerPageAttendance.dispose();
+    attendanceStartDate.dispose();
+    attendanceEndDate.dispose();
   }
 
   void _cancelSubscriptions() {
@@ -138,12 +167,14 @@ class EmployeeManagementController extends State<EmployeeManagement>
     _deleteEmployeeSubscription?.cancel();
     _saveEmployeeToXlsxSubscription?.cancel();
     _searchEmployeeSubscription?.cancel();
+    _getEmployeeAttendanceSubscription?.cancel();
     _getAllEmployeeSubscription = null;
     _updateEmployeeWorkingTimeSubscription = null;
     _createNewEmployeeSubscription = null;
     _deleteEmployeeSubscription = null;
     _saveEmployeeToXlsxSubscription = null;
     _searchEmployeeSubscription = null;
+    _getEmployeeAttendanceSubscription = null;
   }
 
   void _disposeControllers() {
@@ -202,6 +233,28 @@ class EmployeeManagementController extends State<EmployeeManagement>
                 _handleGetAllEmployeeSuccess,
               ),
             );
+  }
+
+  void _getEmployeeAttendance({
+    DateTime? startDate,
+    DateTime? endDate,
+  }) {
+    final owner = _profileService.parkingOwner;
+
+    if (owner == null) return;
+
+    _getEmployeeAttendanceSubscription = _getEmployeeAttendanceInteractor
+        .execute(
+          parkingId: owner.parkingId,
+          startDate: startDate,
+          endDate: endDate,
+        )
+        .listen(
+          (result) => result.fold(
+            _handleGetEmployeeAttendanceFailure,
+            _handleGetEmployeeAttendanceSuccess,
+          ),
+        );
   }
 
   void onEmployeeSelected({
@@ -495,39 +548,54 @@ class EmployeeManagementController extends State<EmployeeManagement>
         );
   }
 
-  void _updateOnDutyEmployees(List<EmployeeNestedInfo> employees) {
-    final now = DateTime.now();
-    final onDuty = employees.where((e) {
-      final startTime = e.workingStartTime;
-      final endTime = e.workingEndTime;
-
-      if (startTime == null || endTime == null) return false;
-
-      final startDateTime = DateTime(
-        now.year,
-        now.month,
-        now.day,
-        startTime.hour,
-        startTime.minute,
-      );
-      final endDateTime = DateTime(
-        now.year,
-        now.month,
-        now.day,
-        endTime.hour,
-        endTime.minute,
-      );
-
-      return now.isAfter(startDateTime) && now.isBefore(endDateTime);
-    });
-
-    onDutyEmployees.value = onDuty.length;
-  }
-
   void openScanner() {
     NavigationUtils.navigateTo(
       context: context,
       path: AppPaths.scanner,
+    );
+  }
+
+  void onAttendanceSelected({
+    required SelectableAttendance attendance,
+    bool? selected,
+  }) {}
+
+  void onAttendanceLongPressed(SelectableAttendance attendance) {}
+
+  void onRowsPerPageAttendanceChanged(int? value) {
+    if (value != null) {
+      rowPerPageAttendance.value = value;
+    }
+  }
+
+  void onOpenAttendanceStartDatePicker() async {
+    final selectedDate = await DialogUtils.showSelectDateDialog(
+      restorationId: 'attendance_start_date',
+      context: context,
+      initialDate: attendanceStartDate.value,
+    );
+
+    if (selectedDate != null) {
+      attendanceStartDate.value = selectedDate;
+    }
+  }
+
+  void onOpenAttendanceEndDatePicker() async {
+    final selectedDate = await DialogUtils.showSelectDateDialog(
+      restorationId: 'attendance_end_date',
+      context: context,
+      initialDate: attendanceEndDate.value,
+    );
+
+    if (selectedDate != null) {
+      attendanceEndDate.value = selectedDate;
+    }
+  }
+
+  void onFilterAttendance() {
+    _getEmployeeAttendance(
+      startDate: attendanceStartDate.value,
+      endDate: attendanceEndDate.value,
     );
   }
 
@@ -552,7 +620,6 @@ class EmployeeManagementController extends State<EmployeeManagement>
             (e) => SelectableEmployee(employeeNestedInfo: e),
           )
           .toList();
-      _updateOnDutyEmployees(success.listEmployeeInfo);
     } else if (success is GetAllEmployeeLoading) {
       getAllEmployeeState.value = success;
     }
@@ -668,9 +735,30 @@ class EmployeeManagementController extends State<EmployeeManagement>
             (e) => SelectableEmployee(employeeNestedInfo: e),
           )
           .toList();
-      _updateOnDutyEmployees(success.employees);
     } else if (success is SearchEmployeeLoading) {
       searchEmployeeState.value = success;
+    }
+  }
+
+  void _handleGetEmployeeAttendanceFailure(Failure failure) {
+    loggy.error('Get Employee Attendance Failure: $failure');
+    if (failure is GetEmployeeAttendanceFailure) {
+      getEmployeeAttendanceState.value = failure;
+    } else {
+      getEmployeeAttendanceState.value =
+          GetEmployeeAttendanceFailure(exception: failure);
+    }
+  }
+
+  void _handleGetEmployeeAttendanceSuccess(Success success) {
+    loggy.info('Get Employee Attendance Success: $success');
+    if (success is GetEmployeeAttendanceSuccess) {
+      getEmployeeAttendanceState.value = success;
+      onDutyEmployees.value = success.listAttendances.length;
+    } else if (success is GetEmployeeAttendanceLoading) {
+      getEmployeeAttendanceState.value = success;
+    } else if (success is GetEmployeeAttendanceEmpty) {
+      getEmployeeAttendanceState.value = success;
     }
   }
 

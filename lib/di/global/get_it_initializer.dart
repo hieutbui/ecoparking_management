@@ -38,6 +38,7 @@ import 'package:ecoparking_management/domain/usecase/analysis/get_yesterday_tota
 import 'package:ecoparking_management/domain/usecase/employee/create_new_employee_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/employee/delete_employee_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/employee/get_all_employee_interactor.dart';
+import 'package:ecoparking_management/domain/usecase/employee/get_employee_attendance_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/employee/save_employee_to_xlsx_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/employee/search_employee_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/employee/update_employee_working_time_interactor.dart';
@@ -207,6 +208,9 @@ class GetItInitializer with GetItLoggy {
     );
     getIt.registerLazySingleton<ScanTicketInteractor>(
       () => ScanTicketInteractor(),
+    );
+    getIt.registerLazySingleton<GetEmployeeAttendanceInteractor>(
+      () => GetEmployeeAttendanceInteractor(),
     );
     loggy.info('_bindingInteractor(): Setup successfully');
   }
