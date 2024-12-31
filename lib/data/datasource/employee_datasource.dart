@@ -41,4 +41,19 @@ abstract class EmployeeDataSource {
     DateTime? startDate,
     DateTime? endDate,
   });
+  Future<Map<String, dynamic>> checkIn({
+    required String employeeId,
+    required String parkingId,
+    required String clockIn,
+    required String date,
+  });
+  Future<Map<String, dynamic>> checkOut({
+    required String employeeId,
+    required String parkingId,
+    required String clockOut,
+    required String date,
+  });
+  Future<Map<String, dynamic>> getEmployeeAttendance({
+    required String employeeId,
+  });
 }
