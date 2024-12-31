@@ -21,13 +21,13 @@ enum TicketStatus {
   String get displayString {
     switch (this) {
       case TicketStatus.paid:
-        return 'Paid';
+        return 'Đã thanh toán';
       case TicketStatus.cancelled:
-        return 'Cancelled';
+        return 'Đã hủy';
       case TicketStatus.completed:
-        return 'Completed';
+        return 'Hoàn thành';
       case TicketStatus.active:
-        return 'Active';
+        return 'Đang hoạt động';
     }
   }
 }

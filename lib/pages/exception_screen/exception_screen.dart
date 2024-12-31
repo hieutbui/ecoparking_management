@@ -1,4 +1,5 @@
 import 'package:ecoparking_management/config/app_paths.dart';
+import 'package:ecoparking_management/pages/exception_screen/exception_screen_view.dart';
 import 'package:ecoparking_management/utils/mixins/custom_logger.dart';
 import 'package:ecoparking_management/utils/navigation_utils.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +31,5 @@ class ExceptionScreenController extends State<ExceptionScreen>
   }
 
   @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
+  Widget build(BuildContext context) => ExceptionScreenView(controller: this);
 }

@@ -54,19 +54,19 @@ enum AppPaths {
   String get label {
     switch (this) {
       case AppPaths.employee:
-        return 'Employee';
+        return 'Nhân viên';
       case AppPaths.liveOverview:
-        return 'Live';
+        return 'Hiện tại';
       case AppPaths.previousAnalysis:
-        return 'Previous';
+        return 'Thống kê';
       case AppPaths.profile:
-        return 'Profile';
+        return 'Hồ sơ';
       case AppPaths.exceptionScreen:
-        return 'Error';
+        return 'Lỗi';
       case AppPaths.login:
-        return 'Login';
+        return 'Đăng nhập';
       case AppPaths.scanner:
-        return 'Scanner';
+        return 'Quét mã';
       default:
         return 'Error';
     }

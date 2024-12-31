@@ -20,7 +20,7 @@ class RevenueChartCard extends StatelessWidget {
       valueListenable: controller.viewTypeRevenue,
       builder: (context, type, child) {
         return InfoCardWithTitle(
-          title: 'Revenues ${type.title}',
+          title: 'Doanh thu ${type.title}',
           functionButton: Row(
             children: <Widget>[
               DropdownPreviousViewType(
@@ -33,7 +33,7 @@ class RevenueChartCard extends StatelessWidget {
               TextButton.icon(
                 onPressed: controller.onExportRevenue,
                 label: Text(
-                  'Export',
+                  'Xuất',
                   style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                         color: Theme.of(context).colorScheme.onSecondary,
                       ),

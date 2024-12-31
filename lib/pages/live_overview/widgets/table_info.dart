@@ -89,7 +89,7 @@ class TableInfoSource extends DataTableSource {
     return const DataRow(
       cells: [
         DataCell(
-          Text('No data'),
+          Text('Không có dữ liệu'),
         ),
       ],
     );

@@ -60,7 +60,7 @@ class EcoParkingManagement extends StatelessWidget {
             GlobalCupertinoLocalizations.delegate,
           ],
           supportedLocales: const [
-            Locale('en', 'US'),
+            Locale('vi', 'VN'),
           ],
           theme: EcoParkingManagementThemes.buildTheme(context),
         );

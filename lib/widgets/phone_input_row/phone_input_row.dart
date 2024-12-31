@@ -25,14 +25,14 @@ class PhoneInputRow extends StatelessWidget {
       onChanged: onChanged,
       countrySelectorNavigator: const CountrySelectorNavigator.page(),
       validator: PhoneValidator.compose([
-        PhoneValidator.required(context, errorText: 'Phone number is required'),
+        PhoneValidator.required(context, errorText: 'SĐT không được để trống'),
         PhoneValidator.valid(context),
       ]),
       countryButtonStyle: CountryButtonStyle(
         textStyle: PhoneInputRowStyles.inputtedTextStyle(context),
       ),
       decoration: InputDecoration(
-        hintText: 'Phone number',
+        hintText: 'Số điện thoại',
         hintStyle: PhoneInputRowStyles.hintStyle(context),
         errorStyle: PhoneInputRowStyles.errorTextStyle(context),
         border: UnderlineInputBorder(

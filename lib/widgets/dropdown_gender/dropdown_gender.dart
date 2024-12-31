@@ -52,7 +52,7 @@ class _DropdownGenderState extends State<DropdownGender> {
         value: _selectedGender,
         isExpanded: true,
         hint: Text(
-          'Gender',
+          'Giới tính',
           style: DropdownGenderStyles.hintStyle(context),
         ),
         items: Gender.values
