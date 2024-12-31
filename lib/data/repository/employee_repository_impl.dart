@@ -76,4 +76,17 @@ class EmployeeRepositoryImpl implements EmployeeRepository {
       searchKey: searchKey,
     );
   }
+
+  @override
+  Future<List<Map<String, dynamic>>?> getAttendance({
+    required String parkingId,
+    DateTime? startDate,
+    DateTime? endDate,
+  }) {
+    return _dataSource.getAttendance(
+      parkingId: parkingId,
+      startDate: startDate,
+      endDate: endDate,
+    );
+  }
 }

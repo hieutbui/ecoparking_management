@@ -162,6 +162,20 @@ class DialogUtils {
     );
   }
 
+  static Future<DateTime?> showSelectDateDialog({
+    required BuildContext context,
+    required DateTime initialDate,
+    required String restorationId,
+  }) async {
+    return show<DateTime>(
+      context: context,
+      builder: _buildSelectDateDialog(
+        initialDate: initialDate,
+        restorationId: restorationId,
+      ),
+    );
+  }
+
   static WidgetBuilder get _buildRequiredLoginDialog => (BuildContext context) {
         return AlertDialog(
           title: Text(
@@ -1834,6 +1848,23 @@ class DialogUtils {
               ),
             ),
           ],
+        );
+      };
+
+  static WidgetBuilder _buildSelectDateDialog({
+    required DateTime initialDate,
+    required String restorationId,
+  }) =>
+      (BuildContext context) {
+        final lastDate = DateTime.now();
+        final firstDate = DateTime.now().subtract(const Duration(days: 365));
+
+        return DatePickerDialog(
+          restorationId: restorationId,
+          initialEntryMode: DatePickerEntryMode.calendarOnly,
+          initialDate: initialDate,
+          firstDate: firstDate,
+          lastDate: lastDate,
         );
       };
 }
