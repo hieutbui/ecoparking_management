@@ -116,7 +116,7 @@ class LiveOverviewView extends StatelessWidget with ViewLoggy {
                       ),
                     ),
                     secondaryChild: Text(
-                      'Parking Lots Occupied',
+                      'Chỗ đỗ xe đã sử dụng',
                       style:
                           Theme.of(context).textTheme.headlineLarge!.copyWith(
                                 color: Theme.of(context)
@@ -178,7 +178,7 @@ class LiveOverviewView extends StatelessWidget with ViewLoggy {
                       ),
                     ),
                     secondaryChild: Text(
-                      'Current Employees',
+                      'Nhân viên đang làm việc',
                       style:
                           Theme.of(context).textTheme.headlineLarge!.copyWith(
                                 color: Theme.of(context)
@@ -239,7 +239,7 @@ class LiveOverviewView extends StatelessWidget with ViewLoggy {
                       ),
                     ),
                     secondaryChild: Text(
-                      'Total Customers today',
+                      'Tổng số khách hàng hôm nay',
                       style:
                           Theme.of(context).textTheme.headlineLarge!.copyWith(
                                 color: Theme.of(context)
@@ -298,7 +298,7 @@ class LiveOverviewView extends StatelessWidget with ViewLoggy {
                       },
                     ),
                     secondaryChild: Text(
-                      'Today\'s Revenue',
+                      'Doanh thu hôm nay',
                       style:
                           Theme.of(context).textTheme.headlineLarge!.copyWith(
                                 color: Theme.of(context)
@@ -311,7 +311,7 @@ class LiveOverviewView extends StatelessWidget with ViewLoggy {
               ),
               const SizedBox(height: LiveOverviewViewStyles.spacing),
               InfoCardWithTitle(
-                title: 'Current Parking lot allotment',
+                title: 'Phân bổ bãi đỗ xe hiện tại',
                 child: ValueListenableBuilder(
                   valueListenable: controller.getTicketStateNotifier,
                   builder: (context, state, child) {
@@ -323,18 +323,21 @@ class LiveOverviewView extends StatelessWidget with ViewLoggy {
                           final data = controller
                               .currentTicketRow(currentParkingLotAllotment);
 
-                          return TableInfo(
-                            titles: controller
-                                .currentParkingLotAllotmentTableTitles,
-                            data: data,
-                            rowPerPage: data.length >
-                                    controller
-                                        .rowPerPageCurrentTicketsNotifier.value
-                                ? controller
-                                    .rowPerPageCurrentTicketsNotifier.value
-                                : data.length,
-                            onRowsPerPageChanged:
-                                controller.onCurrentTicketRowsPerPageChanged,
+                          return ValueListenableBuilder(
+                            valueListenable:
+                                controller.rowPerPageCurrentTicketsNotifier,
+                            builder: (context, rowsPerPage, child) {
+                              return TableInfo(
+                                titles: controller
+                                    .currentParkingLotAllotmentTableTitles,
+                                data: data,
+                                rowPerPage: data.length > rowsPerPage
+                                    ? rowsPerPage
+                                    : data.length,
+                                onRowsPerPageChanged: controller
+                                    .onCurrentTicketRowsPerPageChanged,
+                              );
+                            },
                           );
                         },
                       );
@@ -356,13 +359,7 @@ class LiveOverviewView extends StatelessWidget with ViewLoggy {
                         titles:
                             controller.currentParkingLotAllotmentTableTitles,
                         data: data,
-                        rowPerPage: data.length >
-                                controller
-                                    .rowPerPageCurrentTicketsNotifier.value
-                            ? controller.rowPerPageCurrentTicketsNotifier.value
-                            : data.length,
-                        onRowsPerPageChanged:
-                            controller.onCurrentTicketRowsPerPageChanged,
+                        rowPerPage: 1,
                       );
                     }
 
@@ -378,7 +375,7 @@ class LiveOverviewView extends StatelessWidget with ViewLoggy {
               ),
               const SizedBox(height: LiveOverviewViewStyles.spacing),
               InfoCardWithTitle(
-                title: 'Current Employees',
+                title: 'Nhân viên hiện tại',
                 child: ValueListenableBuilder(
                   valueListenable: controller.getCurrentEmployeeStateNotifier,
                   builder: (context, state, child) {
@@ -389,18 +386,21 @@ class LiveOverviewView extends StatelessWidget with ViewLoggy {
                           final currentEmployeeRow =
                               controller.currentEmployeeRow(employees);
 
-                          return TableInfo(
-                            titles: controller.currentEmployeesTableTitles,
-                            data: currentEmployeeRow,
-                            rowPerPage: currentEmployeeRow.length >
-                                    controller
-                                        .rowPerPageCurrentEmployeesNotifier
-                                        .value
-                                ? controller
-                                    .rowPerPageCurrentEmployeesNotifier.value
-                                : currentEmployeeRow.length,
-                            onRowsPerPageChanged:
-                                controller.onCurrentEmployeesRowsPerPageChanged,
+                          return ValueListenableBuilder(
+                            valueListenable:
+                                controller.rowPerPageCurrentEmployeesNotifier,
+                            builder: (context, rowsPerPage, child) {
+                              return TableInfo(
+                                titles: controller.currentEmployeesTableTitles,
+                                data: currentEmployeeRow,
+                                rowPerPage:
+                                    currentEmployeeRow.length > rowsPerPage
+                                        ? rowsPerPage
+                                        : currentEmployeeRow.length,
+                                onRowsPerPageChanged: controller
+                                    .onCurrentEmployeesRowsPerPageChanged,
+                              );
+                            },
                           );
                         },
                       );
@@ -415,14 +415,7 @@ class LiveOverviewView extends StatelessWidget with ViewLoggy {
                       return TableInfo(
                         titles: controller.currentEmployeesTableTitles,
                         data: currentEmployeeRow,
-                        rowPerPage: currentEmployeeRow.length >
-                                controller
-                                    .rowPerPageCurrentEmployeesNotifier.value
-                            ? controller
-                                .rowPerPageCurrentEmployeesNotifier.value
-                            : currentEmployeeRow.length,
-                        onRowsPerPageChanged:
-                            controller.onCurrentEmployeesRowsPerPageChanged,
+                        rowPerPage: 1,
                       );
                     }
 
@@ -445,24 +438,28 @@ class LiveOverviewView extends StatelessWidget with ViewLoggy {
               ),
               const SizedBox(height: LiveOverviewViewStyles.spacing),
               InfoCardWithTitle(
-                title: 'All Tickets',
+                title: 'Tất cả vé',
                 child: ValueListenableBuilder(
                   valueListenable: controller.getTicketStateNotifier,
                   builder: (context, state, child) {
                     if (state is GetTicketSuccess) {
                       final data = controller.allTicketRow(state.tickets);
 
-                      return TableInfo(
-                        titles:
-                            controller.currentParkingLotAllotmentTableTitles,
-                        data: data,
-                        rowPerPage: data.length >
-                                controller
-                                    .rowPerPageCurrentTicketsNotifier.value
-                            ? controller.rowPerPageCurrentTicketsNotifier.value
-                            : data.length,
-                        onRowsPerPageChanged:
-                            controller.onCurrentTicketRowsPerPageChanged,
+                      return ValueListenableBuilder(
+                        valueListenable:
+                            controller.rowPerPageAllTicketsNotifier,
+                        builder: (context, rowsPerPage, child) {
+                          return TableInfo(
+                            titles: controller
+                                .currentParkingLotAllotmentTableTitles,
+                            data: data,
+                            rowPerPage: data.length > rowsPerPage
+                                ? rowsPerPage
+                                : data.length,
+                            onRowsPerPageChanged:
+                                controller.onAllTicketRowsPerPageChanged,
+                          );
+                        },
                       );
                     }
 
@@ -482,13 +479,7 @@ class LiveOverviewView extends StatelessWidget with ViewLoggy {
                         titles:
                             controller.currentParkingLotAllotmentTableTitles,
                         data: data,
-                        rowPerPage: data.length >
-                                controller
-                                    .rowPerPageCurrentTicketsNotifier.value
-                            ? controller.rowPerPageCurrentTicketsNotifier.value
-                            : data.length,
-                        onRowsPerPageChanged:
-                            controller.onCurrentTicketRowsPerPageChanged,
+                        rowPerPage: 1,
                       );
                     }
 

@@ -48,7 +48,7 @@ class _DateInputRowState extends State<DateInputRow> {
         controller: _controller,
         style: DateInputRowStyles.inputtedTextStyle(context),
         decoration: InputDecoration(
-          hintText: 'Date of Birth',
+          hintText: 'Ngày sinh',
           hintStyle: DateInputRowStyles.hintTextStyle(context),
           suffixIcon: Icon(
             Icons.calendar_today_rounded,

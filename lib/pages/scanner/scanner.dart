@@ -97,13 +97,13 @@ class ScannerController extends State<Scanner>
   String getErrorMessage(MobileScannerException exception) {
     switch (exception.errorCode) {
       case MobileScannerErrorCode.controllerUninitialized:
-        return 'Controller not ready.';
+        return 'Đã xảy ra lỗi khi khởi tạo máy quét';
       case MobileScannerErrorCode.permissionDenied:
-        return 'Permission denied';
+        return 'Quyền truy cập máy ảnh bị từ chối';
       case MobileScannerErrorCode.unsupported:
-        return 'Scanning is unsupported on this device';
+        return 'Thiết bị không hỗ trợ máy quét';
       default:
-        return 'Generic Error';
+        return 'Đã xảy ra lỗi không xác định';
     }
   }
 

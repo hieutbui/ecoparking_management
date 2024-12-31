@@ -34,7 +34,7 @@ class PreviousAnalysisView extends StatelessWidget with ViewLoggy {
       body: PlatformInfos.isMobile
           ? Center(
               child: Text(
-                'This page is not available on mobile',
+                'Trang này không hỗ trợ trên thiết bị di động!',
                 style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                       color:
                           Theme.of(context).colorScheme.surfaceContainerHighest,
@@ -55,7 +55,7 @@ class PreviousAnalysisView extends StatelessWidget with ViewLoggy {
                           secondaryChild: Row(
                             children: <Widget>[
                               Text(
-                                'Total Revenue ',
+                                'Tổng doanh thu ',
                                 style: Theme.of(context)
                                     .textTheme
                                     .headlineLarge!
@@ -80,7 +80,7 @@ class PreviousAnalysisView extends StatelessWidget with ViewLoggy {
                           secondaryChild: Row(
                             children: <Widget>[
                               Text(
-                                'Total Vehicle ',
+                                'Tổng số xe ',
                                 style: Theme.of(context)
                                     .textTheme
                                     .headlineLarge!

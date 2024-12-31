@@ -36,7 +36,7 @@ class LoginView extends StatelessWidget with ViewLoggy {
                         textInputAction: TextInputAction.next,
                         decoration: InputDecoration(
                           labelText: 'Email',
-                          hintText: 'Enter your email',
+                          hintText: 'Nhập email của bạn',
                           labelStyle: Theme.of(context).textTheme.displaySmall,
                           hintStyle: Theme.of(context).textTheme.headlineSmall,
                         ),
@@ -57,8 +57,8 @@ class LoginView extends StatelessWidget with ViewLoggy {
                             textInputAction: TextInputAction.done,
                             obscureText: isObscure,
                             decoration: InputDecoration(
-                              labelText: 'Password',
-                              hintText: 'Enter your password',
+                              labelText: 'Mật khẩu',
+                              hintText: 'Nhập mật khẩu của bạn',
                               labelStyle:
                                   Theme.of(context).textTheme.displaySmall,
                               hintStyle:
@@ -91,7 +91,7 @@ class LoginView extends StatelessWidget with ViewLoggy {
                             state is! SignInLoading ? controller.login : null,
                         child: state is! SignInLoading
                             ? Text(
-                                'Login',
+                                'Đăng nhập',
                                 style:
                                     Theme.of(context).textTheme.headlineMedium,
                               )

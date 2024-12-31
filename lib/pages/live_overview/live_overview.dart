@@ -64,22 +64,24 @@ class LiveOverviewController extends State<LiveOverview> with ControllerLoggy {
       ValueNotifier<int>(PaginatedDataTable.defaultRowsPerPage);
   final ValueNotifier<int> rowPerPageCurrentTicketsNotifier =
       ValueNotifier<int>(PaginatedDataTable.defaultRowsPerPage);
+  final ValueNotifier<int> rowPerPageAllTicketsNotifier =
+      ValueNotifier<int>(PaginatedDataTable.defaultRowsPerPage);
 
   List<String> get currentEmployeesTableTitles => <String>[
-        'Employee ID',
-        'Name',
+        'Mã NV',
+        'Tên NV',
         'Email',
-        'Phone',
+        'SĐT',
       ];
   List<String> get currentParkingLotAllotmentTableTitles => <String>[
-        'License Plate',
-        'Entry Time',
-        'Actual Exit',
-        'Booked Start',
-        'Booked Exit',
-        'Status',
-        'Duration',
-        'Charge',
+        'Biển số',
+        'Thời gian vào',
+        'Thời gian ra',
+        'Đăng ký vào',
+        'Đăng ký ra',
+        'Trạng thái',
+        'Thời gian đặt',
+        'Tổng tiền',
       ];
 
   bool get isEmployee =>
@@ -339,6 +341,7 @@ class LiveOverviewController extends State<LiveOverview> with ControllerLoggy {
     totalRevenueNotifier.dispose();
     currentParkingLotAllotmentNotifier.dispose();
     getTicketStateNotifier.dispose();
+    rowPerPageAllTicketsNotifier.dispose();
   }
 
   void _disposeSubscriptions() {
@@ -730,7 +733,7 @@ class LiveOverviewController extends State<LiveOverview> with ControllerLoggy {
               DataCell(
                 Text(
                   e.entryTime != null
-                      ? DateFormat('yyy/MM/dd hh:mm a').format(e.entryTime!)
+                      ? DateFormat('hh:mm a yyy/MM/dd ').format(e.entryTime!)
                       : '',
                   style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                         color: Theme.of(context).colorScheme.onSurface,
@@ -740,7 +743,7 @@ class LiveOverviewController extends State<LiveOverview> with ControllerLoggy {
               DataCell(
                 Text(
                   e.exitTime != null
-                      ? DateFormat('yyy/MM/dd hh:mm a').format(e.exitTime!)
+                      ? DateFormat('hh:mm a yyy/MM/dd').format(e.exitTime!)
                       : '',
                   style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                         color: Theme.of(context).colorScheme.onSurface,
@@ -749,7 +752,7 @@ class LiveOverviewController extends State<LiveOverview> with ControllerLoggy {
               ),
               DataCell(
                 Text(
-                  DateFormat('yyy/MM/dd hh:mm a').format(e.startTime),
+                  DateFormat('hh:mm a yyy/MM/dd').format(e.startTime),
                   style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                         color: Theme.of(context).colorScheme.onSurface,
                       ),
@@ -757,7 +760,7 @@ class LiveOverviewController extends State<LiveOverview> with ControllerLoggy {
               ),
               DataCell(
                 Text(
-                  DateFormat('yyy/MM/dd hh:mm a').format(e.endTime),
+                  DateFormat('hh:mm a yyy/MM/dd').format(e.endTime),
                   style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                         color: Theme.of(context).colorScheme.onSurface,
                       ),
@@ -802,6 +805,12 @@ class LiveOverviewController extends State<LiveOverview> with ControllerLoggy {
   void onCurrentTicketRowsPerPageChanged(int? selectedRowsPerPage) {
     if (selectedRowsPerPage != null) {
       rowPerPageCurrentTicketsNotifier.value = selectedRowsPerPage;
+    }
+  }
+
+  void onAllTicketRowsPerPageChanged(int? selectedRowsPerPage) {
+    if (selectedRowsPerPage != null) {
+      rowPerPageAllTicketsNotifier.value = selectedRowsPerPage;
     }
   }
 

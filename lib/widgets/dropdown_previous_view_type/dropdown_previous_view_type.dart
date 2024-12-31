@@ -51,7 +51,7 @@ class _DropdownPreviousViewTypeState extends State<DropdownPreviousViewType> {
         value: _selectedViewType,
         isExpanded: true,
         hint: Text(
-          'View Type',
+          'Chọn loại hiển thị',
           style: DropdownPreviousViewTypeStyles.hintStyle(context),
         ),
         items: PreviousAnalysisViewType.values
