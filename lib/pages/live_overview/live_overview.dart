@@ -13,9 +13,15 @@ import 'package:ecoparking_management/domain/state/analysis/get_parking_info_sta
 import 'package:ecoparking_management/domain/state/analysis/get_ticket_state.dart';
 import 'package:ecoparking_management/domain/state/app_state/failure.dart';
 import 'package:ecoparking_management/domain/state/app_state/success.dart';
+import 'package:ecoparking_management/domain/state/employee/check_in_state.dart';
+import 'package:ecoparking_management/domain/state/employee/check_out_state.dart';
+import 'package:ecoparking_management/domain/state/employee/get_employee_attendance_status_state.dart';
 import 'package:ecoparking_management/domain/usecase/analysis/get_current_employee_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/analysis/get_parking_info_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/analysis/get_ticket_interactor.dart';
+import 'package:ecoparking_management/domain/usecase/employee/check_in_interactor.dart';
+import 'package:ecoparking_management/domain/usecase/employee/check_out_interactor.dart';
+import 'package:ecoparking_management/domain/usecase/employee/get_employee_attendance_status_interactor.dart';
 import 'package:ecoparking_management/pages/live_overview/live_overview_view.dart';
 import 'package:ecoparking_management/pages/live_overview/models/parking_occupied.dart';
 import 'package:ecoparking_management/utils/dialog_utils.dart';
@@ -41,6 +47,12 @@ class LiveOverviewController extends State<LiveOverview> with ControllerLoggy {
       getIt.get<GetCurrentEmployeeInteractor>();
   final GetTicketInteractor _getTicketInteractor =
       getIt.get<GetTicketInteractor>();
+  final CheckInInteractor _checkInInteractor = getIt.get<CheckInInteractor>();
+  final CheckOutInteractor _checkOutInteractor =
+      getIt.get<CheckOutInteractor>();
+  final GetEmployeeAttendanceStatusInteractor
+      _getEmployeeAttendanceStatusInteractor =
+      getIt.get<GetEmployeeAttendanceStatusInteractor>();
 
   final ValueNotifier<GetParkingInfoState> getParkingInfoStateNotifier =
       ValueNotifier<GetParkingInfoState>(const GetParkingInfoInitial());
@@ -48,6 +60,15 @@ class LiveOverviewController extends State<LiveOverview> with ControllerLoggy {
       ValueNotifier<GetCurrentEmployeeState>(const GetCurrentEmployeeInitial());
   final ValueNotifier<GetTicketState> getTicketStateNotifier =
       ValueNotifier<GetTicketState>(const GetTicketInitial());
+  final ValueNotifier<CheckInState> checkInStateNotifier =
+      ValueNotifier<CheckInState>(const CheckInInitial());
+  final ValueNotifier<CheckOutState> checkOutStateNotifier =
+      ValueNotifier<CheckOutState>(const CheckOutInitial());
+  final ValueNotifier<GetEmployeeAttendanceStatusState>
+      getEmployeeAttendanceStatusStateNotifier =
+      ValueNotifier<GetEmployeeAttendanceStatusState>(
+    const GetEmployeeAttendanceStatusInitial(),
+  );
 
   final ValueNotifier<ParkingOccupied> parkingOccupied =
       ValueNotifier<ParkingOccupied>(
@@ -89,10 +110,14 @@ class LiveOverviewController extends State<LiveOverview> with ControllerLoggy {
 
   StreamSubscription? _parkingInfoSubscription;
   StreamSubscription? _currentEmployeeSubscription;
+  StreamSubscription? _checkInSubscription;
+  StreamSubscription? _checkOutSubscription;
+  StreamSubscription? _employeeAttendanceStatusSubscription;
 
   @override
   void initState() {
     super.initState();
+    _getEmployeeAttendanceStatus();
     _getParkingInfo();
     _getCurrentEmployee();
     _getTicket();
@@ -118,6 +143,26 @@ class LiveOverviewController extends State<LiveOverview> with ControllerLoggy {
           schema: SupabaseSchema.public.name,
         )
         .subscribe();
+  }
+
+  void _getEmployeeAttendanceStatus() {
+    if (!isEmployee) return;
+
+    final employee = _profileService.parkingEmployee;
+
+    if (employee == null) return;
+
+    final employeeId = employee.id;
+
+    if (employeeId == null) return;
+
+    _employeeAttendanceStatusSubscription =
+        _getEmployeeAttendanceStatusInteractor
+            .execute(employeeId: employeeId)
+            .listen((result) => result.fold(
+                  _handleGetEmployeeAttendanceStatusFailure,
+                  _handleGetEmployeeAttendanceStatusSuccess,
+                ));
   }
 
   void _realtimeCallback(PostgresChangePayload payload) {
@@ -342,13 +387,22 @@ class LiveOverviewController extends State<LiveOverview> with ControllerLoggy {
     currentParkingLotAllotmentNotifier.dispose();
     getTicketStateNotifier.dispose();
     rowPerPageAllTicketsNotifier.dispose();
+    checkInStateNotifier.dispose();
+    checkOutStateNotifier.dispose();
+    getEmployeeAttendanceStatusStateNotifier.dispose();
   }
 
   void _disposeSubscriptions() {
     _parkingInfoSubscription?.cancel();
     _currentEmployeeSubscription?.cancel();
+    _checkInSubscription?.cancel();
+    _checkOutSubscription?.cancel();
+    _employeeAttendanceStatusSubscription?.cancel();
     _parkingInfoSubscription = null;
     _currentEmployeeSubscription = null;
+    _checkInSubscription = null;
+    _checkOutSubscription = null;
+    _employeeAttendanceStatusSubscription = null;
   }
 
   String getFormattedCurrency(num value) {
@@ -816,12 +870,56 @@ class LiveOverviewController extends State<LiveOverview> with ControllerLoggy {
 
   void onCheckInPressed() {
     loggy.info('Check In Pressed');
-    //TODO: Check In
+    _checkIn();
   }
 
   void onCheckOutPressed() {
     loggy.info('Check Out Pressed');
-    //TODO: Check Out
+    _checkOut();
+  }
+
+  void _checkIn() {
+    final employee = _profileService.parkingEmployee;
+
+    if (employee == null) return;
+
+    final employeeId = employee.id;
+
+    if (employeeId == null) return;
+
+    _checkInSubscription = _checkInInteractor
+        .execute(
+          employeeId: employeeId,
+          parkingId: employee.parkingId,
+          clockIn: TimeOfDay.now(),
+          date: DateTime.now(),
+        )
+        .listen((result) => result.fold(
+              _handleCheckInFailure,
+              _handleCheckInSuccess,
+            ));
+  }
+
+  void _checkOut() {
+    final employee = _profileService.parkingEmployee;
+
+    if (employee == null) return;
+
+    final employeeId = employee.id;
+
+    if (employeeId == null) return;
+
+    _checkOutSubscription = _checkOutInteractor
+        .execute(
+          employeeId: employeeId,
+          parkingId: employee.parkingId,
+          clockOut: TimeOfDay.now(),
+          date: DateTime.now(),
+        )
+        .listen((result) => result.fold(
+              _handleCheckOutFailure,
+              _handleCheckOutSuccess,
+            ));
   }
 
   void openScanner() {
@@ -922,6 +1020,62 @@ class LiveOverviewController extends State<LiveOverview> with ControllerLoggy {
       getTicketStateNotifier.value = success;
     } else if (success is GetTicketEmpty) {
       getTicketStateNotifier.value = success;
+    }
+  }
+
+  void _handleCheckInFailure(Failure failure) {
+    loggy.error('Check In Failure: $failure');
+    if (failure is CheckInFailure) {
+      checkInStateNotifier.value = failure;
+    } else if (failure is CheckInEmpty) {
+      checkInStateNotifier.value = failure;
+    } else {
+      checkInStateNotifier.value = CheckInFailure(exception: failure);
+    }
+  }
+
+  void _handleCheckInSuccess(Success success) {
+    if (success is CheckInSuccess) {
+      checkInStateNotifier.value = success;
+    } else if (success is CheckInLoading) {
+      checkInStateNotifier.value = success;
+    }
+  }
+
+  void _handleCheckOutFailure(Failure failure) {
+    if (failure is CheckOutFailure) {
+      checkOutStateNotifier.value = failure;
+    } else if (failure is CheckOutEmpty) {
+      checkOutStateNotifier.value = failure;
+    } else {
+      checkOutStateNotifier.value = CheckOutFailure(exception: failure);
+    }
+  }
+
+  void _handleCheckOutSuccess(Success success) {
+    if (success is CheckOutSuccess) {
+      checkOutStateNotifier.value = success;
+    } else if (success is CheckOutLoading) {
+      checkOutStateNotifier.value = success;
+    }
+  }
+
+  void _handleGetEmployeeAttendanceStatusFailure(Failure failure) {
+    if (failure is GetEmployeeAttendanceStatusFailure) {
+      getEmployeeAttendanceStatusStateNotifier.value = failure;
+    } else {
+      getEmployeeAttendanceStatusStateNotifier.value =
+          GetEmployeeAttendanceStatusFailure(exception: failure);
+    }
+  }
+
+  void _handleGetEmployeeAttendanceStatusSuccess(Success success) {
+    if (success is GetEmployeeAttendanceStatusSuccess) {
+      getEmployeeAttendanceStatusStateNotifier.value = success;
+    } else if (success is GetEmployeeAttendanceStatusLoading) {
+      getEmployeeAttendanceStatusStateNotifier.value = success;
+    } else if (success is GetEmployeeAttendanceStatusEmpty) {
+      getEmployeeAttendanceStatusStateNotifier.value = success;
     }
   }
 

@@ -35,10 +35,13 @@ import 'package:ecoparking_management/domain/usecase/analysis/get_parking_info_i
 import 'package:ecoparking_management/domain/usecase/analysis/get_ticket_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/analysis/get_yesterday_ticket_count_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/analysis/get_yesterday_total_interactor.dart';
+import 'package:ecoparking_management/domain/usecase/employee/check_in_interactor.dart';
+import 'package:ecoparking_management/domain/usecase/employee/check_out_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/employee/create_new_employee_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/employee/delete_employee_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/employee/get_all_employee_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/employee/get_employee_attendance_interactor.dart';
+import 'package:ecoparking_management/domain/usecase/employee/get_employee_attendance_status_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/employee/save_employee_to_xlsx_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/employee/search_employee_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/employee/update_employee_working_time_interactor.dart';
@@ -211,6 +214,15 @@ class GetItInitializer with GetItLoggy {
     );
     getIt.registerLazySingleton<GetEmployeeAttendanceInteractor>(
       () => GetEmployeeAttendanceInteractor(),
+    );
+    getIt.registerLazySingleton<CheckInInteractor>(
+      () => CheckInInteractor(),
+    );
+    getIt.registerLazySingleton<CheckOutInteractor>(
+      () => CheckOutInteractor(),
+    );
+    getIt.registerLazySingleton<GetEmployeeAttendanceStatusInteractor>(
+      () => GetEmployeeAttendanceStatusInteractor(),
     );
     loggy.info('_bindingInteractor(): Setup successfully');
   }
