@@ -20,7 +20,7 @@ class VehicleCountChartCard extends StatelessWidget {
       valueListenable: controller.viewTypeVehicleCount,
       builder: (context, type, child) {
         return InfoCardWithTitle(
-          title: 'Vehicle Count ${type.title}',
+          title: 'Số lượng xe ${type.title}',
           functionButton: Row(
             children: <Widget>[
               DropdownPreviousViewType(
@@ -33,7 +33,7 @@ class VehicleCountChartCard extends StatelessWidget {
               TextButton.icon(
                 onPressed: controller.onExportVehicleCount,
                 label: Text(
-                  'Export',
+                  'Xuất',
                   style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                         color: Theme.of(context).colorScheme.onSecondary,
                       ),

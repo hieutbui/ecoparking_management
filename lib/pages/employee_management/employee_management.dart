@@ -54,10 +54,10 @@ class EmployeeManagementController extends State<EmployeeManagement>
       getIt.get<SearchEmployeeInteractor>();
 
   final List<String> listEmployeesTableTitles = <String>[
-    'Employee ID',
-    'Name',
+    'Mã NV',
+    'Tên NV',
     'Email',
-    'Phone',
+    'SĐT',
   ];
 
   final ValueNotifier<GetAllEmployeeState> getAllEmployeeState =
@@ -413,8 +413,8 @@ class EmployeeManagementController extends State<EmployeeManagement>
     loggy.info('Export Employee Pressed');
     final listTitles = [
       ...listEmployeesTableTitles,
-      'Start Shift',
-      'End Shift',
+      'Bắt Đầu Ca',
+      'Kết Thúc Ca',
     ];
 
     final selectedEmployees = listEmployees.value

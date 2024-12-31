@@ -13,7 +13,7 @@ class EmployeeView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Text(
-        'Only owner can access this page!',
+        'Chỉ chủ sở hữu bãi đỗ xe mới có thể truy cập trang này!',
         style: Theme.of(context).textTheme.displayMedium!.copyWith(
               color: Theme.of(context).colorScheme.inversePrimary,
             ),

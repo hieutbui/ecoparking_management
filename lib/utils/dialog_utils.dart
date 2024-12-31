@@ -165,13 +165,13 @@ class DialogUtils {
   static WidgetBuilder get _buildRequiredLoginDialog => (BuildContext context) {
         return AlertDialog(
           title: Text(
-            'Login Required',
+            'Vui lòng đăng nhập',
             style: Theme.of(context).textTheme.displaySmall!.copyWith(
                   color: Theme.of(context).colorScheme.error,
                 ),
           ),
           content: Text(
-            'You need to login to access this feature.',
+            'Bạn cần đăng nhập để sử dụng tính năng này!',
             style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                   fontWeight: FontWeight.normal,
                   color: Theme.of(context).colorScheme.inversePrimary,
@@ -179,27 +179,6 @@ class DialogUtils {
           ),
           surfaceTintColor: AppConfig.baseBackgroundColor,
           actions: <Widget>[
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              style: const ButtonStyle(
-                backgroundColor: WidgetStatePropertyAll<Color>(
-                  Colors.white,
-                ),
-                shape: WidgetStatePropertyAll<OutlinedBorder>(
-                  RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(8.0),
-                    ),
-                  ),
-                ),
-              ),
-              child: Text(
-                'Cancel',
-                style: Theme.of(context).textTheme.headlineMedium!.copyWith(
-                      color: AppConfig.negativeTextColor,
-                    ),
-              ),
-            ),
             TextButton(
               onPressed: () => Navigator.of(context).pop(true),
               style: ButtonStyle(
@@ -218,7 +197,7 @@ class DialogUtils {
                 ),
               ),
               child: Text(
-                'Login',
+                'Đăng nhập',
                 style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                       color: Colors.white,
                     ),
@@ -231,13 +210,13 @@ class DialogUtils {
   static WidgetBuilder get _buildLoginErrorDialog => (BuildContext context) {
         return AlertDialog(
           title: Text(
-            'Login Error',
+            'Đăng nhập thất bại!',
             style: Theme.of(context).textTheme.displaySmall!.copyWith(
                   color: Theme.of(context).colorScheme.error,
                 ),
           ),
           content: Text(
-            'An error occurred while trying to login. Please try again.',
+            'Đã xảy ra lỗi khi đăng nhập. Vui lòng thử lại.',
             style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                   fontWeight: FontWeight.normal,
                   color: Theme.of(context).colorScheme.inversePrimary,
@@ -277,13 +256,13 @@ class DialogUtils {
       (BuildContext context) {
         return AlertDialog(
           title: Text(
-            'Something Went Wrong',
+            'Đã xảy ra lỗi!',
             style: Theme.of(context).textTheme.displaySmall!.copyWith(
                   color: Theme.of(context).colorScheme.error,
                 ),
           ),
           content: Text(
-            'An error occurred while trying to process your request. Please try again.',
+            'Đã xảy ra lỗi. Vui lòng thử lại.',
             style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                   fontWeight: FontWeight.normal,
                   color: Theme.of(context).colorScheme.inversePrimary,
@@ -323,13 +302,13 @@ class DialogUtils {
       (BuildContext context) {
         return AlertDialog(
           title: Text(
-            'Account Not Allowed',
+            'Tài khoản không có quyền truy cập',
             style: Theme.of(context).textTheme.displaySmall!.copyWith(
                   color: Theme.of(context).colorScheme.error,
                 ),
           ),
           content: Text(
-            'Your account is not allowed to access this feature. Please contact the administrator.',
+            'Tài khoản của bạn không có quyền truy cập vào tính năng này. Vui lòng liên hệ với quản trị viên để biết thêm chi tiết.',
             style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                   fontWeight: FontWeight.normal,
                   color: Theme.of(context).colorScheme.inversePrimary,
@@ -369,13 +348,13 @@ class DialogUtils {
       (BuildContext context) {
         return AlertDialog(
           title: Text(
-            'Fill All Fields',
+            'Thiếu thông tin đăng nhập',
             style: Theme.of(context).textTheme.displaySmall!.copyWith(
                   color: Theme.of(context).colorScheme.error,
                 ),
           ),
           content: Text(
-            'Please fill all fields to login.',
+            'Vui lòng điền đầy đủ thông tin để đăng nhập.',
             style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                   fontWeight: FontWeight.normal,
                   color: Theme.of(context).colorScheme.inversePrimary,
@@ -419,7 +398,7 @@ class DialogUtils {
       (BuildContext context) {
         return AlertDialog(
           title: Text(
-            'Account Not Allowed',
+            'Thông tin nhân viên',
             style: Theme.of(context).textTheme.displaySmall!.copyWith(
                   color: Theme.of(context).colorScheme.inversePrimary,
                 ),
@@ -433,7 +412,7 @@ class DialogUtils {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Name:',
+                      'Tên:',
                       style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                             color: Theme.of(context).colorScheme.onSurface,
                           ),
@@ -469,7 +448,7 @@ class DialogUtils {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Phone:',
+                      'SĐT:',
                       style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                             color: Theme.of(context).colorScheme.onSurface,
                           ),
@@ -487,7 +466,7 @@ class DialogUtils {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Text(
-                      'Working start time: ',
+                      'Bắt đầu ca: ',
                       style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                             color: Theme.of(context).colorScheme.onSurface,
                           ),
@@ -504,7 +483,7 @@ class DialogUtils {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Text(
-                      'Working end time: ',
+                      'Kết thúc ca: ',
                       style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                             color: Theme.of(context).colorScheme.onSurface,
                           ),
@@ -536,7 +515,7 @@ class DialogUtils {
                 ),
               ),
               label: Text(
-                'Cancel',
+                'Bỏ qua',
                 style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                       color: AppConfig.negativeTextColor,
                     ),
@@ -594,7 +573,7 @@ class DialogUtils {
 
               return AlertDialog(
                 title: Text(
-                  'Create Employee',
+                  'Tạo nhân viên mới',
                   style: Theme.of(context).textTheme.displaySmall!.copyWith(
                         color: Theme.of(context).colorScheme.inversePrimary,
                       ),
@@ -606,8 +585,8 @@ class DialogUtils {
                       TextField(
                         controller: nameController,
                         decoration: InputDecoration(
-                          labelText: 'Name',
-                          hintText: 'Enter name',
+                          labelText: 'Tên',
+                          hintText: 'Nhập tên',
                           labelStyle: Theme.of(context).textTheme.displaySmall,
                           hintStyle: Theme.of(context).textTheme.headlineSmall,
                         ),
@@ -618,7 +597,7 @@ class DialogUtils {
                         controller: emailController,
                         decoration: InputDecoration(
                           labelText: 'Email',
-                          hintText: 'Enter email',
+                          hintText: 'Nhập email',
                           labelStyle: Theme.of(context).textTheme.displaySmall,
                           hintStyle: Theme.of(context).textTheme.headlineSmall,
                         ),
@@ -633,7 +612,7 @@ class DialogUtils {
                             obscureText: isObscure,
                             decoration: InputDecoration(
                               labelText: 'Password',
-                              hintText: 'Enter password',
+                              hintText: 'Nhập mật khẩu',
                               labelStyle:
                                   Theme.of(context).textTheme.displaySmall,
                               hintStyle:
@@ -658,7 +637,7 @@ class DialogUtils {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
                           Text(
-                            'Working start time: ',
+                            'Bắt đầu ca: ',
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyMedium!
@@ -678,7 +657,7 @@ class DialogUtils {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
                           Text(
-                            'Working end time: ',
+                            'Kết thúc ca: ',
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyMedium!
@@ -714,7 +693,7 @@ class DialogUtils {
                       ),
                     ),
                     label: Text(
-                      'Cancel',
+                      'Bỏ qua',
                       style:
                           Theme.of(context).textTheme.headlineMedium!.copyWith(
                                 color: AppConfig.negativeTextColor,
@@ -760,7 +739,7 @@ class DialogUtils {
             if (state is CreateNewEmployeeLoading) {
               return AlertDialog(
                 title: Text(
-                  'Creating Employee',
+                  'Đang tạo nhân viên',
                   style: Theme.of(context).textTheme.displaySmall!.copyWith(
                         color: Theme.of(context).colorScheme.inversePrimary,
                       ),
@@ -780,13 +759,13 @@ class DialogUtils {
                 state is CreateNewEmployeeFailure) {
               return AlertDialog(
                 title: Text(
-                  'Create Employee Error',
+                  'Không thể tạo nhân viên!',
                   style: Theme.of(context).textTheme.displaySmall!.copyWith(
                         color: Theme.of(context).colorScheme.error,
                       ),
                 ),
                 content: Text(
-                  'An error occurred while trying to create employee. Please try again.',
+                  'Đã xảy ra lỗi khi tạo nhân viên. Vui lòng thử lại.',
                   style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                         fontWeight: FontWeight.normal,
                         color: Theme.of(context).colorScheme.inversePrimary,
@@ -810,7 +789,7 @@ class DialogUtils {
                       ),
                     ),
                     label: Text(
-                      'Cancel',
+                      'Bỏ qua',
                       style:
                           Theme.of(context).textTheme.headlineMedium!.copyWith(
                                 color: AppConfig.negativeTextColor,
@@ -857,7 +836,7 @@ class DialogUtils {
             if (state is CreateNewEmployeeSuccess) {
               return AlertDialog(
                 title: Text(
-                  'Create Employee Success',
+                  'Tạo nhân viên thành công',
                   style: Theme.of(context).textTheme.displaySmall!.copyWith(
                         color: Theme.of(context).colorScheme.onSecondary,
                       ),
@@ -871,7 +850,7 @@ class DialogUtils {
                       size: 48.0,
                     ),
                     Text(
-                      'Employee has been created successfully.',
+                      'Nhân viên đã được tạo thành công.',
                       style: Theme.of(context)
                           .textTheme
                           .headlineMedium!
@@ -900,7 +879,7 @@ class DialogUtils {
                       ),
                     ),
                     label: Text(
-                      'Cancel',
+                      'Bỏ qua',
                       style:
                           Theme.of(context).textTheme.headlineMedium!.copyWith(
                                 color: AppConfig.negativeTextColor,
@@ -948,13 +927,13 @@ class DialogUtils {
           },
           child: AlertDialog(
             title: Text(
-              'Create Employee Error',
+              'Tạo nhân viên thất bại!',
               style: Theme.of(context).textTheme.displaySmall!.copyWith(
                     color: Theme.of(context).colorScheme.error,
                   ),
             ),
             content: Text(
-              'An error occurred while trying to create employee. Please try again.',
+              'Đã xảy ra lỗi khi tạo nhân viên. Vui lòng thử lại.',
               style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                     fontWeight: FontWeight.normal,
                     color: Theme.of(context).colorScheme.inversePrimary,
@@ -978,7 +957,7 @@ class DialogUtils {
                   ),
                 ),
                 label: Text(
-                  'Cancel',
+                  'Bỏ qua',
                   style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                         color: AppConfig.negativeTextColor,
                       ),
@@ -1029,13 +1008,13 @@ class DialogUtils {
             if (state is DeleteEmployeeInitial) {
               return AlertDialog(
                 title: Text(
-                  'Confirm Delete Employee',
+                  'Xac nhận xóa nhân viên',
                   style: Theme.of(context).textTheme.displaySmall!.copyWith(
                         color: Theme.of(context).colorScheme.error,
                       ),
                 ),
                 content: Text(
-                  'Are you sure you want to delete this employee?',
+                  'Bạn có chắc chắn muốn xóa nhân viên này?',
                   style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                         fontWeight: FontWeight.normal,
                         color: Theme.of(context).colorScheme.inversePrimary,
@@ -1059,7 +1038,7 @@ class DialogUtils {
                       ),
                     ),
                     label: Text(
-                      'Cancel',
+                      'Bỏ qua',
                       style:
                           Theme.of(context).textTheme.headlineMedium!.copyWith(
                                 color: AppConfig.negativeTextColor,
@@ -1105,7 +1084,7 @@ class DialogUtils {
             if (state is DeleteEmployeeLoading) {
               return AlertDialog(
                 title: Text(
-                  'Deleting Employee',
+                  'Đang xóa nhân viên',
                   style: Theme.of(context).textTheme.displaySmall!.copyWith(
                         color: Theme.of(context).colorScheme.inversePrimary,
                       ),
@@ -1123,7 +1102,7 @@ class DialogUtils {
             if (state is DeleteEmployeeFailure) {
               return AlertDialog(
                 title: Text(
-                  'Delete Employee Error',
+                  'Xóa nhân viên thất bại!',
                   style: Theme.of(context).textTheme.displaySmall!.copyWith(
                         color: Theme.of(context).colorScheme.error,
                       ),
@@ -1153,7 +1132,7 @@ class DialogUtils {
                       ),
                     ),
                     label: Text(
-                      'Cancel',
+                      'Bỏ qua',
                       style:
                           Theme.of(context).textTheme.headlineMedium!.copyWith(
                                 color: AppConfig.negativeTextColor,
@@ -1200,7 +1179,7 @@ class DialogUtils {
             if (state is DeleteEmployeeSuccess) {
               return AlertDialog(
                 title: Text(
-                  'Delete Employee Success',
+                  'Xóa nhân viên thành công',
                   style: Theme.of(context).textTheme.displaySmall!.copyWith(
                         color: Theme.of(context).colorScheme.onSecondary,
                       ),
@@ -1214,7 +1193,7 @@ class DialogUtils {
                       size: 48.0,
                     ),
                     Text(
-                      'Employee has been deleted successfully.',
+                      'Nhân viên đã được xóa thành công.',
                       style: Theme.of(context)
                           .textTheme
                           .headlineMedium!
@@ -1243,7 +1222,7 @@ class DialogUtils {
                       ),
                     ),
                     label: Text(
-                      'Cancel',
+                      'Bỏ qua',
                       style:
                           Theme.of(context).textTheme.headlineMedium!.copyWith(
                                 color: AppConfig.negativeTextColor,
@@ -1291,13 +1270,13 @@ class DialogUtils {
           },
           child: AlertDialog(
             title: Text(
-              'Delete Employee Error',
+              'Xóa nhân viên thất bại!',
               style: Theme.of(context).textTheme.displaySmall!.copyWith(
                     color: Theme.of(context).colorScheme.error,
                   ),
             ),
             content: Text(
-              'An error occurred while trying to delete employee. Please try again.',
+              'Đã xảy ra lỗi khi xóa nhân viên. Vui lòng thử lại.',
               style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                     fontWeight: FontWeight.normal,
                     color: Theme.of(context).colorScheme.inversePrimary,
@@ -1321,7 +1300,7 @@ class DialogUtils {
                   ),
                 ),
                 label: Text(
-                  'Cancel',
+                  'Bỏ qua',
                   style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                         color: AppConfig.negativeTextColor,
                       ),
@@ -1365,13 +1344,13 @@ class DialogUtils {
       (BuildContext context) {
         return AlertDialog(
           title: Text(
-            'Employee Not Selected',
+            'Chưa chọn nhân viên',
             style: Theme.of(context).textTheme.displaySmall!.copyWith(
                   color: Theme.of(context).colorScheme.error,
                 ),
           ),
           content: Text(
-            'Please select an employee to proceed.',
+            'Vui lòng chọn một nhân viên để thực hiện thao tác này.',
             style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                   fontWeight: FontWeight.normal,
                   color: Theme.of(context).colorScheme.inversePrimary,
@@ -1419,7 +1398,7 @@ class DialogUtils {
                 state is SaveEmployeeToXlsxLoading) {
               return AlertDialog(
                 title: Text(
-                  'Saving Employee',
+                  'Đang lưu nhân viên',
                   style: Theme.of(context).textTheme.displaySmall!.copyWith(
                         color: Theme.of(context).colorScheme.inversePrimary,
                       ),
@@ -1437,7 +1416,7 @@ class DialogUtils {
             if (state is SaveEmployeeToXlsxSuccess) {
               return AlertDialog(
                 title: Text(
-                  'Save Employee Success',
+                  'Lưu nhân viên thành công',
                   style: Theme.of(context).textTheme.displaySmall!.copyWith(
                         color: Theme.of(context).colorScheme.onSecondary,
                       ),
@@ -1451,7 +1430,7 @@ class DialogUtils {
                       size: 48.0,
                     ),
                     Text(
-                      'Employee has been saved successfully.',
+                      'Nhân viên đã được lưu thành công.',
                       style: Theme.of(context)
                           .textTheme
                           .headlineMedium!
@@ -1480,7 +1459,7 @@ class DialogUtils {
                       ),
                     ),
                     label: Text(
-                      'Cancel',
+                      'Bỏ qua',
                       style:
                           Theme.of(context).textTheme.headlineMedium!.copyWith(
                                 color: AppConfig.negativeTextColor,
@@ -1528,13 +1507,13 @@ class DialogUtils {
           },
           child: AlertDialog(
             title: Text(
-              'Save Employee Error',
+              'Lưu nhân viên thất bại!',
               style: Theme.of(context).textTheme.displaySmall!.copyWith(
                     color: Theme.of(context).colorScheme.error,
                   ),
             ),
             content: Text(
-              'An error occurred while trying to save employee. Please try again.',
+              'Đã xảy ra lỗi khi lưu nhân viên. Vui lòng thử lại.',
               style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                     fontWeight: FontWeight.normal,
                     color: Theme.of(context).colorScheme.inversePrimary,
@@ -1558,7 +1537,7 @@ class DialogUtils {
                   ),
                 ),
                 label: Text(
-                  'Cancel',
+                  'Bỏ qua',
                   style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                         color: AppConfig.negativeTextColor,
                       ),
@@ -1608,7 +1587,7 @@ class DialogUtils {
             if (state is ExportDataInitial || state is ExportDataLoading) {
               return AlertDialog(
                 title: Text(
-                  'Exporting Data',
+                  'Đang xuất dữ liệu',
                   style: Theme.of(context).textTheme.displaySmall!.copyWith(
                         color: Theme.of(context).colorScheme.inversePrimary,
                       ),
@@ -1626,7 +1605,7 @@ class DialogUtils {
             if (state is ExportDataSuccess) {
               return AlertDialog(
                 title: Text(
-                  'Export data Success',
+                  'Xuất dữ liệu thành công',
                   style: Theme.of(context).textTheme.displaySmall!.copyWith(
                         color: Theme.of(context).colorScheme.onSecondary,
                       ),
@@ -1640,7 +1619,7 @@ class DialogUtils {
                       size: 48.0,
                     ),
                     Text(
-                      'Data has been exported successfully.',
+                      'Dữ liệu đã được xuất thành công.',
                       style: Theme.of(context)
                           .textTheme
                           .headlineMedium!
@@ -1669,7 +1648,7 @@ class DialogUtils {
                       ),
                     ),
                     label: Text(
-                      'Cancel',
+                      'Bỏ qua',
                       style:
                           Theme.of(context).textTheme.headlineMedium!.copyWith(
                                 color: AppConfig.negativeTextColor,
@@ -1717,13 +1696,13 @@ class DialogUtils {
           },
           child: AlertDialog(
             title: Text(
-              'Export Data Error',
+              'Xuất dữ liệu thất bại!',
               style: Theme.of(context).textTheme.displaySmall!.copyWith(
                     color: Theme.of(context).colorScheme.error,
                   ),
             ),
             content: Text(
-              'An error occurred while trying to export data. Please try again.',
+              'Đã xảy ra lỗi khi xuất dữ liệu. Vui lòng thử lại.',
               style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                     fontWeight: FontWeight.normal,
                     color: Theme.of(context).colorScheme.inversePrimary,
@@ -1747,7 +1726,7 @@ class DialogUtils {
                   ),
                 ),
                 label: Text(
-                  'Cancel',
+                  'Bỏ qua',
                   style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                         color: AppConfig.negativeTextColor,
                       ),
@@ -1790,13 +1769,13 @@ class DialogUtils {
   static WidgetBuilder get _buildInvalidTicketDialog => (BuildContext context) {
         return AlertDialog(
           title: Text(
-            'Invalid Ticket',
+            'Vé không hợp lệ',
             style: Theme.of(context).textTheme.displaySmall!.copyWith(
                   color: Theme.of(context).colorScheme.error,
                 ),
           ),
           content: Text(
-            'The ticket is invalid. Please try again.',
+            'Vé không hợp lệ hoặc đã được sử dụng. Vui lòng kiểm tra lại.',
             style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                   fontWeight: FontWeight.normal,
                   color: Theme.of(context).colorScheme.inversePrimary,
@@ -1819,7 +1798,7 @@ class DialogUtils {
                 ),
               ),
               label: Text(
-                'Cancel',
+                'Bỏ qua',
                 style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                       color: AppConfig.negativeTextColor,
                     ),
@@ -1866,7 +1845,7 @@ enum ConfirmAction {
   String get title {
     switch (this) {
       case ConfirmAction.cancel:
-        return 'Cancel';
+        return 'Bỏ qua';
       case ConfirmAction.ok:
         return 'OK';
     }

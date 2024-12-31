@@ -7,13 +7,13 @@ enum PreviousAnalysisViewType {
   String get title {
     switch (this) {
       case PreviousAnalysisViewType.last12months:
-        return 'Last 12 months';
+        return '12 tháng qua';
       case PreviousAnalysisViewType.lastYear:
-        return 'Last year';
+        return 'Năm trước';
       case PreviousAnalysisViewType.lastMonth:
-        return 'Last month';
+        return 'Tháng trước';
       case PreviousAnalysisViewType.yesterday:
-        return 'Yesterday';
+        return 'Hôm qua';
     }
   }
 

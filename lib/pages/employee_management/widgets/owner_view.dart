@@ -39,7 +39,7 @@ class OwnerView extends StatelessWidget {
                     },
                   ),
                   secondaryChild: Text(
-                    'Total Employees',
+                    'Tổng số nhân viên',
                     style: Theme.of(context).textTheme.headlineLarge!.copyWith(
                           color: Theme.of(context)
                               .colorScheme
@@ -61,7 +61,7 @@ class OwnerView extends StatelessWidget {
                     },
                   ),
                   secondaryChild: Text(
-                    'On Time Employees',
+                    'Số nhân viên đang làm việc',
                     style: Theme.of(context).textTheme.headlineLarge!.copyWith(
                           color: Theme.of(context)
                               .colorScheme
@@ -75,7 +75,7 @@ class OwnerView extends StatelessWidget {
               height: EmployeeManagementViewStyles.spacing,
             ),
             InfoCardWithTitle(
-              title: 'Employee List',
+              title: 'Danh sách nhân viên',
               child: ValueListenableBuilder(
                 valueListenable: controller.listEmployees,
                 builder: (context, employees, child) {
@@ -101,7 +101,7 @@ class OwnerView extends StatelessWidget {
                           child: TextField(
                             onChanged: controller.onSearchEmployee,
                             decoration: InputDecoration(
-                              hintText: 'Search',
+                              hintText: 'Tìm kiếm nhân viên',
                               hintStyle: Theme.of(context)
                                   .textTheme
                                   .headlineMedium!
@@ -132,7 +132,7 @@ class OwnerView extends StatelessWidget {
                           color: Theme.of(context).colorScheme.onSecondary,
                         ),
                         label: Text(
-                          'Add',
+                          'Thêm',
                           style: Theme.of(context)
                               .textTheme
                               .headlineMedium!
@@ -161,7 +161,7 @@ class OwnerView extends StatelessWidget {
                           color: Theme.of(context).colorScheme.onTertiary,
                         ),
                         label: Text(
-                          'Export',
+                          'Xuất',
                           style: Theme.of(context)
                               .textTheme
                               .headlineMedium!
@@ -189,7 +189,7 @@ class OwnerView extends StatelessWidget {
                           color: Colors.white,
                         ),
                         label: Text(
-                          'Remove',
+                          'Xóa',
                           style: Theme.of(context)
                               .textTheme
                               .headlineMedium!
@@ -294,7 +294,7 @@ List<DataRow> _emptyEmployeeRow({
       cells: <DataCell>[
         DataCell(
           Text(
-            'No data',
+            'Không có dữ liệu',
             style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                   color: Theme.of(context).colorScheme.onSurface,
                 ),
@@ -302,7 +302,7 @@ List<DataRow> _emptyEmployeeRow({
         ),
         DataCell(
           Text(
-            'No data',
+            'Không có dữ liệu',
             style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                   color: Theme.of(context).colorScheme.onSurface,
                 ),
@@ -310,7 +310,7 @@ List<DataRow> _emptyEmployeeRow({
         ),
         DataCell(
           Text(
-            'No data',
+            'Không có dữ liệu',
             style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                   color: Theme.of(context).colorScheme.onSurface,
                 ),
@@ -318,7 +318,7 @@ List<DataRow> _emptyEmployeeRow({
         ),
         DataCell(
           Text(
-            'No data',
+            'Không có dữ liệu',
             style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                   color: Theme.of(context).colorScheme.onSurface,
                 ),

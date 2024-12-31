@@ -22,7 +22,7 @@ class ExceptionScreenView extends StatelessWidget with ViewLoggy {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
-              'Something went wrong!',
+              'Có lỗi xảy ra!',
               style: Theme.of(context).textTheme.displayMedium!.copyWith(
                     color: Theme.of(context).colorScheme.inversePrimary,
                   ),
@@ -38,7 +38,7 @@ class ExceptionScreenView extends StatelessWidget with ViewLoggy {
                 ),
               ),
               child: Text(
-                'Go back to login',
+                'Đăng nhập lại',
                 style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                       color: Theme.of(context).colorScheme.onSecondary,
                     ),
