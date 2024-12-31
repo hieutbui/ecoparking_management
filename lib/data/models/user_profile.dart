@@ -97,11 +97,11 @@ enum Gender {
   String toDisplayString() {
     switch (this) {
       case male:
-        return 'Male';
+        return 'Nam';
       case female:
-        return 'Female';
+        return 'Nữ';
       case other:
-        return 'Other';
+        return 'Khác';
     }
   }
 }
