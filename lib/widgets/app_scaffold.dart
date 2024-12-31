@@ -6,20 +6,20 @@ class AppScaffold extends StatelessWidget {
   final String title;
   final Widget body;
   final VoidCallback? onNotificationPressed;
-  final VoidCallback? onCheckInPressed;
-  final VoidCallback? onCheckOutPressed;
   final bool? showBackButton;
   final Widget? actionButton;
+  final Widget? checkInButton;
+  final Widget? checkOutButton;
 
   const AppScaffold({
     super.key,
     required this.title,
     required this.body,
     this.onNotificationPressed,
-    this.onCheckInPressed,
-    this.onCheckOutPressed,
     this.showBackButton = false,
     this.actionButton,
+    this.checkInButton,
+    this.checkOutButton,
   });
 
   @override
@@ -67,63 +67,13 @@ class AppScaffold extends StatelessWidget {
               onPressed: onNotificationPressed,
             ),
           ],
-          if (onCheckInPressed != null) ...[
+          if (checkInButton != null) ...[
             const SizedBox(width: 8.0),
-            TextButton.icon(
-              onPressed: onCheckInPressed,
-              label: Text(
-                'Check In',
-                style: Theme.of(context).textTheme.headlineMedium!.copyWith(
-                      color: Theme.of(context).colorScheme.onSecondary,
-                    ),
-              ),
-              icon: Icon(
-                Icons.check_circle,
-                color: Theme.of(context).colorScheme.onSecondary,
-                size: 20.0,
-              ),
-              style: ButtonStyle(
-                backgroundColor: WidgetStatePropertyAll<Color>(
-                  Theme.of(context).colorScheme.secondary,
-                ),
-                shape: const WidgetStatePropertyAll<OutlinedBorder>(
-                  RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(8.0),
-                    ),
-                  ),
-                ),
-              ),
-            ),
+            checkInButton!,
           ],
-          if (onCheckOutPressed != null) ...[
+          if (checkOutButton != null) ...[
             const SizedBox(width: 8.0),
-            TextButton.icon(
-              onPressed: onCheckOutPressed,
-              label: Text(
-                'Check Out',
-                style: Theme.of(context).textTheme.headlineMedium!.copyWith(
-                      color: Theme.of(context).colorScheme.onSecondary,
-                    ),
-              ),
-              icon: Icon(
-                Icons.check_circle_outline,
-                color: Theme.of(context).colorScheme.onSecondary,
-                size: 20.0,
-              ),
-              style: ButtonStyle(
-                backgroundColor: WidgetStatePropertyAll<Color>(
-                  Theme.of(context).colorScheme.secondary,
-                ),
-                shape: const WidgetStatePropertyAll<OutlinedBorder>(
-                  RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(8.0),
-                    ),
-                  ),
-                ),
-              ),
-            ),
+            checkOutButton!,
           ],
           if (actionButton != null) ...[
             const SizedBox(width: 8.0),

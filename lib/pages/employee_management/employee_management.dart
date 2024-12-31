@@ -754,7 +754,11 @@ class EmployeeManagementController extends State<EmployeeManagement>
     loggy.info('Get Employee Attendance Success: $success');
     if (success is GetEmployeeAttendanceSuccess) {
       getEmployeeAttendanceState.value = success;
-      onDutyEmployees.value = success.listAttendances.length;
+      onDutyEmployees.value = success.listAttendances
+          .where(
+            (e) => e.clockOut == null && e.clockIn != null,
+          )
+          .length;
     } else if (success is GetEmployeeAttendanceLoading) {
       getEmployeeAttendanceState.value = success;
     } else if (success is GetEmployeeAttendanceEmpty) {
