@@ -36,4 +36,9 @@ abstract class EmployeeDataSource {
     required String parkingId,
     required String searchKey,
   });
+  Future<List<Map<String, dynamic>>?> getAttendance({
+    required String parkingId,
+    DateTime? startDate,
+    DateTime? endDate,
+  });
 }

@@ -5,7 +5,7 @@ class SelectableEmployee with EquatableMixin {
   final EmployeeNestedInfo employeeNestedInfo;
   final bool isSelected;
 
-  SelectableEmployee({
+  const SelectableEmployee({
     required this.employeeNestedInfo,
     this.isSelected = false,
   });
