@@ -1,3 +1,4 @@
+import 'package:ecoparking_management/data/models/employee_attendance.dart';
 import 'package:ecoparking_management/data/models/employee_nested_info.dart';
 import 'package:ecoparking_management/data/models/parking_employee.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -55,5 +56,8 @@ abstract class EmployeeDataSource {
   });
   Future<Map<String, dynamic>> getEmployeeAttendance({
     required String employeeId,
+  });
+  Future<Map<String, dynamic>> saveAttendanceToXlsx({
+    required List<EmployeeAttendance> attendances,
   });
 }

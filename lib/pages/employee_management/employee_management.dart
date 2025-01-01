@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:dartz/dartz.dart' hide State;
 import 'package:ecoparking_management/config/app_paths.dart';
+import 'package:ecoparking_management/data/models/employee_attendance.dart';
 import 'package:ecoparking_management/data/models/employee_nested_info.dart';
 import 'package:ecoparking_management/data/models/parking_employee.dart';
 import 'package:ecoparking_management/data/models/user_profile.dart';
@@ -12,6 +13,7 @@ import 'package:ecoparking_management/domain/state/employee/create_new_employee_
 import 'package:ecoparking_management/domain/state/employee/delete_employee_state.dart';
 import 'package:ecoparking_management/domain/state/employee/get_all_employee_state.dart';
 import 'package:ecoparking_management/domain/state/employee/get_employee_attendance_state.dart';
+import 'package:ecoparking_management/domain/state/employee/save_attendance_to_xlsx_state.dart';
 import 'package:ecoparking_management/domain/state/employee/save_employee_to_xlsx_state.dart';
 import 'package:ecoparking_management/domain/state/employee/search_employee_state.dart';
 import 'package:ecoparking_management/domain/state/employee/update_employee_working_time_state.dart';
@@ -19,6 +21,7 @@ import 'package:ecoparking_management/domain/usecase/employee/create_new_employe
 import 'package:ecoparking_management/domain/usecase/employee/delete_employee_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/employee/get_all_employee_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/employee/get_employee_attendance_interactor.dart';
+import 'package:ecoparking_management/domain/usecase/employee/save_attendance_to_xlsx_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/employee/save_employee_to_xlsx_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/employee/search_employee_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/employee/update_employee_working_time_interactor.dart';
@@ -57,6 +60,8 @@ class EmployeeManagementController extends State<EmployeeManagement>
       getIt.get<SearchEmployeeInteractor>();
   final GetEmployeeAttendanceInteractor _getEmployeeAttendanceInteractor =
       getIt.get<GetEmployeeAttendanceInteractor>();
+  final SaveAttendanceToXlsxInteractor _saveAttendanceToXlsxInteractor =
+      getIt.get<SaveAttendanceToXlsxInteractor>();
 
   final List<String> listEmployeesTableTitles = <String>[
     'Mã NV',
@@ -91,6 +96,10 @@ class EmployeeManagementController extends State<EmployeeManagement>
       ValueNotifier<GetEmployeeAttendanceState>(
     const GetEmployeeAttendanceInitial(),
   );
+  final ValueNotifier<SaveAttendanceToXlsxState> saveAttendanceToXlsxState =
+      ValueNotifier<SaveAttendanceToXlsxState>(
+    const SaveAttendanceToXlsxInitial(),
+  );
 
   final ValueNotifier<int> rowPerPage =
       ValueNotifier<int>(PaginatedDataTable.defaultRowsPerPage);
@@ -124,6 +133,8 @@ class EmployeeManagementController extends State<EmployeeManagement>
   StreamSubscription<Either<Failure, Success>>? _searchEmployeeSubscription;
   StreamSubscription<Either<Failure, Success>>?
       _getEmployeeAttendanceSubscription;
+  StreamSubscription<Either<Failure, Success>>?
+      _saveAttendanceToXlsxSubscription;
 
   @override
   void initState() {
@@ -158,6 +169,7 @@ class EmployeeManagementController extends State<EmployeeManagement>
     rowPerPageAttendance.dispose();
     attendanceStartDate.dispose();
     attendanceEndDate.dispose();
+    saveAttendanceToXlsxState.dispose();
   }
 
   void _cancelSubscriptions() {
@@ -168,6 +180,7 @@ class EmployeeManagementController extends State<EmployeeManagement>
     _saveEmployeeToXlsxSubscription?.cancel();
     _searchEmployeeSubscription?.cancel();
     _getEmployeeAttendanceSubscription?.cancel();
+    _saveAttendanceToXlsxSubscription?.cancel();
     _getAllEmployeeSubscription = null;
     _updateEmployeeWorkingTimeSubscription = null;
     _createNewEmployeeSubscription = null;
@@ -175,6 +188,7 @@ class EmployeeManagementController extends State<EmployeeManagement>
     _saveEmployeeToXlsxSubscription = null;
     _searchEmployeeSubscription = null;
     _getEmployeeAttendanceSubscription = null;
+    _saveAttendanceToXlsxSubscription = null;
   }
 
   void _disposeControllers() {
@@ -503,6 +517,35 @@ class EmployeeManagementController extends State<EmployeeManagement>
     }
   }
 
+  void onExportAttendancePressed({
+    required List<EmployeeAttendance> attendances,
+  }) async {
+    loggy.info('Export Attendance Pressed');
+    final action = await DialogUtils.showSaveAttendanceToXlsxDialog(
+      context: context,
+      notifier: saveAttendanceToXlsxState,
+      onSaveAttendanceToXlsx: () => _saveAttendanceToXlsx(attendances),
+    );
+
+    switch (action) {
+      case ConfirmAction.ok:
+      case ConfirmAction.cancel:
+      default:
+        return;
+    }
+  }
+
+  void _saveAttendanceToXlsx(List<EmployeeAttendance> attendances) {
+    _saveAttendanceToXlsxSubscription = _saveAttendanceToXlsxInteractor
+        .execute(attendances: attendances)
+        .listen(
+          (result) => result.fold(
+            _handleSaveAttendanceToXlsxFailure,
+            _handleSaveAttendanceToXlsxSuccess,
+          ),
+        );
+  }
+
   void _saveEmployee(
     List<String> listTitles,
     List<EmployeeNestedInfo> employees,
@@ -763,6 +806,25 @@ class EmployeeManagementController extends State<EmployeeManagement>
       getEmployeeAttendanceState.value = success;
     } else if (success is GetEmployeeAttendanceEmpty) {
       getEmployeeAttendanceState.value = success;
+    }
+  }
+
+  void _handleSaveAttendanceToXlsxFailure(Failure failure) {
+    loggy.error('Save Attendance To Xlsx Failure: $failure');
+    if (failure is SaveAttendanceToXlsxFailure) {
+      saveAttendanceToXlsxState.value = failure;
+    } else {
+      saveAttendanceToXlsxState.value =
+          SaveAttendanceToXlsxFailure(exception: failure);
+    }
+  }
+
+  void _handleSaveAttendanceToXlsxSuccess(Success success) {
+    loggy.info('Save Attendance To Xlsx Success: $success');
+    if (success is SaveAttendanceToXlsxSuccess) {
+      saveAttendanceToXlsxState.value = success;
+    } else if (success is SaveAttendanceToXlsxLoading) {
+      saveAttendanceToXlsxState.value = success;
     }
   }
 

@@ -1,4 +1,5 @@
 import 'package:ecoparking_management/data/datasource/employee_datasource.dart';
+import 'package:ecoparking_management/data/models/employee_attendance.dart';
 import 'package:ecoparking_management/data/models/employee_nested_info.dart';
 import 'package:ecoparking_management/data/models/parking_employee.dart';
 import 'package:ecoparking_management/di/global/get_it_initializer.dart';
@@ -125,5 +126,12 @@ class EmployeeRepositoryImpl implements EmployeeRepository {
     required String employeeId,
   }) {
     return _dataSource.getEmployeeAttendance(employeeId: employeeId);
+  }
+
+  @override
+  Future<Map<String, dynamic>> saveAttendanceToXlsx({
+    required List<EmployeeAttendance> attendances,
+  }) {
+    return _dataSource.saveAttendanceToXlsx(attendances: attendances);
   }
 }
