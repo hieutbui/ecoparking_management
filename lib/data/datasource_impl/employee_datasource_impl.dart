@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:ecoparking_management/data/datasource/employee_datasource.dart';
+import 'package:ecoparking_management/data/models/employee_attendance.dart';
 import 'package:ecoparking_management/data/models/employee_nested_info.dart';
 import 'package:ecoparking_management/data/models/parking_employee.dart';
 import 'package:ecoparking_management/data/supabase_data/database_function_name.dart';
@@ -272,5 +273,80 @@ class EmployeeDataSourceImpl extends EmployeeDataSource {
         .eq(table.employeeId, employeeId)
         .eq(table.date, dateFormatter.format(now))
         .single();
+  }
+
+  @override
+  Future<Map<String, dynamic>> saveAttendanceToXlsx({
+    required List<EmployeeAttendance> attendances,
+  }) async {
+    try {
+      // Create an excel file
+      Excel excel = Excel.createExcel();
+
+      // Create a sheet
+      excel.rename('Sheet1', 'attendance');
+      excel.setDefaultSheet('attendance');
+
+      // Get the sheet
+      Sheet sheet = excel['attendance'];
+
+      // Adding the titles
+      final listTitles = [
+        'Mã nhân viên',
+        'Thời gian vào',
+        'Thời gian ra',
+        'Ngày',
+      ];
+
+      sheet.appendRow(
+        listTitles.map((title) => TextCellValue(title)).toList(),
+      );
+
+      // Adding the data
+      final dateFormatter = DateFormat('dd/MM/yyyy');
+
+      for (var attendance in attendances) {
+        final clockInTime = attendance.clockIn;
+        final clockOutTime = attendance.clockOut;
+
+        final listData = [
+          attendance.employeeId,
+          clockInTime != null
+              ? '${clockInTime.hour.toString().padLeft(2, '0')}:${clockInTime.minute.toString().padLeft(2, '0')}'
+              : 'N/A',
+          clockOutTime != null
+              ? '${clockOutTime.hour.toString().padLeft(2, '0')}:${clockOutTime.minute.toString().padLeft(2, '0')}'
+              : 'N/A',
+          dateFormatter.format(attendance.date),
+        ];
+
+        sheet.appendRow(
+          listData.map((data) => TextCellValue(data)).toList(),
+        );
+      }
+
+      // Saving the file
+
+      if (PlatformInfos.isWeb) {
+        excel.save(fileName: 'attendance.xlsx');
+      } else {
+        var fileBytes = excel.save();
+        var directory = await getApplicationDocumentsDirectory();
+
+        if (fileBytes != null) {
+          File(join('$directory/attendance.xlsx'))
+            ..createSync(recursive: true)
+            ..writeAsBytesSync(fileBytes);
+        }
+      }
+
+      return <String, dynamic>{
+        'status': 'success',
+      };
+    } catch (e) {
+      return <String, dynamic>{
+        'status': 'error',
+      };
+    }
   }
 }

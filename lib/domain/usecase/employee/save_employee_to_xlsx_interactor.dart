@@ -35,7 +35,8 @@ class SaveEmployeeToXlsxInteractor with InteractorLoggy {
         yield Right(SaveEmployeeToXlsxSuccess(status: status));
       } else {
         yield const Left(
-            SaveEmployeeToXlsxFailure(exception: 'Failed to save'));
+          SaveEmployeeToXlsxFailure(exception: 'Failed to save'),
+        );
       }
     } catch (e) {
       yield Left(SaveEmployeeToXlsxFailure(exception: e));
