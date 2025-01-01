@@ -90,4 +90,17 @@ class AnalysisRepositoryImpl implements AnalysisRepository {
   }) {
     return _dataSource.getTicket(parkingId: parkingId);
   }
+
+  @override
+  Future<Map<String, dynamic>> updateParkingSlot({
+    required String parkingId,
+    required int totalSlot,
+    required int availableSlot,
+  }) {
+    return _dataSource.updateParkingSlot(
+      parkingId: parkingId,
+      totalSlot: totalSlot,
+      availableSlot: availableSlot,
+    );
+  }
 }

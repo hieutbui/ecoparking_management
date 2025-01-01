@@ -27,34 +27,42 @@ class InfoMultiColumns extends StatelessWidget {
             final index = columns.indexOf(column);
 
             return TableCell(
-              child: Container(
-                padding: const EdgeInsets.only(
-                  top: 22.0,
-                  left: 24.0,
-                  bottom: 24.0,
-                  right: 28.0,
-                ),
-                decoration: BoxDecoration(
-                  border: index != 0 && index != columns.length - 1
-                      ? Border(
-                          right: BorderSide(
-                            color: Theme.of(context).colorScheme.tertiary,
-                            width: 1.0,
-                          ),
-                          left: BorderSide(
-                            color: Theme.of(context).colorScheme.tertiary,
-                            width: 1.0,
-                          ),
-                        )
-                      : null,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    column.highlightedChild,
-                    const SizedBox(height: 8.0),
-                    column.secondaryChild,
-                  ],
+              child: MouseRegion(
+                cursor: column.onTap != null
+                    ? SystemMouseCursors.click
+                    : SystemMouseCursors.basic,
+                child: GestureDetector(
+                  onTap: column.onTap,
+                  child: Container(
+                    padding: const EdgeInsets.only(
+                      top: 22.0,
+                      left: 24.0,
+                      bottom: 24.0,
+                      right: 28.0,
+                    ),
+                    decoration: BoxDecoration(
+                      border: index != 0 && index != columns.length - 1
+                          ? Border(
+                              right: BorderSide(
+                                color: Theme.of(context).colorScheme.tertiary,
+                                width: 1.0,
+                              ),
+                              left: BorderSide(
+                                color: Theme.of(context).colorScheme.tertiary,
+                                width: 1.0,
+                              ),
+                            )
+                          : null,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        column.highlightedChild,
+                        const SizedBox(height: 8.0),
+                        column.secondaryChild,
+                      ],
+                    ),
+                  ),
                 ),
               ),
             );
@@ -68,15 +76,18 @@ class InfoMultiColumns extends StatelessWidget {
 class ColumnArguments with EquatableMixin {
   final Widget highlightedChild;
   final Widget secondaryChild;
+  final void Function()? onTap;
 
   const ColumnArguments({
     required this.highlightedChild,
     required this.secondaryChild,
+    this.onTap,
   });
 
   @override
   List<Object?> get props => [
         highlightedChild,
         secondaryChild,
+        onTap,
       ];
 }

@@ -45,6 +45,7 @@ class LiveOverviewView extends StatelessWidget with ViewLoggy {
               InfoMultiColumns(
                 columns: <ColumnArguments>[
                   ColumnArguments(
+                    onTap: controller.onParkingSlotPressed,
                     highlightedChild: ValueListenableBuilder(
                       valueListenable: controller.getParkingInfoStateNotifier,
                       builder: (context, state, child) {

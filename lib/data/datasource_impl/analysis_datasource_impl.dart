@@ -215,4 +215,22 @@ class AnalysisDataSourceImpl extends AnalysisDataSource {
         .select(queryString)
         .eq(table.parkingId, parkingId);
   }
+
+  @override
+  Future<Map<String, dynamic>> updateParkingSlot({
+    required String parkingId,
+    required int totalSlot,
+    required int availableSlot,
+  }) {
+    const table = ParkingTable();
+
+    return Supabase.instance.client
+        .from(table.tableName)
+        .update({
+          table.totalSlot: totalSlot,
+          table.availableSlot: availableSlot,
+        })
+        .eq(table.id, parkingId)
+        .single();
+  }
 }

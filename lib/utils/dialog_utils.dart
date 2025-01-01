@@ -192,6 +192,20 @@ class DialogUtils {
     );
   }
 
+  static Future<ConfirmAction?> showUpdateParkingSlotDialog({
+    required BuildContext context,
+    required TextEditingController parkingSlotController,
+    required TextEditingController occupiedSlotController,
+  }) async {
+    return show<ConfirmAction>(
+      context: context,
+      builder: _buildUpdateParkingSlotDialog(
+        parkingSlotController: parkingSlotController,
+        occupiedSlotController: occupiedSlotController,
+      ),
+    );
+  }
+
   static WidgetBuilder get _buildRequiredLoginDialog => (BuildContext context) {
         return AlertDialog(
           title: Text(
@@ -2071,6 +2085,111 @@ class DialogUtils {
               ),
             ],
           ),
+        );
+      };
+
+  static WidgetBuilder _buildUpdateParkingSlotDialog({
+    required TextEditingController parkingSlotController,
+    required TextEditingController occupiedSlotController,
+  }) =>
+      (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            'Cập nhật chỗ đậu xe',
+            style: Theme.of(context).textTheme.displaySmall!.copyWith(
+                  color: Theme.of(context).colorScheme.inversePrimary,
+                ),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: parkingSlotController,
+                keyboardType: TextInputType.number,
+                textInputAction: TextInputAction.next,
+                decoration: InputDecoration(
+                  label: Text(
+                    'Số chỗ đậu xe',
+                    style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                          color: Theme.of(context).colorScheme.onSecondary,
+                        ),
+                  ),
+                  hintText: 'Số chỗ đậu xe',
+                  labelStyle: Theme.of(context).textTheme.displaySmall,
+                  hintStyle: Theme.of(context).textTheme.headlineSmall,
+                ),
+              ),
+              const SizedBox(height: 16.0),
+              TextField(
+                controller: occupiedSlotController,
+                keyboardType: TextInputType.number,
+                textInputAction: TextInputAction.done,
+                decoration: InputDecoration(
+                  label: Text(
+                    'Số chỗ đậu xe đã sử dụng',
+                    style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                          color: Theme.of(context).colorScheme.onSecondary,
+                        ),
+                  ),
+                  hintText: 'Số chỗ đậu xe đã sử dụng',
+                  labelStyle: Theme.of(context).textTheme.displaySmall,
+                  hintStyle: Theme.of(context).textTheme.headlineSmall,
+                ),
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton.icon(
+              onPressed: () => Navigator.of(context).pop(ConfirmAction.cancel),
+              style: ButtonStyle(
+                backgroundColor: WidgetStatePropertyAll<Color>(
+                  Theme.of(context).colorScheme.outline,
+                ),
+                shape: const WidgetStatePropertyAll<OutlinedBorder>(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(8.0),
+                    ),
+                  ),
+                ),
+              ),
+              label: Text(
+                'Bỏ qua',
+                style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                      color: AppConfig.negativeTextColor,
+                    ),
+              ),
+              icon: const Icon(
+                Icons.cancel,
+                color: AppConfig.negativeTextColor,
+              ),
+            ),
+            TextButton.icon(
+              onPressed: () => Navigator.of(context).pop(ConfirmAction.ok),
+              style: ButtonStyle(
+                backgroundColor: WidgetStatePropertyAll<Color>(
+                  Theme.of(context).colorScheme.secondary,
+                ),
+                shape: const WidgetStatePropertyAll<OutlinedBorder>(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(8.0),
+                    ),
+                  ),
+                ),
+              ),
+              label: Text(
+                'OK',
+                style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                      color: Theme.of(context).colorScheme.onSecondary,
+                    ),
+              ),
+              icon: Icon(
+                Icons.check,
+                color: Theme.of(context).colorScheme.onSecondary,
+              ),
+            ),
+          ],
         );
       };
 }

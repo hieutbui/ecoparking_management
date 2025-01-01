@@ -38,4 +38,9 @@ abstract class AnalysisRepository {
   Future<List<Map<String, dynamic>>> getTicket({
     required String parkingId,
   });
+  Future<Map<String, dynamic>> updateParkingSlot({
+    required String parkingId,
+    required int totalSlot,
+    required int availableSlot,
+  });
 }
