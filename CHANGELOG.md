@@ -1,3 +1,9 @@
+## v0.0.7 - 01/01/2025
+### Added
+- Change text to Vietnamese
+- Implement employee attendance
+- Implement update parking slot
+
 ## v0.0.6 - 29/12/2024
 ### Added
 - Config Android version
