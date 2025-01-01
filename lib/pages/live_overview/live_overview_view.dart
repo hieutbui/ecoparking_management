@@ -1,7 +1,5 @@
 import 'package:ecoparking_management/config/app_paths.dart';
-import 'package:ecoparking_management/data/models/employee_nested_info.dart';
 import 'package:ecoparking_management/data/models/ticket_info.dart';
-import 'package:ecoparking_management/domain/state/analysis/get_current_employee_state.dart';
 import 'package:ecoparking_management/domain/state/analysis/get_parking_info_state.dart';
 import 'package:ecoparking_management/domain/state/analysis/get_ticket_state.dart';
 import 'package:ecoparking_management/domain/state/employee/check_in_state.dart';
