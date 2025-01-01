@@ -19,6 +19,7 @@ import 'package:ecoparking_management/domain/state/employee/get_employee_attenda
 import 'package:ecoparking_management/domain/usecase/analysis/get_current_employee_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/analysis/get_parking_info_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/analysis/get_ticket_interactor.dart';
+import 'package:ecoparking_management/domain/usecase/analysis/update_parking_slot_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/employee/check_in_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/employee/check_out_interactor.dart';
 import 'package:ecoparking_management/domain/usecase/employee/get_employee_attendance_status_interactor.dart';
@@ -53,6 +54,8 @@ class LiveOverviewController extends State<LiveOverview> with ControllerLoggy {
   final GetEmployeeAttendanceStatusInteractor
       _getEmployeeAttendanceStatusInteractor =
       getIt.get<GetEmployeeAttendanceStatusInteractor>();
+  final UpdateParkingSlotInteractor _updateParkingSlotInteractor =
+      getIt.get<UpdateParkingSlotInteractor>();
 
   final ValueNotifier<GetParkingInfoState> getParkingInfoStateNotifier =
       ValueNotifier<GetParkingInfoState>(const GetParkingInfoInitial());
@@ -88,6 +91,11 @@ class LiveOverviewController extends State<LiveOverview> with ControllerLoggy {
   final ValueNotifier<int> rowPerPageAllTicketsNotifier =
       ValueNotifier<int>(PaginatedDataTable.defaultRowsPerPage);
 
+  final TextEditingController updateParkingSlotController =
+      TextEditingController();
+  final TextEditingController updateOccupiedSlotController =
+      TextEditingController();
+
   List<String> get currentEmployeesTableTitles => <String>[
         'Mã NV',
         'Tên NV',
@@ -113,6 +121,7 @@ class LiveOverviewController extends State<LiveOverview> with ControllerLoggy {
   StreamSubscription? _checkInSubscription;
   StreamSubscription? _checkOutSubscription;
   StreamSubscription? _employeeAttendanceStatusSubscription;
+  StreamSubscription? _updateParkingSlotSubscription;
 
   @override
   void initState() {
@@ -129,6 +138,7 @@ class LiveOverviewController extends State<LiveOverview> with ControllerLoggy {
     _unsubscribeListenRealtime();
     _disposeSubscriptions();
     _disposeNotifiers();
+    _disposeTextController();
     super.dispose();
   }
 
@@ -399,11 +409,20 @@ class LiveOverviewController extends State<LiveOverview> with ControllerLoggy {
     _checkInSubscription?.cancel();
     _checkOutSubscription?.cancel();
     _employeeAttendanceStatusSubscription?.cancel();
+    _updateParkingSlotSubscription?.cancel();
     _parkingInfoSubscription = null;
     _currentEmployeeSubscription = null;
     _checkInSubscription = null;
     _checkOutSubscription = null;
     _employeeAttendanceStatusSubscription = null;
+    _updateParkingSlotSubscription = null;
+  }
+
+  void _disposeTextController() {
+    updateParkingSlotController.dispose();
+    updateOccupiedSlotController.dispose();
+    updateParkingSlotController.clear();
+    updateOccupiedSlotController.clear();
   }
 
   String getFormattedCurrency(num value) {
@@ -930,6 +949,48 @@ class LiveOverviewController extends State<LiveOverview> with ControllerLoggy {
     );
   }
 
+  void onParkingSlotPressed() async {
+    updateParkingSlotController.text = parkingOccupied.value.total.toString();
+    updateOccupiedSlotController.text =
+        parkingOccupied.value.occupied.toString();
+
+    final action = await DialogUtils.showUpdateParkingSlotDialog(
+      context: context,
+      parkingSlotController: updateParkingSlotController,
+      occupiedSlotController: updateOccupiedSlotController,
+    );
+
+    switch (action) {
+      case ConfirmAction.ok:
+        final parkingId = await _getParkingId();
+
+        if (parkingId == null) {
+          await _showRequiredLogin();
+
+          return;
+        }
+
+        final totalSlot = int.parse(updateParkingSlotController.text);
+        final availableSlot =
+            totalSlot - int.parse(updateOccupiedSlotController.text);
+
+        _updateParkingSlotSubscription = _updateParkingSlotInteractor
+            .execute(
+              parkingId: parkingId,
+              totalSlot: totalSlot,
+              availableSlot: availableSlot,
+            )
+            .listen((result) => result.fold(
+                  _handleUpdateParkingSlotFailure,
+                  _handleUpdateParkingSlotSuccess,
+                ));
+        return;
+      case ConfirmAction.cancel:
+      default:
+        return;
+    }
+  }
+
   void _handleGetParkingInfoFailure(Failure failure) {
     if (failure is GetParkingInfoFailure) {
       getParkingInfoStateNotifier.value = failure;
@@ -1077,6 +1138,30 @@ class LiveOverviewController extends State<LiveOverview> with ControllerLoggy {
       getEmployeeAttendanceStatusStateNotifier.value = success;
     } else if (success is GetEmployeeAttendanceStatusEmpty) {
       getEmployeeAttendanceStatusStateNotifier.value = success;
+    }
+  }
+
+  void _handleUpdateParkingSlotFailure(Failure failure) {
+    if (failure is GetParkingInfoFailure) {
+      getParkingInfoStateNotifier.value = failure;
+    } else if (failure is GetParkingInfoEmpty) {
+      getParkingInfoStateNotifier.value = failure;
+    } else {
+      getParkingInfoStateNotifier.value =
+          GetParkingInfoFailure(exception: failure);
+    }
+  }
+
+  void _handleUpdateParkingSlotSuccess(Success success) {
+    if (success is GetParkingInfoSuccess) {
+      getParkingInfoStateNotifier.value = success;
+      parkingOccupied.value = ParkingOccupied(
+        occupied:
+            success.parkingInfo.totalSlot - success.parkingInfo.availableSlot,
+        total: success.parkingInfo.totalSlot,
+      );
+    } else if (success is GetParkingInfoLoading) {
+      getParkingInfoStateNotifier.value = success;
     }
   }
 
