@@ -354,7 +354,8 @@ class LiveOverviewController extends State<LiveOverview> with ControllerLoggy {
   }
 
   void _getTicket() {
-    final parkingId = _profileService.parkingOwner?.parkingId;
+    final parkingId = _profileService.parkingOwner?.parkingId ??
+        _profileService.parkingEmployee?.parkingId;
 
     if (parkingId == null) {
       return;
