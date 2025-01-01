@@ -291,6 +291,42 @@ class OwnerView extends StatelessWidget {
                           emptyData: _emptyAttendanceRow(context: context),
                           onRowsPerPageChanged:
                               controller.onRowsPerPageAttendanceChanged,
+                          actions: <Widget>[
+                            TextButton.icon(
+                              onPressed: () =>
+                                  controller.onExportAttendancePressed(
+                                attendances: state.listAttendances,
+                              ),
+                              icon: Icon(
+                                Icons.download_rounded,
+                                color: Theme.of(context).colorScheme.onTertiary,
+                              ),
+                              label: Text(
+                                'Xuất',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .headlineMedium!
+                                    .copyWith(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onTertiary,
+                                    ),
+                              ),
+                              style: ButtonStyle(
+                                backgroundColor: WidgetStatePropertyAll<Color>(
+                                  Theme.of(context).colorScheme.tertiary,
+                                ),
+                                shape: const WidgetStatePropertyAll<
+                                    OutlinedBorder>(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(8.0),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                           header: ValueListenableBuilder(
                             valueListenable: controller.attendanceStartDate,
                             builder: (context, date, child) {
