@@ -259,7 +259,7 @@ class EmployeeDataSourceImpl extends EmployeeDataSource {
   }
 
   @override
-  Future<Map<String, dynamic>> getEmployeeAttendance({
+  Future<Map<String, dynamic>?> getEmployeeAttendance({
     required String employeeId,
   }) async {
     const table = EmployeeAttendanceTable();
@@ -272,7 +272,7 @@ class EmployeeDataSourceImpl extends EmployeeDataSource {
         .select()
         .eq(table.employeeId, employeeId)
         .eq(table.date, dateFormatter.format(now))
-        .single();
+        .maybeSingle();
   }
 
   @override

@@ -515,6 +515,7 @@ Widget? _buildCheckInButton(
   return ValueListenableBuilder(
     valueListenable: controller.getEmployeeAttendanceStatusStateNotifier,
     builder: (context, statusState, child) {
+      print('statusState: $statusState');
       if (statusState is GetEmployeeAttendanceStatusInitial) {
         return TextButton.icon(
           onPressed: controller.onCheckInPressed,
@@ -579,7 +580,7 @@ Widget? _buildCheckInButton(
           builder: (context, state, child) {
             if (state is CheckInInitial) {
               return TextButton.icon(
-                onPressed: () {},
+                onPressed: controller.onCheckInPressed,
                 label: Text(
                   'Check in',
                   style: Theme.of(context).textTheme.headlineMedium!.copyWith(
@@ -626,7 +627,7 @@ Widget? _buildCheckInButton(
 
             if (state is CheckInFailure) {
               return TextButton.icon(
-                onPressed: () {},
+                onPressed: controller.onCheckInPressed,
                 label: Text(
                   'Check in: Failed',
                   style: Theme.of(context).textTheme.headlineMedium!.copyWith(

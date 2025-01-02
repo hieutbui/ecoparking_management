@@ -122,7 +122,7 @@ class EmployeeRepositoryImpl implements EmployeeRepository {
   }
 
   @override
-  Future<Map<String, dynamic>> getEmployeeAttendance({
+  Future<Map<String, dynamic>?> getEmployeeAttendance({
     required String employeeId,
   }) {
     return _dataSource.getEmployeeAttendance(employeeId: employeeId);
