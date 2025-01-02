@@ -1,3 +1,7 @@
+## v0.0.8 - 02/01/2025
+### Fix
+- Error when employee open app in a new day
+
 ## v0.0.7 - 01/01/2025
 ### Added
 - Change text to Vietnamese
