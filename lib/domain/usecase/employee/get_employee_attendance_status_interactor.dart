@@ -21,7 +21,7 @@ class GetEmployeeAttendanceStatusInteractor with InteractorLoggy {
         employeeId: employeeId,
       );
 
-      if (result.isEmpty) {
+      if (result == null || result.isEmpty) {
         yield const Right(GetEmployeeAttendanceStatusEmpty());
       } else {
         final employeeAttendance = EmployeeAttendance.fromJson(result);

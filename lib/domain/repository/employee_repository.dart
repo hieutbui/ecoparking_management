@@ -58,7 +58,7 @@ abstract class EmployeeRepository {
     required String date,
   });
 
-  Future<Map<String, dynamic>> getEmployeeAttendance({
+  Future<Map<String, dynamic>?> getEmployeeAttendance({
     required String employeeId,
   });
 

@@ -54,7 +54,7 @@ abstract class EmployeeDataSource {
     required String clockOut,
     required String date,
   });
-  Future<Map<String, dynamic>> getEmployeeAttendance({
+  Future<Map<String, dynamic>?> getEmployeeAttendance({
     required String employeeId,
   });
   Future<Map<String, dynamic>> saveAttendanceToXlsx({
