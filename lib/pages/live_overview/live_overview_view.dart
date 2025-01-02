@@ -515,7 +515,6 @@ Widget? _buildCheckInButton(
   return ValueListenableBuilder(
     valueListenable: controller.getEmployeeAttendanceStatusStateNotifier,
     builder: (context, statusState, child) {
-      print('statusState: $statusState');
       if (statusState is GetEmployeeAttendanceStatusInitial) {
         return TextButton.icon(
           onPressed: controller.onCheckInPressed,
