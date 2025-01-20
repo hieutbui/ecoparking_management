@@ -25,6 +25,7 @@ import 'package:ecoparking_management/domain/usecase/employee/check_out_interact
 import 'package:ecoparking_management/domain/usecase/employee/get_employee_attendance_status_interactor.dart';
 import 'package:ecoparking_management/pages/live_overview/live_overview_view.dart';
 import 'package:ecoparking_management/pages/live_overview/models/parking_occupied.dart';
+import 'package:ecoparking_management/pages/live_overview/models/selectable_ticket.dart';
 import 'package:ecoparking_management/utils/dialog_utils.dart';
 import 'package:ecoparking_management/utils/mixins/custom_logger.dart';
 import 'package:ecoparking_management/utils/navigation_utils.dart';
@@ -791,14 +792,33 @@ class LiveOverviewController extends State<LiveOverview> with ControllerLoggy {
       ];
     }
 
-    return tickets
+    final List<SelectableTicket> selectableTickets = tickets
+        .map(
+          (e) => SelectableTicket(
+            ticket: e,
+          ),
+        )
+        .toList();
+
+    return selectableTickets
         .map(
           (e) => DataRow(
             //TODO: Show ticket info in dialog when press on row
+            selected: e.isSelected,
+            onSelectChanged: (isSelected) {
+              final index = selectableTickets.indexOf(e);
+              final ticket = selectableTickets[index];
+              selectableTickets[index] =
+                  ticket.copyWith(isSelected: isSelected);
+              currentParkingLotAllotmentNotifier.value = selectableTickets
+                  .where((element) => element.isSelected)
+                  .map((e) => e.ticket)
+                  .toList();
+            },
             cells: <DataCell>[
               DataCell(
                 Text(
-                  e.vehicle?.licensePlate ?? '',
+                  e.ticket.vehicle?.licensePlate ?? '',
                   style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                         color: Theme.of(context).colorScheme.onSurface,
                       ),
@@ -806,8 +826,9 @@ class LiveOverviewController extends State<LiveOverview> with ControllerLoggy {
               ),
               DataCell(
                 Text(
-                  e.entryTime != null
-                      ? DateFormat('hh:mm a yyy/MM/dd ').format(e.entryTime!)
+                  e.ticket.entryTime != null
+                      ? DateFormat('hh:mm a yyy/MM/dd ')
+                          .format(e.ticket.entryTime!)
                       : '',
                   style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                         color: Theme.of(context).colorScheme.onSurface,
@@ -816,8 +837,9 @@ class LiveOverviewController extends State<LiveOverview> with ControllerLoggy {
               ),
               DataCell(
                 Text(
-                  e.exitTime != null
-                      ? DateFormat('hh:mm a yyy/MM/dd').format(e.exitTime!)
+                  e.ticket.exitTime != null
+                      ? DateFormat('hh:mm a yyy/MM/dd')
+                          .format(e.ticket.exitTime!)
                       : '',
                   style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                         color: Theme.of(context).colorScheme.onSurface,
@@ -826,7 +848,7 @@ class LiveOverviewController extends State<LiveOverview> with ControllerLoggy {
               ),
               DataCell(
                 Text(
-                  DateFormat('hh:mm a yyy/MM/dd').format(e.startTime),
+                  DateFormat('hh:mm a yyy/MM/dd').format(e.ticket.startTime),
                   style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                         color: Theme.of(context).colorScheme.onSurface,
                       ),
@@ -834,7 +856,7 @@ class LiveOverviewController extends State<LiveOverview> with ControllerLoggy {
               ),
               DataCell(
                 Text(
-                  DateFormat('hh:mm a yyy/MM/dd').format(e.endTime),
+                  DateFormat('hh:mm a yyy/MM/dd').format(e.ticket.endTime),
                   style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                         color: Theme.of(context).colorScheme.onSurface,
                       ),
@@ -842,15 +864,15 @@ class LiveOverviewController extends State<LiveOverview> with ControllerLoggy {
               ),
               DataCell(
                 Text(
-                  e.status.displayString,
+                  e.ticket.status.displayString,
                   style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                        color: statusColor(e.status),
+                        color: statusColor(e.ticket.status),
                       ),
                 ),
               ),
               DataCell(
                 Text(
-                  '${e.days}d ${e.hours}h',
+                  '${e.ticket.days}d ${e.ticket.hours}h',
                   style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                         color: Theme.of(context).colorScheme.onSurface,
                       ),
@@ -858,7 +880,7 @@ class LiveOverviewController extends State<LiveOverview> with ControllerLoggy {
               ),
               DataCell(
                 Text(
-                  getFormattedCurrency(e.total),
+                  getFormattedCurrency(e.ticket.total),
                   style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                         color: Theme.of(context).colorScheme.onTertiary,
                       ),
